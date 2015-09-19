@@ -10,13 +10,9 @@ out vec4 position;
 void main()
 {
 	position = vec4(vPosition, 1.0);
-	
-	// Doesn't work
+		
 	gl_Position = projection * view * position;
 	
-	// Works ok
-	//gl_Position = position;
-	
-	
-	//gl_Position = position * view * projection;
+	// Ortographic projection
+	//gl_Position = view * position;
 }
