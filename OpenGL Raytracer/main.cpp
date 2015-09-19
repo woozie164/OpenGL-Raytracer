@@ -97,13 +97,15 @@ int main() {
 
 	loadShader("raytracer_cs.glsl", GL_COMPUTE_SHADER, shaders);
 	GLuint raytracerprog = compileShaderProgram(shaders);
+	glUseProgram(raytracerprog);
+	glDispatchCompute(800, 800, 1);
 
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
-		
+		/*
 		glUniformMatrix4fv(glGetUniformLocation(simple, "projection"), 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(simple, "view"), 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
 		
@@ -111,13 +113,13 @@ int main() {
 		glVertex3f(-0.5f, -0.5f, 1.0f);
 		glVertex3f(0.5f, -0.5f, 1.0f);
 		glVertex3f(0.5f, 0.5f, 1.0f);
-		/*
+		
 		glVertex3f(-0.5f, -0.5f, 0.5f);
 		glVertex3f(0.5f, -0.5f, 0.5f);
 		glVertex3f(0.5f, 0.5f, 0.5f);
-		*/
+		
 		glEnd();
-
+		*/
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
