@@ -89,6 +89,7 @@ int main() {
 	
 	vector<ShaderInfo> shaders;
 	Camera camera;
+	
 	while (!glfwWindowShouldClose(window)) {		
 		glBegin(GL_TRIANGLES);
 		glVertex2f(-0.5f, -0.5f);

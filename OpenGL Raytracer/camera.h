@@ -13,6 +13,8 @@ class Camera
 	float speed;
 	float mouseSpeed;
 	float scrollWheelY;
+	bool firstTime;
+	double lastTime;
 
 public:
 	Camera();
