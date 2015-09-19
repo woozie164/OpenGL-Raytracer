@@ -93,6 +93,10 @@ int main() {
 	loadShader("simple_frag.glsl", GL_FRAGMENT_SHADER, shaders);
 	GLuint simple = compileShaderProgram(shaders);
 	glUseProgram(simple);
+	shaders.clear();
+
+	loadShader("raytracer_cs.glsl", GL_COMPUTE_SHADER, shaders);
+	GLuint raytracerprog = compileShaderProgram(shaders);
 
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
