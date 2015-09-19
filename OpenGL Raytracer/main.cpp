@@ -1,6 +1,8 @@
-#include "glew-1.13.0\include\GL\glew.h"
+#include <glew.h>
 #include "glfw3.h"
 #include <iostream>
+#include "shaders.h"
+#include <vector>
 
 using namespace std;
 
@@ -80,10 +82,11 @@ int main() {
 	if (glDebugMessageCallback){
 		glDebugMessageCallback(openglCallbackFunction, nullptr);
 	}
-	else
-	{
+	else {
 		cout << "glDebugMessageCallback not available" << endl;
 	}
+	
+	vector<ShaderInfo> shaders;
 
 	while (!glfwWindowShouldClose(window)) {		
 		glBegin(GL_TRIANGLES);

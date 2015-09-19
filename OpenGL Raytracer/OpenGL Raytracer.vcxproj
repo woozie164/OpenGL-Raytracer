@@ -39,7 +39,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>C:\Users\woozie\Documents\GitHub\OpenGL Raytracer\OpenGL Raytracer\glew-1.13.0\include\GL;C:\Users\woozie\Documents\GitHub\OpenGL Raytracer\OpenGL Raytracer\glfw-3.1.1.bin.WIN32\include\GLFW;$(IncludePath)</IncludePath>
+    <IncludePath>C:\Users\woozie\Documents\GitHub\OpenGL Raytracer\OpenGL Raytracer\glm\glm;C:\Users\woozie\Documents\GitHub\OpenGL Raytracer\OpenGL Raytracer\glew-1.13.0\include\GL;C:\Users\woozie\Documents\GitHub\OpenGL Raytracer\OpenGL Raytracer\glfw-3.1.1.bin.WIN32\include\GLFW;$(IncludePath)</IncludePath>
     <LibraryPath>C:\Users\woozie\Documents\GitHub\OpenGL Raytracer\OpenGL Raytracer\glew-1.13.0\lib\Release\Win32;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -69,7 +69,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="shaders.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="camera.h" />
+    <ClInclude Include="shaders.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
