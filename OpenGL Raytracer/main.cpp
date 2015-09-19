@@ -4,6 +4,7 @@
 #include "shaders.h"
 #include <vector>
 #include "camera.h"
+#include <gtc/type_ptr.hpp>
 
 using namespace std;
 
@@ -90,16 +91,21 @@ int main() {
 	vector<ShaderInfo> shaders;
 	loadShader("simple_vert.glsl", GL_VERTEX_SHADER, shaders);
 	loadShader("simple_frag.glsl", GL_FRAGMENT_SHADER, shaders);
+	GLuint simple = compileShaderProgram(shaders);
+	glUseProgram(simple);
 
 	Camera camera;
 	
 	while (!glfwWindowShouldClose(window)) {
 		camera.Update();
-
+		
+		glUniformMatrix4fv(glGetUniformLocation(simple, "projection"), 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(simple, "view"), 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
+		
 		glBegin(GL_TRIANGLES);
-		glVertex2f(-0.5f, -0.5f);
-		glVertex2f(0.5f, -0.5f);
-		glVertex2f(0.5f, 0.5f);
+		glVertex3f(-0.5f, -0.5f, 1.0f);
+		glVertex3f(0.5f, -0.5f, 1.0f);
+		glVertex3f(0.5f, 0.5f, 1.0f);
 		glEnd();
 
 		glfwSwapBuffers(window);
