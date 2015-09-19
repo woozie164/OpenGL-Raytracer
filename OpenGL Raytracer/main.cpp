@@ -88,6 +88,9 @@ int main() {
 	}
 	
 	vector<ShaderInfo> shaders;
+	loadShader("simple_vert.glsl", GL_VERTEX_SHADER, shaders);
+	loadShader("simple_frag.glsl", GL_FRAGMENT_SHADER, shaders);
+
 	Camera camera;
 	
 	while (!glfwWindowShouldClose(window)) {
