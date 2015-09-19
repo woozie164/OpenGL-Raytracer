@@ -111,9 +111,11 @@ int main() {
 		glVertex3f(-0.5f, -0.5f, 1.0f);
 		glVertex3f(0.5f, -0.5f, 1.0f);
 		glVertex3f(0.5f, 0.5f, 1.0f);
+		/*
 		glVertex3f(-0.5f, -0.5f, 0.5f);
 		glVertex3f(0.5f, -0.5f, 0.5f);
 		glVertex3f(0.5f, 0.5f, 0.5f);
+		*/
 		glEnd();
 
 		glfwSwapBuffers(window);

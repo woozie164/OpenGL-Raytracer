@@ -1,6 +1,10 @@
 #version 430 core
 
 layout (local_size_x = 1, local_size_y = 1) in;
+layout (rgba8, binding = 0) uniform image2D outTexture;
+
+uniform vec3 camera_pos;
+uniform vec3 camera_dir;
 
 bool RayVsTriangle(vec3 ray_origin, vec3 ray_dir,
  vec3 tri_x, vec3 tri_y,  vec3 tri_z,
@@ -49,5 +53,14 @@ void RayVsTriangle(Ray & ray, Triangle & tri, HitData & hitData)
 
 void main(void) 
 {
-		
+	vec3 x = vec3(-0.5f, -0.5f, 0.5f);
+	vec3 y = vec3(0.5f, -0.5f, 0.5f);
+	vec3 z = vec3(0.5f, 0.5f, 0.5f);
+	float t;
+	//vec3 intersectionPoint = camera_pos = camera_dir * t;
+	if(RayVsTriangle(camera_pos, camera_dir, x, y, z, t)) {
+		vec4 color = vec4(0.0, 0.0, 1.0, 1.0);
+		ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
+		imageStore(outTexture, storePos, color);
+	}
 }
