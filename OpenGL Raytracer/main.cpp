@@ -97,19 +97,25 @@ int main() {
 
 	loadShader("raytracer_cs.glsl", GL_COMPUTE_SHADER, shaders);
 	GLuint raytracerprog = compileShaderProgram(shaders);
-	glUseProgram(raytracerprog);
-
+	//glUseProgram(raytracerprog);
+	
+	/* TODO: 
+	1.Create a texture that the compute shader will draw into
+	2. Blit the texture into the backbuffer
+	3. Fix the position of the triangles so they're are immediately visible, or fix moving camera.
+	*/
 
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
-
+		/*
 		glUniformMatrix4fv(glGetUniformLocation(raytracerprog, "camera_pos"), 1, GL_FALSE, glm::value_ptr(camera.getPosition()));
 		glUniformMatrix4fv(glGetUniformLocation(raytracerprog, "camera_dir"), 1, GL_FALSE, glm::value_ptr(camera.getDirection()));
 		glDispatchCompute(800, 800, 1);
-		/*
+		*/
+		
 		glUniformMatrix4fv(glGetUniformLocation(simple, "projection"), 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(simple, "view"), 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
 		
@@ -123,7 +129,7 @@ int main() {
 		glVertex3f(0.5f, 0.5f, 0.5f);
 		
 		glEnd();
-		*/
+		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}

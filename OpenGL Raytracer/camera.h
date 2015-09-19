@@ -31,5 +31,13 @@ public:
 	{
 		return projectionMatrix;
 	}
+
+	glm::vec3 getPosition() {
+		return cameraPosition;
+	}
+
+	glm::vec3 getDirection() {
+		return direction;
+	}
 };
 
