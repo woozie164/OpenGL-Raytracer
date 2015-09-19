@@ -21,5 +21,15 @@ public:
 	~Camera();
 
 	void Update();
+
+	glm::mat4 getViewMatrix()
+	{
+		return viewMatrix;
+	}
+
+	glm::mat4 getProjectionMatrix()
+	{
+		return projectionMatrix;
+	}
 };
 
