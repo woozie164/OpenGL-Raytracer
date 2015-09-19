@@ -85,8 +85,15 @@ int main() {
 		cout << "glDebugMessageCallback not available" << endl;
 	}
 
-	while (!glfwWindowShouldClose(window)) {
-		// Keep running
+	while (!glfwWindowShouldClose(window)) {		
+		glBegin(GL_TRIANGLES);
+		glVertex2f(-0.5f, -0.5f);
+		glVertex2f(0.5f, -0.5f);
+		glVertex2f(0.5f, 0.5f);
+		glEnd();
+
+		glfwSwapBuffers(window);
+		glfwPollEvents();
 	}
 
 	glfwTerminate();
