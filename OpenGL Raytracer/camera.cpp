@@ -5,7 +5,7 @@ using namespace glm;
 
 Camera::Camera()
 {
-	cameraPosition = vec3(0.0f, 0.0f, 1.0f);
+	cameraPosition = vec3(0.0f, 0.0f, 0.0f);
 	horizontalAngle = 3.14f;
 	verticalAngle = 0.0f;
 	initialFoV = 45.0f;
