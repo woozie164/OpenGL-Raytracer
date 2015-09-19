@@ -2,10 +2,28 @@
 
 layout (local_size_x = 1, local_size_y = 1) in;
 
-void RayVsTriangle(vec3 ray_origin, vec3 ray_dir,
- vec3 tri_x, vec3 tri_y,  vec3 tri_z)
+bool RayVsTriangle(vec3 ray_origin, vec3 ray_dir,
+ vec3 tri_x, vec3 tri_y,  vec3 tri_z,
+ out float t)
 {
+	vec3 e1 = tri_y - tri_x;
+	vec3 e2 = tri_z - tri_x;
+	vec3 q = cross(ray_dir,  e2);
+	float a = dot(e1, q);
+	float NEAR_ZERO = 1e-20; // 1 * 10^-20
+	if(a > - NEAR_ZERO && a < NEAR_ZERO) return false;
 	
+	float f = 1 / a;
+	vec3 s = ray_origin - tri_x;
+	float u = f * dot(s, q);
+	if(u < 0.0f) return false;
+	
+	vec3 r = cross(s, e1);
+	float v = f * dot(ray_dir, r);
+	if(v < 0.0f || u + v > 1.0f) return false;
+	
+	t = f * dot(e2, r);
+	return true;
 }
 
 /*
