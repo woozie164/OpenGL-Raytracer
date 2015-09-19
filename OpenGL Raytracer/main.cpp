@@ -1,18 +1,94 @@
+#include "glew-1.13.0\include\GL\glew.h"
 #include "glfw3.h"
 #include <iostream>
+
+using namespace std;
 
 void glfw_error_callback(int error, const char* description)
 {
 	std::cerr << description << std::endl;
 }
 
-void main() {
+void APIENTRY openglCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void * userParam)
+{
+	using namespace std;
+	// Ignore certain messages
+	switch (id)
+	{
+		// A verbose message about what type of memory was allocated for a buffer.
+	case 131185:
+		return;
+	}
+
+	cout << "---------------------opengl-callback-start------------" << endl;
+	cout << "message: " << message << endl;
+	cout << "type: ";
+	switch (type) {
+	case GL_DEBUG_TYPE_ERROR:
+		cout << "ERROR";
+		break;
+	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+		cout << "DEPRECATED_BEHAVIOR";
+		break;
+	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+		cout << "UNDEFINED_BEHAVIOR";
+		break;
+	case GL_DEBUG_TYPE_PORTABILITY:
+		cout << "PORTABILITY";
+		break;
+	case GL_DEBUG_TYPE_PERFORMANCE:
+		cout << "PERFORMANCE";
+		break;
+	case GL_DEBUG_TYPE_OTHER:
+		cout << "OTHER";
+		break;
+	}
+	cout << endl;
+
+	cout << "id: " << id << endl;
+	cout << "severity: ";
+	switch (severity) {
+	case GL_DEBUG_SEVERITY_LOW:
+		cout << "LOW";
+		break;
+	case GL_DEBUG_SEVERITY_MEDIUM:
+		cout << "MEDIUM";
+		break;
+	case GL_DEBUG_SEVERITY_HIGH:
+		cout << "HIGH";
+		break;
+	}
+	cout << endl;
+	cout << "---------------------opengl-callback-end--------------" << endl;
+}
+
+int main() {
 	glfwSetErrorCallback(glfw_error_callback);
 	glfwInit();
+
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
 	GLFWwindow * window = glfwCreateWindow(800, 800, "OpenGL Raytracer", 0, 0);
-	glfwMakeContextCurrent(window);
-	while (!glfwWindowShouldClose(window))
+	if (!window) {
+		glfwTerminate();
+		return -1;
+	}
+	glfwMakeContextCurrent(window);	
+	glewInit();
+
+	glEnable(GL_DEBUG_OUTPUT);
+	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+	if (glDebugMessageCallback){
+		glDebugMessageCallback(openglCallbackFunction, nullptr);
+	}
+	else
 	{
+		cout << "glDebugMessageCallback not available" << endl;
+	}
+
+	while (!glfwWindowShouldClose(window)) {
 		// Keep running
 	}
+
+	glfwTerminate();
+	return 0;
 }
