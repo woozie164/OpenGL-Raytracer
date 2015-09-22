@@ -99,6 +99,19 @@ int main() {
 	GLuint raytracerprog = compileShaderProgram(shaders);
 	//glUseProgram(raytracerprog);
 	
+	// Create a texture that the computer shader will render into
+	GLuint tex;
+	glGenTextures(1, &tex);
+	glBindTexture(GL_TEXTURE_2D, tex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 800, 800, 0, GL_RGBA, GL_FLOAT, nullptr);
+
+	GLuint framebuffer;
+	glGenFramebuffers(1, &framebuffer);	
+	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
+	// wtf is the difference vs glGenFrameBuffers? Different inital state - which contains what?
+	//glCreateFramebuffers(1, &framebuffer);	
+
 	/* TODO: 
 	1.Create a texture that the compute shader will draw into
 	2. Blit the texture into the backbuffer
@@ -110,12 +123,17 @@ int main() {
 	while (!glfwWindowShouldClose(window)) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
+
+		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
+		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
 		/*
+		// Raytracer stuff
 		glUniformMatrix4fv(glGetUniformLocation(raytracerprog, "camera_pos"), 1, GL_FALSE, glm::value_ptr(camera.getPosition()));
 		glUniformMatrix4fv(glGetUniformLocation(raytracerprog, "camera_dir"), 1, GL_FALSE, glm::value_ptr(camera.getDirection()));
 		glDispatchCompute(800, 800, 1);
 		*/
 		
+		/* Rasterizer code */
 		glUniformMatrix4fv(glGetUniformLocation(simple, "projection"), 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(simple, "view"), 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
 		
@@ -129,6 +147,10 @@ int main() {
 		glVertex3f(0.5f, 0.5f, 0.5f);
 		
 		glEnd();
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBlitFramebuffer(0, 0, 800, 800, 0, 0, 800, 800, GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
