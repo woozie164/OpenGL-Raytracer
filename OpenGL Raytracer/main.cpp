@@ -113,9 +113,7 @@ int main() {
 	//glCreateFramebuffers(1, &framebuffer);	
 
 	/* TODO: 
-	1.Create a texture that the compute shader will draw into
-	2. Blit the texture into the backbuffer
-	3. Fix the position of the triangles so they're are immediately visible, or fix moving camera.
+	Fix so that the rays are not sent from the exact same location.
 	*/
 
 	Camera camera;

@@ -53,16 +53,18 @@ void RayVsTriangle(Ray & ray, Triangle & tri, HitData & hitData)
 
 void main(void) 
 {
-
-	vec3 x = vec3(-0.5f, -0.5f, 0.5f);
-	vec3 y = vec3(0.5f, -0.5f, 0.5f);
+	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
+	float dx = (storePos.x - 400) / 400.0f; 
+	float dy = (storePos.y - 400) / 400.0f;
+	vec3 x = vec3(-0.5f + dx, -0.5f, 0.5f);
+	vec3 y = vec3(0.5f, -0.5f + dy, 0.5f);
 	vec3 z = vec3(0.5f, 0.5f, 0.5f);
 	float t;
 	//vec3 intersectionPoint = camera_pos = camera_dir * t;
 	//if(RayVsTriangle(camera_pos, camera_dir, x, y, z, t)) {
 	if(RayVsTriangle(vec3(0.25, -0.25, 0), vec3(0.0, 0.0, 1.0), x, y, z, t)) {
 		vec4 color = vec4(0.0, 1.0, 1.0, 1.0);
-		ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
+		
 		imageStore(outTexture, storePos, color);
 	}
 	
