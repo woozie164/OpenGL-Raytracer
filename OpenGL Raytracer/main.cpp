@@ -97,7 +97,7 @@ int main() {
 
 	loadShader("raytracer_cs.glsl", GL_COMPUTE_SHADER, shaders);
 	GLuint raytracerprog = compileShaderProgram(shaders);
-	//glUseProgram(raytracerprog);
+	glUseProgram(raytracerprog);
 	
 	// Create a texture that the computer shader will render into
 	GLuint tex;
@@ -126,16 +126,17 @@ int main() {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
-		/*
-		// Raytracer stuff
-		glUniformMatrix4fv(glGetUniformLocation(raytracerprog, "camera_pos"), 1, GL_FALSE, glm::value_ptr(camera.getPosition()));
-		glUniformMatrix4fv(glGetUniformLocation(raytracerprog, "camera_dir"), 1, GL_FALSE, glm::value_ptr(camera.getDirection()));
-		glDispatchCompute(800, 800, 1);
-		*/
 		
-		/* Rasterizer code */
+		/* Raytracer stuff */		
+		glUniform3fv(glGetUniformLocation(raytracerprog, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
+		glUniform3fv(glGetUniformLocation(raytracerprog, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
+		glDispatchCompute(800, 800, 1);
+		
+		
+		/* Rasterizer code 
 		glUniformMatrix4fv(glGetUniformLocation(simple, "projection"), 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(simple, "view"), 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
+		
 		
 		glBegin(GL_TRIANGLES);
 		glVertex3f(-0.5f, -0.5f, 1.0f);
@@ -147,7 +148,10 @@ int main() {
 		glVertex3f(0.5f, 0.5f, 0.5f);
 		
 		glEnd();
+		*/
 
+		glMemoryBarrier(GL_ALL_BARRIER_BITS);
+		//glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glBlitFramebuffer(0, 0, 800, 800, 0, 0, 800, 800, GL_COLOR_BUFFER_BIT, GL_NEAREST);
