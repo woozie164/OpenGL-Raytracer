@@ -53,6 +53,7 @@ void RayVsTriangle(Ray & ray, Triangle & tri, HitData & hitData)
 
 void main(void) 
 {
+/*
 	vec3 x = vec3(-0.5f, -0.5f, 0.5f);
 	vec3 y = vec3(0.5f, -0.5f, 0.5f);
 	vec3 z = vec3(0.5f, 0.5f, 0.5f);
@@ -63,4 +64,8 @@ void main(void)
 		ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 		imageStore(outTexture, storePos, color);
 	}
+*/
+	vec4 color = vec4(0.0, 0.0, 1.0, 1.0);
+	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
+	imageStore(outTexture, storePos, color);
 }

@@ -127,7 +127,8 @@ int main() {
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
 		
-		/* Raytracer stuff */		
+		/* Raytracer stuff */
+		glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
 		glUniform3fv(glGetUniformLocation(raytracerprog, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
 		glUniform3fv(glGetUniformLocation(raytracerprog, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
 		glDispatchCompute(800, 800, 1);
