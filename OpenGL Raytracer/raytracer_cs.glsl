@@ -5,6 +5,8 @@ layout (rgba8, binding = 0) uniform image2D outTexture;
 
 uniform vec3 camera_pos;
 uniform vec3 camera_dir;
+uniform vec3 camera_up;
+uniform vec3 camera_right;
 
 bool RayVsTriangle(vec3 ray_origin, vec3 ray_dir,
  vec3 tri_x, vec3 tri_y,  vec3 tri_z,
@@ -54,14 +56,11 @@ void RayVsTriangle(Ray & ray, Triangle & tri, HitData & hitData)
 void main(void) 
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
-	
-	// A point in the near plane
-	vec3 s = camera_pos + camera_dir * NEAR_PLANE_DIST;
-	
 	float dx = (storePos.x - 400) / 400.0f; 
 	float dy = (storePos.y - 400) / 400.0f;
-	s.x += dx;
-	s.y += dy;
+	
+	// A point in the near plane
+	vec3 s = camera_pos + camera_dir * NEAR_PLANE_DIST + dx * camera_right + dy * camera_up;	
 	
 	// Hardcoded geometry data (1 triangle)
 	vec3 x = vec3(-0.5f, -0.5f, 0.5f);
