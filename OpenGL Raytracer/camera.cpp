@@ -53,14 +53,14 @@ void Camera::Update(){
 		);
 
 	// Right vector
-	vec3 right = vec3(
+	right = vec3(
 		sin(horizontalAngle - 3.14f / 2.0f),
 		0,
 		cos(horizontalAngle - 3.14f / 2.0f)
 		);
 
 	// Up vector
-	vec3 up = cross(right, direction);
+	up = cross(right, direction);
 
 	// Move forward
 	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
