@@ -50,23 +50,35 @@ void RayVsTriangle(Ray & ray, Triangle & tri, HitData & hitData)
 	hitData.color = tri.c;
 }
 */
-
+#define NEAR_PLANE_DIST 4.0f
 void main(void) 
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
+	
+	// A point in the near plane
+	vec3 s = camera_pos + camera_dir * NEAR_PLANE_DIST;
+	
 	float dx = (storePos.x - 400) / 400.0f; 
 	float dy = (storePos.y - 400) / 400.0f;
-	vec3 x = vec3(-0.5f + dx, -0.5f, 0.5f);
-	vec3 y = vec3(0.5f, -0.5f + dy, 0.5f);
+	s.x += dx;
+	s.y += dy;
+	
+	// Hardcoded geometry data (1 triangle)
+	vec3 x = vec3(-0.5f, -0.5f, 0.5f);
+	vec3 y = vec3(0.5f, -0.5f, 0.5f);
 	vec3 z = vec3(0.5f, 0.5f, 0.5f);
+	
 	float t;
+	vec4 color;
+	vec3 ray_dir = s;
 	//vec3 intersectionPoint = camera_pos = camera_dir * t;
-	//if(RayVsTriangle(camera_pos, camera_dir, x, y, z, t)) {
-	if(RayVsTriangle(vec3(0.25, -0.25, 0), vec3(0.0, 0.0, 1.0), x, y, z, t)) {
-		vec4 color = vec4(0.0, 1.0, 1.0, 1.0);
-		
-		imageStore(outTexture, storePos, color);
+	if(RayVsTriangle(camera_pos, ray_dir, x, y, z, t)) {
+	//if(RayVsTriangle(vec3(0.25, -0.25, 0), vec3(0.0, 0.0, 1.0), x, y, z, t)) {
+		color = vec4(0.0, 1.0, 1.0, 1.0);			
+	} else {
+		color = vec4(0.0, 1.0, 0.0, 1.0);
 	}
+	imageStore(outTexture, storePos, color);
 	
 	/*
 	vec4 color = vec4(0.0, 0.0, 1.0, 1.0);
