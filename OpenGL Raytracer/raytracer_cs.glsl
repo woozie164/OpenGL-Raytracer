@@ -32,6 +32,33 @@ bool RayVsTriangle(vec3 ray_origin, vec3 ray_dir,
 	return true;
 }
 
+bool RayVsSphere(vec3 ray_origin, vec3 ray_dir,
+	vec3 sphere_center, float radius, 
+	out float t) {
+	vec3 l = ray_origin - sphere_center;
+	float b = dot(ray_dir, l);
+	float c = dot(l, l) - radius * radius;
+	
+	float x = b * b - c;
+	if(x < 0) return false;
+	else 
+	{
+		float t1 = -b - sqrt(x);
+		float t2 = -b + sqrt(x);
+		
+		if(t1 > 0 || t2 > 0) 
+		{
+			if(t1 < t2 && t1 > 0)
+				t = t1;
+			else
+				t = t2;
+			
+			return true;
+		}		
+	}
+	return false;
+}
+
 #define NEAR_PLANE_DIST 4.0f
 void main(void) 
 {
