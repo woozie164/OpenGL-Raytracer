@@ -31,20 +31,24 @@ bool RayVsTriangle(vec3 ray_origin, vec3 ray_dir,
 	t = f * dot(e2, r);
 	return true;
 }
-
+/*
 bool RayVsSphere(vec3 ray_origin, vec3 ray_dir,
 	vec3 sphere_center, float radius, 
 	out float t) {
 	vec3 l = ray_origin - sphere_center;
-	float b = dot(ray_dir, l);
+	float b = 2* dot(ray_dir, l);
 	float c = dot(l, l) - radius * radius;
-	
-	float x = b * b - c;
-	if(x < 0) return false;
-	else 
-	{
-		float t1 = -b - sqrt(x);
-		float t2 = -b + sqrt(x);
+	float a = dot(camera_dir, camera_dir);
+	//float x = b * b - c;
+	 float x = (b*b)-(4.0 * a * c);
+	//bool hit = x >= 0.0f ? true : false;
+	//return hit;
+
+	if(x < 0) {
+		return false;
+	} else {
+		float t1 = (-b - sqrt(x)) / (2.0f * a);
+		float t2 = (-b + sqrt(x)) / (2.0f * a);
 		
 		if(t1 > 0 || t2 > 0) 
 		{
@@ -54,9 +58,53 @@ bool RayVsSphere(vec3 ray_origin, vec3 ray_dir,
 				t = t2;
 			
 			return true;
-		}		
-	}
-	return false;
+		}
+		return false;	
+	}	
+}
+*/
+struct sphere {
+	vec3 pos;
+	float r;
+} my_sphere;
+
+bool intersectSphere(vec3 origin, vec3 dir, const sphere s) {
+	//Squared distance between ray origin and sphere center
+    float squaredDist = dot(origin - s.pos, origin - s.pos);
+
+    //If the distance is less than the squared radius of the sphere...
+    if(squaredDist <= s.r)
+    {
+        //Point is in sphere, consider as no intersection existing        
+        //return vec2(MAX_SCENE_BOUNDS, MAX_SCENE_BOUNDS);
+		return false;
+    }
+
+    //Will hold solution to quadratic equation
+    float t0, t1;
+
+    //Calculating the coefficients of the quadratic equation
+    float a = dot(dir,dir); // a = d*d
+    float b = 2.0 * dot(dir, origin - s.pos); // b = 2d(o-C)
+    float c = dot(origin - s.pos, origin - s.pos) - (s.r*s.r); // c = (o-C)^2-R^2
+
+    //Calculate discriminant
+    float disc = (b*b)-(4.0*a*c);
+
+    if(disc < 0) //If discriminant is negative no intersection happens
+    {
+        //std::cout << "No intersection with sphere..." << std::endl;
+        //return vec2(MAX_SCENE_BOUNDS, MAX_SCENE_BOUNDS);
+		return false;
+    }
+    else //If discriminant is positive one or two intersections (two solutions) exists
+    {
+        float sqrt_disc = sqrt(disc);
+        t0 = (-b - sqrt_disc) / (2.0f * a);
+        t1 = (-b + sqrt_disc) / (2.0f * a);
+		//return vec2(min(t0, t1), max(t0, t1));
+		return true;
+    }	
 }
 
 #define NEAR_PLANE_DIST 4.0f
@@ -87,10 +135,11 @@ void main(void)
 		
 	}
 	*/
-	if(RayVsSphere(camera_pos, ray_dir, vec3(0.0f, 0.0f, 0.0f), 0.01f, t)) {
+	my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);
+	//if(RayVsSphere(camera_pos, ray_dir, vec3(-5.0f, -5.0f, -5.0f), 1.0f, t)) {
+	if(intersectSphere(camera_pos, ray_dir, my_sphere)) {
 		color = vec4(1.0, 0.0, 0.0, 1.0f);
-	}	
-	else {
+	} else {
 		color = vec4(0.0, 1.0, 0.0, 1.0);
 	}
 	imageStore(outTexture, storePos, color);
