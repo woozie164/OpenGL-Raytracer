@@ -32,26 +32,6 @@ bool RayVsTriangle(vec3 ray_origin, vec3 ray_dir,
 	return true;
 }
 
-/*
-void RayVsTriangle(Ray & ray, Triangle & tri, HitData & hitData)
-{
-	Vec e1 = tri.p[1] - tri.p[0];
-	Vec e2 = tri.p[2] - tri.p[0];
-	Vec q = ray.d ^ e2;
-	float a = e1 * q;
-	if(a > - NEAR_ZERO && a < NEAR_ZERO) return;
-	float f = 1 / a;
-	Vec s = ray.o - tri.p[0];
-	float u = f * (s * q);
-	if(u < 0.0f) return;
-	Vec r = s ^ e1;
-	float v = f * (ray.d * r);
-	if(v < 0.0f || u + v > 1.0f) return;
-	float t = f * (e2 * r);
-	hitData.t = t;
-	hitData.color = tri.c;
-}
-*/
 #define NEAR_PLANE_DIST 4.0f
 void main(void) 
 {
@@ -78,10 +58,4 @@ void main(void)
 		color = vec4(0.0, 1.0, 0.0, 1.0);
 	}
 	imageStore(outTexture, storePos, color);
-	
-	/*
-	vec4 color = vec4(0.0, 0.0, 1.0, 1.0);
-	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
-	imageStore(outTexture, storePos, color);
-	*/
 }
