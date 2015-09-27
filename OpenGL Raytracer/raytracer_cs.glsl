@@ -74,14 +74,23 @@ void main(void)
 	vec3 y = vec3(0.5f, -0.5f, 0.5f);
 	vec3 z = vec3(0.5f, 0.5f, 0.5f);
 	
+	
+	
 	float t;
 	vec4 color;
 	vec3 ray_dir = camera_pos + (s - camera_pos) * NEAR_PLANE_DIST;
 	//vec3 intersectionPoint = camera_pos = camera_dir * t;
+	/*
 	if(RayVsTriangle(camera_pos, ray_dir, x, y, z, t)) {
 	//if(RayVsTriangle(vec3(0.25, -0.25, 0), vec3(0.0, 0.0, 1.0), x, y, z, t)) {
 		color = vec4(0.0, 1.0, 1.0, 1.0);			
-	} else {
+		
+	}
+	*/
+	if(RayVsSphere(camera_pos, ray_dir, vec3(0.0f, 0.0f, 0.0f), 0.01f, t)) {
+		color = vec4(1.0, 0.0, 0.0, 1.0f);
+	}	
+	else {
 		color = vec4(0.0, 1.0, 0.0, 1.0);
 	}
 	imageStore(outTexture, storePos, color);
