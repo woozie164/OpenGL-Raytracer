@@ -147,9 +147,9 @@ void main(void)
 		// Send a ray from each intersection point towards each light source
 		// if there's nothing in the way between the light source and the intersection point -> color this pixel with the light source color
 		// else color this pixel black (because there's an object in the way of the light)
-		vec3 intersectionPoint = camera_pos + ray_dir * t;
+		vec3 intersectionPoint = camera_pos + ray_dir * t; // NOTE: t is not set to anything.
 		vec3 lightRayDir = normalize(light_position - intersectionPoint);		
-		if(!RayVsTriangle(intersectionPoint, lightRayDir, x, y, z, t) && !RayVsSphere(intersectionPoint, lightRayDir, my_sphere)) {
+		if(!RayVsTriangle(intersectionPoint, lightRayDir, x, y, z, t) && !intersectSphere(intersectionPoint, lightRayDir, my_sphere)) {
 			color = vec4(light_color, 1.0f);
 		} else {
 			color = vec4(1.0, 1.0, 1.0, 1.0);
