@@ -71,7 +71,7 @@ struct sphere {
 	float r;
 } my_sphere;
 
-bool intersectSphere(vec3 origin, vec3 dir, const sphere s) {
+bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out float t1) {
 	//Squared distance between ray origin and sphere center
     float squaredDist = dot(origin - s.pos, origin - s.pos);
 
@@ -84,7 +84,7 @@ bool intersectSphere(vec3 origin, vec3 dir, const sphere s) {
     }
 
     //Will hold solution to quadratic equation
-    float t0, t1;
+    //float t0, t1; // Replaced with out paramaters
 
     //Calculating the coefficients of the quadratic equation
     float a = dot(dir,dir); // a = d*d
@@ -140,16 +140,19 @@ void main(void)
 	*/
 	my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);
 	//if(RayVsSphere(camera_pos, ray_dir, vec3(-5.0f, -5.0f, -5.0f), 1.0f, t)) {
-	if(intersectSphere(camera_pos, ray_dir, my_sphere)) {
+	float t0, t1;
+	if(intersectSphere(camera_pos, ray_dir, my_sphere, t0, t1)) {
 		/*********
 		Light pass 
 		**********/
 		// Send a ray from each intersection point towards each light source
 		// if there's nothing in the way between the light source and the intersection point -> color this pixel with the light source color
 		// else color this pixel black (because there's an object in the way of the light)
-		vec3 intersectionPoint = camera_pos + ray_dir * t; // NOTE: t is not set to anything.
+		
+		t = min(t0, t1);
+		vec3 intersectionPoint = camera_pos + ray_dir * t;
 		vec3 lightRayDir = normalize(light_position - intersectionPoint);		
-		if(!RayVsTriangle(intersectionPoint, lightRayDir, x, y, z, t) && !intersectSphere(intersectionPoint, lightRayDir, my_sphere)) {
+		if(!RayVsTriangle(intersectionPoint, lightRayDir, x, y, z, t) && !intersectSphere(intersectionPoint, lightRayDir, my_sphere, t0, t1)) {
 			color = vec4(light_color, 1.0f);
 		} else {
 			color = vec4(1.0, 1.0, 1.0, 1.0);
