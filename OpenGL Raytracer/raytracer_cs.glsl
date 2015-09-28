@@ -34,24 +34,26 @@ bool RayVsTriangle(vec3 ray_origin, vec3 ray_dir,
 	t = f * dot(e2, r);
 	return true;
 }
-/*
+
 bool RayVsSphere(vec3 ray_origin, vec3 ray_dir,
 	vec3 sphere_center, float radius, 
 	out float t) {
 	vec3 l = ray_origin - sphere_center;
-	float b = 2* dot(ray_dir, l);
+	float b = dot(ray_dir, l); // 2* dot(ray_dir, l);
 	float c = dot(l, l) - radius * radius;
 	float a = dot(camera_dir, camera_dir);
-	//float x = b * b - c;
-	 float x = (b*b)-(4.0 * a * c);
+	float x = b * b - c;
+	// float x = (b*b)-(4.0 * a * c);
 	//bool hit = x >= 0.0f ? true : false;
 	//return hit;
 
 	if(x < 0) {
 		return false;
 	} else {
-		float t1 = (-b - sqrt(x)) / (2.0f * a);
-		float t2 = (-b + sqrt(x)) / (2.0f * a);
+	//	float t1 = (-b - sqrt(x)) / (2.0f * a);
+		//float t2 = (-b + sqrt(x)) / (2.0f * a);
+		float t1 = (-b - sqrt(x));
+		float t2 = (-b + sqrt(x));
 		
 		if(t1 > 0 || t2 > 0) 
 		{
@@ -65,7 +67,7 @@ bool RayVsSphere(vec3 ray_origin, vec3 ray_dir,
 		return false;	
 	}	
 }
-*/
+
 struct sphere {
 	vec3 pos;
 	float r;
@@ -129,19 +131,22 @@ void main(void)
 	
 	float t;
 	vec4 color;
-	vec3 ray_dir = camera_pos + (s - camera_pos) * NEAR_PLANE_DIST;
+	vec3 ray_dir = normalize(camera_pos + (s - camera_pos) * NEAR_PLANE_DIST);
 	
 	/*
 	if(RayVsTriangle(camera_pos, ray_dir, x, y, z, t)) {
 	//if(RayVsTriangle(vec3(0.25, -0.25, 0), vec3(0.0, 0.0, 1.0), x, y, z, t)) {
 		color = vec4(0.0, 1.0, 1.0, 1.0);			
 		
-	}
+	}	
 	*/
+	//RayVsTriangle(camera_pos, ray_dir, x, y, z, t);
+	
 	my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);
-	//if(RayVsSphere(camera_pos, ray_dir, vec3(-5.0f, -5.0f, -5.0f), 1.0f, t)) {
+	
 	float t0, t1;
-	if(intersectSphere(camera_pos, ray_dir, my_sphere, t0, t1)) {
+	if(RayVsSphere(camera_pos, ray_dir, vec3(-5.0f, -5.0f, -5.0f), 1.0f, t)) {
+	//if(intersectSphere(camera_pos, ray_dir, my_sphere, t0, t1)) {
 		/*********
 		Light pass 
 		**********/
@@ -149,17 +154,32 @@ void main(void)
 		// if there's nothing in the way between the light source and the intersection point -> color this pixel with the light source color
 		// else color this pixel black (because there's an object in the way of the light)
 		
-		t = min(t0, t1);
+		//t = min(t, min(t0, t1));
+		//t = min(t0, t1);
 		vec3 intersectionPoint = camera_pos + ray_dir * t;
-		vec3 lightRayDir = normalize(light_position - intersectionPoint);		
+		vec3 lightRayDir = normalize(light_position - intersectionPoint);
+		float t0, t1;
+		
 		if(!RayVsTriangle(intersectionPoint, lightRayDir, x, y, z, t) && !intersectSphere(intersectionPoint, lightRayDir, my_sphere, t0, t1)) {
 			color = vec4(light_color, 1.0f);
 		} else {
+		
 			color = vec4(1.0, 1.0, 1.0, 1.0);
-		}				
+		}					
 	} else {
 		color = vec4(0.0, 1.0, 0.0, 1.0);
-	}	
-	
+	}
+	/*
+	float min_t = min(t, min(t0, t1));
+	if(min_t == t) {
+		color = vec4(0.0, 1.0, 1.0, 1.0);	
+	} else if(min_t == t0){
+		color = vec4(light_color, 1.0f);
+	} else if(min_t == t1){
+		color = vec4(1.0, 1.0, 1.0, 1.0);
+	} else {
+		color = vec4(0.0, 1.0, 0.0, 1.0);
+	}
+	*/
 	imageStore(outTexture, storePos, color);
 }
