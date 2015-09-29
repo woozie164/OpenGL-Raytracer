@@ -133,7 +133,7 @@ int main() {
 		glUniform3fv(glGetUniformLocation(raytracerprog, "camera_right"), 1, glm::value_ptr(camera.getRight()));
 
 		glUniform3fv(glGetUniformLocation(raytracerprog, "light_position"), 1, glm::value_ptr(glm::vec3(100.0f, 100.0f, 100.0f)));
-		glUniform3fv(glGetUniformLocation(raytracerprog, "light_color"), 1, glm::value_ptr(glm::vec3(0.0f, 0.0f, 0.0f)));
+		glUniform3fv(glGetUniformLocation(raytracerprog, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
 		glDispatchCompute(800, 800, 1);		
 		
 		/* Rasterizer code 
