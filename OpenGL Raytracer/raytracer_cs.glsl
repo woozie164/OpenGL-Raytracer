@@ -150,7 +150,7 @@ void trace(vec3 ray_origin, vec3 ray_dir, out float t, out int primitiveID) {
 	t = t_min;
 }
 
-#define NEAR_PLANE_DIST 4.0f
+#define NEAR_PLANE_DIST 1.0f
 void main(void) 
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
