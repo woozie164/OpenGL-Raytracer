@@ -132,6 +132,15 @@ void trace(vec3 ray_origin, vec3 ray_dir, out float t, out int primitiveID) {
 		primitiveID = 0; // Set to 0 because it intersects the first triangle in the scene
 	}
 	
+	my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);
+	float t0, t1;
+	intersectSphere(ray_origin, ray_dir, my_sphere, t0, t1);
+	t = min(t0, t1);
+	if(t < t_min) {
+		t_min = t;
+		primitiveID = 1; // Set to 0 because it intersects the first triangle in the scene
+	}
+	
 	RayVsSphere(ray_origin, ray_dir, vec3(-5.0f, -5.0f, -5.0f), 1.0f, t);
 	if(t < t_min) {
 		t_min = t;
@@ -151,13 +160,35 @@ void main(void)
 	// A point in the near plane
 	vec3 s = camera_pos + camera_dir * NEAR_PLANE_DIST + dx * camera_right + dy * camera_up;	
 	
-	vec3 ray_dir = normalize(camera_pos + (s - camera_pos) * NEAR_PLANE_DIST);
+	vec3 ray_dir = normalize(s - camera_pos);
 
-	
-	
-	
 	float t;
+	int primitiveID;
 	vec4 color;
+	
+	trace(camera_pos, ray_dir, t, primitiveID);
+	if(primitiveID != -1) {
+		if(primitiveID == 0) {
+			color = vec4(0.0, 1.0, 1.0, 1.0);
+		}
+		if(primitiveID == 1) {
+			color = vec4(0.0, 0.5, 0.5, 1.0);
+		}
+		/*
+		vec3 intersectionPoint = camera_pos + ray_dir * t;
+		vec3 lightRayDir = normalize(light_position - intersectionPoint);
+		int lightPrimitiveID;
+		trace(intersectionPoint, lightRayDir, t, lightPrimitiveID);
+		if(lightPrimitiveID != -1 && lightPrimitiveID != primitiveID) {
+			color = vec4(light_color, 1.0f);			
+		} else {
+			color = vec4(0.3, 0.3, 0.3, 1.0);	
+		}
+		*/		
+	} else {
+		// Background color
+		color = vec4(0.0, 1.0, 0.0, 1.0);
+	}
 	
 	
 	/*
@@ -168,15 +199,14 @@ void main(void)
 	}	
 	*/
 	//RayVsTriangle(camera_pos, ray_dir, x, y, z, t);
-	
+		/*
 	my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);
 	int primitiveId = -1;	
 	if(RayVsSphere(camera_pos, ray_dir, vec3(-5.0f, -5.0f, -5.0f), 1.0f, t)) {
 		primitiveId = 0;
 	//if(intersectSphere(camera_pos, ray_dir, my_sphere, t0, t1)) {
-		/*********
-		Light pass 
-		**********/
+		
+		//**Light pass** 		
 		// Send a ray from each intersection point towards each light source
 		// if there's nothing in the way between the light source and the intersection point -> color this pixel with the light source color
 		// else color this pixel black (because there's an object in the way of the light)
@@ -187,7 +217,7 @@ void main(void)
 		vec3 lightRayDir = normalize(light_position - intersectionPoint);
 		float t0, t1, t3;
 		
-		if(!RayVsTriangle(intersectionPoint, lightRayDir, x, y, z, t3)/* && !intersectSphere(intersectionPoint, lightRayDir, my_sphere, t0, t1)*/) {			
+		if(!RayVsTriangle(intersectionPoint, lightRayDir, x, y, z, t3)/* && !intersectSphere(intersectionPoint, lightRayDir, my_sphere, t0, t1)) {			
 			color = vec4(light_color, 1.0f);			
 		} else {		
 			color = vec4(0.0, 0.0, 0.0, 1.0);
@@ -195,6 +225,7 @@ void main(void)
 	} else {
 		color = vec4(0.0, 1.0, 0.0, 1.0);
 	}
+	*/
 	/*
 	float min_t = min(t, min(t0, t1));
 	if(min_t == t) {
