@@ -11,6 +11,8 @@ uniform vec3 camera_right;
 uniform vec3 light_position;
 uniform vec3 light_color;
 
+#define NEAR_ZERO 1e-20 // 1 * 10^-20
+
 bool RayVsTriangle(vec3 ray_origin, vec3 ray_dir,
  vec3 tri_x, vec3 tri_y,  vec3 tri_z,
  out float t)
@@ -19,7 +21,6 @@ bool RayVsTriangle(vec3 ray_origin, vec3 ray_dir,
 	vec3 e2 = tri_z - tri_x;
 	vec3 q = cross(ray_dir,  e2);
 	float a = dot(e1, q);
-	float NEAR_ZERO = 1e-20; // 1 * 10^-20
 	if(a > - NEAR_ZERO && a < NEAR_ZERO) return false;
 	
 	float f = 1 / a;
@@ -112,6 +113,33 @@ bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out fl
     }	
 }
 
+// Do intersection tests with all the geometry in the scene
+void trace(ray_origin, ray_dir, out float t, out int primitiveID) {	
+	// Set initial value to infinity
+	float t_min = 1.0 / 0.0;
+	
+	// -1 indicates that this ray haven't intersected anything
+	primitiveID = -1;
+	
+	// Hardcoded geometry data (1 triangle)
+	vec3 x = vec3(-0.5f, -0.5f, 0.5f);
+	vec3 y = vec3(0.5f, -0.5f, 0.5f);
+	vec3 z = vec3(0.5f, 0.5f, 0.5f);
+	RayVsTriangle(ray_origin, ray_dir, x, y, z, t)
+	if(t < t_min) {
+		t_min = t;
+		primitiveID = 0; // Set to 0 because it intersects the first triangle in the scene
+	}
+	
+	RayVsSphere(ray_origin, ray_dir, vec3(-5.0f, -5.0f, -5.0f), 1.0f, t)
+	if(t < t_min) {
+		t_min = t;
+		primitiveID = 1; // Set to 0 because it intersects the first triangle in the scene
+	}
+	
+	t = t_min;
+}
+
 #define NEAR_PLANE_DIST 4.0f
 void main(void) 
 {
@@ -143,9 +171,10 @@ void main(void)
 	//RayVsTriangle(camera_pos, ray_dir, x, y, z, t);
 	
 	my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);
-	
+	int primitiveId = -1;
 	float t0, t1;
 	if(RayVsSphere(camera_pos, ray_dir, vec3(-5.0f, -5.0f, -5.0f), 1.0f, t)) {
+		primitiveId = 0;
 	//if(intersectSphere(camera_pos, ray_dir, my_sphere, t0, t1)) {
 		/*********
 		Light pass 
@@ -158,12 +187,11 @@ void main(void)
 		//t = min(t0, t1);
 		vec3 intersectionPoint = camera_pos + ray_dir * t;
 		vec3 lightRayDir = normalize(light_position - intersectionPoint);
-		float t0, t1;
+		float t0, t1, t3;
 		
-		if(!RayVsTriangle(intersectionPoint, lightRayDir, x, y, z, t) && !intersectSphere(intersectionPoint, lightRayDir, my_sphere, t0, t1)) {
-			color = vec4(light_color, 1.0f);
-		} else {
-		
+		if(!RayVsTriangle(intersectionPoint, lightRayDir, x, y, z, t3)/* && !intersectSphere(intersectionPoint, lightRayDir, my_sphere, t0, t1)*/) {			
+			color = vec4(light_color, 1.0f);			
+		} else {		
 			color = vec4(0.0, 0.0, 0.0, 1.0);
 		}					
 	} else {
