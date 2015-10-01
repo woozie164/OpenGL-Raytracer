@@ -13,6 +13,16 @@ uniform vec3 light_color;
 
 #define NEAR_ZERO 1e-20 // 1 * 10^-20
 
+struct ray {
+	vec3 origin;
+	vec3 dir;
+};
+
+struct sphere {
+	vec3 pos;
+	float r;
+} my_sphere;
+
 // Hardcoded geometry data (1 triangle)
 vec3 x = vec3(-0.5f, -0.5f, 0.5f);
 vec3 y = vec3(0.5f, -0.5f, 0.5f);
@@ -74,10 +84,24 @@ bool RayVsSphere(vec3 ray_origin, vec3 ray_dir,
 	}	
 }
 
-struct sphere {
-	vec3 pos;
-	float r;
-} my_sphere;
+bool RaySphereIntersect(ray r, sphere s, out float t) {
+	vec3 l = s.pos - r.origin;
+	float a = dot(l, r.dir);
+	float l_squared = dot(l, l);
+	float r_squared = s.r * s.r;
+	if(a < 0 && l_squared > r_squared) return false;
+	
+	float m_squared = l_squared - a * a;
+	if(m_squared > r_squared) return false;
+	
+	float q = sqrt(r_squared - m_squared);
+	if(l_squared > r_squared) {
+		t = a - q;
+	} else {
+		t = a + q;
+	}
+	return true;
+}
 
 bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out float t1) {
 	//Squared distance between ray origin and sphere center
@@ -133,6 +157,13 @@ void trace(vec3 ray_origin, vec3 ray_dir, out float t, out int primitiveID) {
 	}
 	
 	my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);
+	ray my_ray = ray(ray_origin, ray_dir);
+	RaySphereIntersect(my_ray, my_sphere, t);
+	if(t < t_min) {
+		t_min = t;
+		primitiveID = 1; // Set to 0 because it intersects the first triangle in the scene
+	}
+	/*
 	float t0, t1;
 	intersectSphere(ray_origin, ray_dir, my_sphere, t0, t1);
 	t = min(t0, t1);
@@ -146,7 +177,7 @@ void trace(vec3 ray_origin, vec3 ray_dir, out float t, out int primitiveID) {
 		t_min = t;
 		primitiveID = 1; // Set to 0 because it intersects the first triangle in the scene
 	}
-	
+	*/
 	t = t_min;
 }
 
@@ -164,15 +195,15 @@ void main(void)
 
 	float t;
 	int primitiveID;
-	vec4 color;
+	vec4 color = vec4(0.3);
 	
 	trace(camera_pos, ray_dir, t, primitiveID);
 	if(primitiveID != -1) {
 		if(primitiveID == 0) {
-			color = vec4(0.0, 1.0, 1.0, 1.0);
+			color = vec4(0.0, 0.0, 1.0, 1.0);
 		}
 		if(primitiveID == 1) {
-			color = vec4(0.0, 0.5, 0.5, 1.0);
+			color = vec4(1.0, 0.0, 0.0, 1.0);
 		}
 		/*
 		vec3 intersectionPoint = camera_pos + ray_dir * t;
