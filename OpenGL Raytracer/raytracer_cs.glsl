@@ -203,7 +203,7 @@ void main(void)
 
 	float t;
 	int primitiveID;
-	vec4 color = vec4(0.3);
+	vec4 color = vec4(0.0);
 	
 	trace(camera_pos, ray_dir, t, primitiveID);
 	if(primitiveID != -1) {
@@ -213,7 +213,7 @@ void main(void)
 		if(primitiveID == 1) {
 			color = vec4(1.0, 0.0, 0.0, 1.0);
 		}
-		/*
+		
 		vec3 intersectionPoint = camera_pos + ray_dir * t;
 		vec3 lightRayDir = normalize(light_position - intersectionPoint);
 		int lightPrimitiveID;
@@ -223,7 +223,7 @@ void main(void)
 		} else {
 			color = vec4(0.3, 0.3, 0.3, 1.0);	
 		}
-		*/		
+		
 	} else {
 		// Background color
 		color = vec4(0.0, 1.0, 0.0, 1.0);
