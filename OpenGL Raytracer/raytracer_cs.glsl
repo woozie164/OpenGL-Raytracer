@@ -86,6 +86,7 @@ bool RayVsSphere(vec3 ray_origin, vec3 ray_dir,
 
 bool RaySphereIntersect(ray r, sphere s, out float t) {
 	vec3 l = s.pos - r.origin;
+	//vec3 l = r.origin - s.pos;
 	float a = dot(l, r.dir);
 	float l_squared = dot(l, l);
 	float r_squared = s.r * s.r;
@@ -145,37 +146,44 @@ bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out fl
 // Do intersection tests with all the geometry in the scene
 void trace(vec3 ray_origin, vec3 ray_dir, out float t, out int primitiveID) {	
 	// Set initial value to infinity
-	float t_min = 1.0 / 0.0;
+	// Is this positive or negative infinity??
+	//float t_min = 1.0 / 0.0;
+	
+	float t_min = 99999999999999999.0f;
 	
 	// -1 indicates that this ray haven't intersected anything
 	primitiveID = -1;
 	
-	RayVsTriangle(ray_origin, ray_dir, x, y, z, t);
-	if(t < t_min) {
-		t_min = t;
-		primitiveID = 0; // Set to 0 because it intersects the first triangle in the scene
+	if(RayVsTriangle(ray_origin, ray_dir, x, y, z, t)) {
+		if(t < t_min) {
+			t_min = t;
+			primitiveID = 0;
+		}
 	}
 	
 	my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);
 	ray my_ray = ray(ray_origin, ray_dir);
+	/*
 	RaySphereIntersect(my_ray, my_sphere, t);
 	if(t < t_min) {
 		t_min = t;
-		primitiveID = 1; // Set to 0 because it intersects the first triangle in the scene
+		primitiveID = 1;
+	}
+	*/
+	
+	float t0, t1;
+	if(intersectSphere(ray_origin, ray_dir, my_sphere, t0, t1)){
+		t = min(t0, t1);
+		if(t < t_min) {
+			t_min = t;
+			primitiveID = 1;
+		}
 	}
 	/*
-	float t0, t1;
-	intersectSphere(ray_origin, ray_dir, my_sphere, t0, t1);
-	t = min(t0, t1);
-	if(t < t_min) {
-		t_min = t;
-		primitiveID = 1; // Set to 0 because it intersects the first triangle in the scene
-	}
-	
 	RayVsSphere(ray_origin, ray_dir, vec3(-5.0f, -5.0f, -5.0f), 1.0f, t);
 	if(t < t_min) {
 		t_min = t;
-		primitiveID = 1; // Set to 0 because it intersects the first triangle in the scene
+		primitiveID = 1;
 	}
 	*/
 	t = t_min;
@@ -191,7 +199,7 @@ void main(void)
 	// A point in the near plane
 	vec3 s = camera_pos + camera_dir * NEAR_PLANE_DIST + dx * camera_right + dy * camera_up;	
 	
-	vec3 ray_dir = normalize(s - camera_pos);
+	vec3 ray_dir = normalize(s - camera_pos);		
 
 	float t;
 	int primitiveID;
