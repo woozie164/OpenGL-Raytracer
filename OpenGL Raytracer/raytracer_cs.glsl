@@ -144,7 +144,7 @@ bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out fl
 }
 
 // Do intersection tests with all the geometry in the scene
-void trace(vec3 ray_origin, vec3 ray_dir, out float t, out int primitiveID) {	
+void trace(vec3 ray_origin, vec3 ray_dir, out float t, in out int primitiveID) {	
 	// Set initial value to infinity
 	float t_min = 1.0 / 0.0;	
 	
@@ -204,23 +204,30 @@ void main(void)
 	
 	trace(camera_pos, ray_dir, t, primitiveID);
 	if(primitiveID != -1) {
-		if(primitiveID == 0) {
-			color = vec4(0.0, 0.0, 1.0, 1.0);
-		}
-		if(primitiveID == 1) {
-			color = vec4(1.0, 0.0, 0.0, 1.0);
-		}
 		
 		vec3 intersectionPoint = camera_pos + ray_dir * t;
 		vec3 lightRayDir = normalize(light_position - intersectionPoint);
 		int lightPrimitiveID = primitiveID;
 		trace(intersectionPoint, lightRayDir, t, lightPrimitiveID);
-		if(lightPrimitiveID != -1 && lightPrimitiveID != primitiveID) {
-			color = vec4(light_color, 1.0f);			
+
+		// The trace function doesn't count the intersections between the ray and the
+		// primitive it was created from, so if this is true
+		// it means that the light ray didn't intersect with some other primitive 
+		if(lightPrimitiveID == primitiveID) {
+			if(primitiveID == 0) {
+				color = vec4(0.0, 0.0, 1.0, 1.0);
+			}
+			if(primitiveID == 1) {
+				color = vec4(1.0, 0.0, 0.0, 1.0);
+			}
+				
+			//color = vec4(light_color, 1.0f);			
 		} else {
+			// Shadow color
+			// Shadows on the backside of geometry doesn't work because 
+			// I don't count self-intersections
 			color = vec4(0.3, 0.3, 0.3, 1.0);	
-		}
-		
+		}		
 	} else {
 		// Background color
 		color = vec4(0.0, 1.0, 0.0, 1.0);
