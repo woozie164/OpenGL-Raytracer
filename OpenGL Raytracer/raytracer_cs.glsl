@@ -147,15 +147,15 @@ bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out fl
 void trace(vec3 ray_origin, vec3 ray_dir, out float t, out int primitiveID) {	
 	// Set initial value to infinity
 	// Is this positive or negative infinity??
-	//float t_min = 1.0 / 0.0;
+	float t_min = 1.0 / 0.0;
 	
-	float t_min = 99999999999999999.0f;
+	//float t_min = 99999999999999999.0f;
 	
 	// -1 indicates that this ray haven't intersected anything
 	primitiveID = -1;
 	
 	if(RayVsTriangle(ray_origin, ray_dir, x, y, z, t)) {
-		if(t < t_min) {
+		if(t > 0 && t < t_min) {
 			t_min = t;
 			primitiveID = 0;
 		}
@@ -174,7 +174,7 @@ void trace(vec3 ray_origin, vec3 ray_dir, out float t, out int primitiveID) {
 	float t0, t1;
 	if(intersectSphere(ray_origin, ray_dir, my_sphere, t0, t1)){
 		t = min(t0, t1);
-		if(t < t_min) {
+		if(t > 0 && t < t_min) {
 			t_min = t;
 			primitiveID = 1;
 		}
