@@ -146,16 +146,13 @@ bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out fl
 // Do intersection tests with all the geometry in the scene
 void trace(vec3 ray_origin, vec3 ray_dir, out float t, out int primitiveID) {	
 	// Set initial value to infinity
-	// Is this positive or negative infinity??
-	float t_min = 1.0 / 0.0;
-	
-	//float t_min = 99999999999999999.0f;
+	float t_min = 1.0 / 0.0;	
 	
 	// -1 indicates that this ray haven't intersected anything
-	primitiveID = -1;
+	//primitiveID = -1;
 	
 	if(RayVsTriangle(ray_origin, ray_dir, x, y, z, t)) {
-		if(t > 0 && t < t_min) {
+		if(t > 0 && t < t_min && primitiveID != 0) {
 			t_min = t;
 			primitiveID = 0;
 		}
@@ -174,7 +171,7 @@ void trace(vec3 ray_origin, vec3 ray_dir, out float t, out int primitiveID) {
 	float t0, t1;
 	if(intersectSphere(ray_origin, ray_dir, my_sphere, t0, t1)){
 		t = min(t0, t1);
-		if(t > 0 && t < t_min) {
+		if(t > 0 && t < t_min && primitiveID != 1) {
 			t_min = t;
 			primitiveID = 1;
 		}
@@ -202,7 +199,7 @@ void main(void)
 	vec3 ray_dir = normalize(s - camera_pos);		
 
 	float t;
-	int primitiveID;
+	int primitiveID = -1;
 	vec4 color = vec4(0.0);
 	
 	trace(camera_pos, ray_dir, t, primitiveID);
@@ -216,7 +213,7 @@ void main(void)
 		
 		vec3 intersectionPoint = camera_pos + ray_dir * t;
 		vec3 lightRayDir = normalize(light_position - intersectionPoint);
-		int lightPrimitiveID;
+		int lightPrimitiveID = primitiveID;
 		trace(intersectionPoint, lightRayDir, t, lightPrimitiveID);
 		if(lightPrimitiveID != -1 && lightPrimitiveID != primitiveID) {
 			color = vec4(light_color, 1.0f);			
