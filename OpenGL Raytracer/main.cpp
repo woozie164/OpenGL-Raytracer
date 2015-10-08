@@ -98,6 +98,11 @@ int main() {
 	loadShader("raytracer_cs.glsl", GL_COMPUTE_SHADER, shaders);
 	GLuint raytracerprog = compileShaderProgram(shaders);
 	glUseProgram(raytracerprog);
+
+	shaders.clear();
+	loadShader("raygen_cs.glsl", GL_COMPUTE_SHADER, shaders);
+	GLuint raygenprog = compileShaderProgram(shaders);
+	glUseProgram(raygenprog);
 	
 	// Create a texture that the computer shader will render into
 	GLuint tex;
@@ -119,6 +124,7 @@ int main() {
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	while (!glfwWindowShouldClose(window)) {
+		GLuint currentShaderProg = raygenprog;
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
 
@@ -127,13 +133,13 @@ int main() {
 		
 		/* Raytracer stuff */	
 		glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
-		glUniform3fv(glGetUniformLocation(raytracerprog, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
-		glUniform3fv(glGetUniformLocation(raytracerprog, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
-		glUniform3fv(glGetUniformLocation(raytracerprog, "camera_up"), 1, glm::value_ptr(camera.getUp()));
-		glUniform3fv(glGetUniformLocation(raytracerprog, "camera_right"), 1, glm::value_ptr(camera.getRight()));
+		glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
+		glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
+		glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_up"), 1, glm::value_ptr(camera.getUp()));
+		glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_right"), 1, glm::value_ptr(camera.getRight()));
 
-		glUniform3fv(glGetUniformLocation(raytracerprog, "light_position"), 1, glm::value_ptr(glm::vec3(100.0f, 100.0f, 100.0f)));
-		glUniform3fv(glGetUniformLocation(raytracerprog, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
+		glUniform3fv(glGetUniformLocation(currentShaderProg, "light_position"), 1, glm::value_ptr(glm::vec3(100.0f, 100.0f, 100.0f)));
+		glUniform3fv(glGetUniformLocation(currentShaderProg, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
 		glDispatchCompute(800, 800, 1);		
 		
 		/* Rasterizer code 
