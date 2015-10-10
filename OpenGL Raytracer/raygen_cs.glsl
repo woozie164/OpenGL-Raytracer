@@ -1,6 +1,6 @@
 #version 430 core
 
-layout (local_size_x = 1, local_size_y = 1) in;
+layout (local_size_x = 32, local_size_y = 1) in;
 layout (rgba8, binding = 0) uniform image2D outTexture;
 
 uniform vec3 camera_pos;
@@ -33,7 +33,7 @@ struct triangle {
 // but an 800*800 array is too big for shared memory
 // Not sure how to solve that. Probably need to be careful in 
 // which order i run the shader kernels
-shared ray rays[800];
+shared ray rays[32];
 
 void main(void) 
 {
@@ -45,5 +45,5 @@ void main(void)
 	vec3 s = camera_pos + camera_dir * NEAR_PLANE_DIST + dx * camera_right + dy * camera_up;	
 	
 	vec3 ray_dir = normalize(s - camera_pos);		
-	rays[storePos.x + storePos.y * 800] = ray(camera_pos, ray_dir);
+	rays[storePos.x] = ray(camera_pos, ray_dir);	
 }
