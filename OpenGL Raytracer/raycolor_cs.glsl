@@ -36,16 +36,9 @@ struct triangle {
 shared ray rays[32];
 shared vec4 color[32];
 
-void main(void) 
+void main()
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
-	float dx = (storePos.x - 400) / 400.0f; 
-	float dy = (storePos.y - 400) / 400.0f;
-	
-	// A point in the near plane
-	vec3 s = camera_pos + camera_dir * NEAR_PLANE_DIST + dx * camera_right + dy * camera_up;	
-	
-	vec3 ray_dir = normalize(s - camera_pos);		
-	rays[gl_LocalInvocationID.x] = ray(camera_pos, ray_dir);	
-	color[gl_LocalInvocationID.x] = vec4(1.0, 0.0, 0.0, 1.0);
+	//color[gl_LocalInvocationID.x] = vec4(0.0, 1.0, 0.0, 1.0);
+	imageStore(outTexture, storePos, color[gl_LocalInvocationID.x]);	
 }

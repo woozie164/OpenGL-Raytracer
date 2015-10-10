@@ -96,13 +96,15 @@ int main() {
 	shaders.clear();
 
 	loadShader("raytracer_cs.glsl", GL_COMPUTE_SHADER, shaders);
-	GLuint raytracerprog = compileShaderProgram(shaders);
-	glUseProgram(raytracerprog);
+	GLuint raytracerprog = compileShaderProgram(shaders);	
 
 	shaders.clear();
 	loadShader("raygen_cs.glsl", GL_COMPUTE_SHADER, shaders);
-	GLuint raygenprog = compileShaderProgram(shaders);
-	glUseProgram(raygenprog);
+	GLuint raygenprog = compileShaderProgram(shaders);	
+
+	shaders.clear();
+	loadShader("raycolor_cs.glsl", GL_COMPUTE_SHADER, shaders);
+	GLuint raycolorprog = compileShaderProgram(shaders);	
 	
 	// Create a texture that the computer shader will render into
 	GLuint tex;
@@ -123,8 +125,7 @@ int main() {
 
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-	while (!glfwWindowShouldClose(window)) {
-		GLuint currentShaderProg = raygenprog;
+	while (!glfwWindowShouldClose(window)) {		
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
 
@@ -132,17 +133,30 @@ int main() {
 		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
 		
 		/* Raytracer stuff */	
-		glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
-		glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
-		glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
-		glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_up"), 1, glm::value_ptr(camera.getUp()));
-		glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_right"), 1, glm::value_ptr(camera.getRight()));
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint currentShaderProg;
+			switch (i) 
+			{		
+			case 0: currentShaderProg = raygenprog; break;
+			case 1: currentShaderProg = raycolorprog; break;								
+			}
 
-		glUniform3fv(glGetUniformLocation(currentShaderProg, "light_position"), 1, glm::value_ptr(glm::vec3(100.0f, 100.0f, 100.0f)));
-		glUniform3fv(glGetUniformLocation(currentShaderProg, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
-		// Workgroup size is 32 x 1
-		// Dispatch 25 * 32 = 800
-		glDispatchCompute(25, 800, 1);
+			glUseProgram(currentShaderProg);
+			glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
+			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
+			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
+			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_up"), 1, glm::value_ptr(camera.getUp()));
+			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_right"), 1, glm::value_ptr(camera.getRight()));
+
+			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_position"), 1, glm::value_ptr(glm::vec3(100.0f, 100.0f, 100.0f)));
+			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
+			// Workgroup size is 32 x 1
+			// Dispatch 25 * 32 = 800
+			glDispatchCompute(25, 800, 1);
+			glMemoryBarrier(GL_ALL_BARRIER_BITS);
+		}
+		
 		
 		/* Rasterizer code 
 		glUniformMatrix4fv(glGetUniformLocation(simple, "projection"), 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
@@ -160,8 +174,7 @@ int main() {
 		
 		glEnd();
 		*/
-
-		glMemoryBarrier(GL_ALL_BARRIER_BITS);
+		
 		//glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
