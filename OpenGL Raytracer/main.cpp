@@ -127,10 +127,19 @@ int main() {
 	Fix so that shaders can send data between shader invocations. It's needed when the raytracer is divided into several stages.
 	*/
 
+	// Same struct as in the glsl shader
+	// Should be the same size as well
+	struct ray {
+		glm::vec3 origin;
+		glm::vec3 dir;
+		float t;
+		int primitiveID;
+	};
+
 	GLuint ssbo = 0;
 	glGenBuffers(1, &ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4) * 800 * 800, nullptr, GL_DYNAMIC_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(ray) * 800 * 800, nullptr, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	Camera camera;

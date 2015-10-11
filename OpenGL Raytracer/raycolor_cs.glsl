@@ -3,6 +3,9 @@
 struct ray {
 	vec3 origin;
 	vec3 dir;
+	vec3 color;
+	float t;
+	int primitiveID;
 };
 
 struct sphere {
@@ -40,5 +43,5 @@ void main()
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 	//color[gl_LocalInvocationID.x] = vec4(0.0, 1.0, 0.0, 1.0);
-	imageStore(outTexture, storePos, vec4(rays[gl_LocalInvocationID.x].dir, 1.0));	
+	imageStore(outTexture, storePos, vec4(rays[storePos.x + storePos.y * 800].dir, 1.0));	
 }

@@ -3,6 +3,9 @@
 struct ray {
 	vec3 origin;
 	vec3 dir;
+	vec3 color;
+	float t;
+	int primitiveID;	
 };
 
 struct sphere {
@@ -39,5 +42,5 @@ void main(void)
 	vec3 s = camera_pos + camera_dir * NEAR_PLANE_DIST + dx * camera_right + dy * camera_up;	
 	
 	vec3 ray_dir = normalize(s - camera_pos);		
-	rays[gl_LocalInvocationID.x] = ray(camera_pos, ray_dir);		
+	rays[storePos.x + storePos.y * 800] = ray(camera_pos, ray_dir);		
 }
