@@ -103,6 +103,10 @@ int main() {
 	GLuint raygenprog = compileShaderProgram(shaders);	
 
 	shaders.clear();
+	loadShader("rayintersection_cs.glsl", GL_COMPUTE_SHADER, shaders);
+	GLuint rayintersectprog = compileShaderProgram(shaders);
+
+	shaders.clear();
 	loadShader("raycolor_cs.glsl", GL_COMPUTE_SHADER, shaders);
 	GLuint raycolorprog = compileShaderProgram(shaders);	
 	
