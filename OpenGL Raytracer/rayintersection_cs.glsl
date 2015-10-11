@@ -135,6 +135,11 @@ void trace(in out ray r) {
 	float t_min = 1.0 / 0.0;	
 	float t;
 	
+	// Hardcoded geometry data (1 triangle)
+	vec3 x = vec3(-0.5f, -0.5f, 0.5f);
+	vec3 y = vec3(0.5f, -0.5f, 0.5f);
+	vec3 z = vec3(0.5f, 0.5f, 0.5f);
+	
 	if(RayVsTriangle(r.origin, r.dir, x, y, z, t)) {
 		if(t > 0 && t < t_min && r.primitiveID != 0) {
 			t_min = t;
@@ -142,8 +147,7 @@ void trace(in out ray r) {
 		}
 	}
 	
-	my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);
-
+	sphere my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);
 	
 	float t0, t1;
 	if(intersectSphere(r.origin, r.dir, my_sphere, t0, t1)){

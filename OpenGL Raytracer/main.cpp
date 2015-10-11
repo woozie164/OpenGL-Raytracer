@@ -132,6 +132,7 @@ int main() {
 	struct ray {
 		glm::vec3 origin;
 		glm::vec3 dir;
+		glm::vec3 color;
 		float t;
 		int primitiveID;
 	};
@@ -152,18 +153,18 @@ int main() {
 		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
 		
 		/* Raytracer stuff */	
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < 3; i++)
 		{
 			GLuint currentShaderProg;
 			switch (i) 
 			{		
 			case 0: currentShaderProg = raygenprog; break;
-			case 1: currentShaderProg = raycolorprog; break;								
+			case 1: currentShaderProg = rayintersectprog; break;								
+			case 2: currentShaderProg = raycolorprog; break;
 			}
 
 			glUseProgram(currentShaderProg);
-			glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
-			//glUnifo//rm1i(1, ssbo); // Probably not the correct way of giving the shader the ssbo...
+			glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);			
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
