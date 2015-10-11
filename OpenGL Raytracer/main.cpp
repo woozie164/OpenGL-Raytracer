@@ -120,8 +120,14 @@ int main() {
 	//glCreateFramebuffers(1, &framebuffer);	
 
 	/* TODO: 
-	Fix so that the rays are not sent from the exact same location.
+	Fix so that shaders can send data between shader invocations. It's needed when the raytracer is divided into several stages.
 	*/
+
+	GLuint ssbo = 0;
+	glGenBuffers(1, &ssbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(glm::vec4) * 800 * 800, nullptr, GL_DYNAMIC_COPY);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -144,6 +150,8 @@ int main() {
 
 			glUseProgram(currentShaderProg);
 			glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
+			//glUnifo//rm1i(1, ssbo); // Probably not the correct way of giving the shader the ssbo...
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_up"), 1, glm::value_ptr(camera.getUp()));

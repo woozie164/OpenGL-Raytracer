@@ -2,6 +2,7 @@
 
 layout (local_size_x = 32, local_size_y = 1) in;
 layout (rgba8, binding = 0) uniform image2D outTexture;
+layout (binding = 1) buffer color_test { vec4 col[]; };
 
 uniform vec3 camera_pos;
 uniform vec3 camera_dir;
@@ -47,5 +48,5 @@ void main(void)
 	
 	vec3 ray_dir = normalize(s - camera_pos);		
 	rays[gl_LocalInvocationID.x] = ray(camera_pos, ray_dir);	
-	color[gl_LocalInvocationID.x] = vec4(1.0, 0.0, 0.0, 1.0);
+	col[gl_LocalInvocationID.x] = vec4(1.0, 0.0, 0.0, 1.0);
 }
