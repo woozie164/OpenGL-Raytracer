@@ -32,13 +32,6 @@ uniform vec3 light_color;
 #define NEAR_ZERO 1e-20 // 1 * 10^-20
 #define NEAR_PLANE_DIST 1.0f
 
-// 1 ray for each pixel, 800x800 pixels total
-// but an 800*800 array is too big for shared memory
-// Not sure how to solve that. Probably need to be careful in 
-// which order i run the shader kernels
-shared ray rays[32];
-shared vec4 color[32];
-
 void main()
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
