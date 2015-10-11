@@ -140,14 +140,15 @@ void trace(in out ray r) {
 	vec3 y = vec3(0.5f, -0.5f, 0.5f);
 	vec3 z = vec3(0.5f, 0.5f, 0.5f);
 	
+	// And 1 sphere
+	sphere my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);
+	
 	if(RayVsTriangle(r.origin, r.dir, x, y, z, t)) {
 		if(t > 0 && t < t_min && r.primitiveID != 0) {
 			t_min = t;
 			r.primitiveID = 0;
 		}
-	}
-	
-	sphere my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);
+	}	
 	
 	float t0, t1;
 	if(intersectSphere(r.origin, r.dir, my_sphere, t0, t1)){
@@ -165,6 +166,6 @@ void main(void)
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 	ray my_ray = rays[storePos.x + storePos.y * 800];
-	trace(my_ray);
+	//trace(my_ray);
 	rays[storePos.x + storePos.y * 800] = my_ray;
 }
