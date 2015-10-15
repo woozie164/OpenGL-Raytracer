@@ -147,6 +147,7 @@ void trace(in out ray r) {
 		if(t > 0 && t < t_min && r.primitiveID != 0) {
 			t_min = t;
 			r.primitiveID = 0;
+			r.color = vec3(0.0, 1.0, 0.0);
 		}
 	}	
 	
@@ -156,6 +157,7 @@ void trace(in out ray r) {
 		if(t > 0 && t < t_min && r.primitiveID != 1) {
 			t_min = t;
 			r.primitiveID = 1;
+			r.color = vec3(0.0, 0.0, 1.0);
 		}
 	}
 
@@ -166,6 +168,6 @@ void main(void)
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 	ray my_ray = rays[storePos.x + storePos.y * 800];	
-	//trace(my_ray);
+	trace(my_ray);
 	rays[storePos.x + storePos.y * 800] = my_ray;
 }
