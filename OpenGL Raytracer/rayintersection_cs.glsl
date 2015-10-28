@@ -134,6 +134,7 @@ void trace(in out ray r) {
 	// Set initial value to infinity
 	float t_min = 1.0 / 0.0;	
 	float t;
+	vec3 n;
 	
 	// Hardcoded geometry data (1 triangle)
 	vec3 x = vec3(-0.5f, -0.5f, 0.5f);
@@ -141,13 +142,19 @@ void trace(in out ray r) {
 	vec3 z = vec3(0.5f, 0.5f, 0.5f);
 	
 	// And 1 sphere
-	sphere my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);
+	sphere my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);	
 	
 	if(RayVsTriangle(r.origin, r.dir, x, y, z, t)) {
 		if(t > 0 && t < t_min && r.primitiveID != 0) {
 			t_min = t;
 			r.primitiveID = 0;
 			r.color = vec3(0.0, 1.0, 0.0);
+			
+			// Calculate the surface normal of the triangle
+			
+			vec3 u = x - z;
+			vec3 v = y - z;
+			n = normalize(cross(u, v));
 		}
 	}	
 	
@@ -158,10 +165,22 @@ void trace(in out ray r) {
 			t_min = t;
 			r.primitiveID = 1;
 			r.color = vec3(0.0, 0.0, 1.0);
+			
+			// First calculate the intersection point of the ray and the sphere
+			vec3 p = r.origin + r.dir * t_min;
+			
+			// Then calculate the surface normal of the sphere
+			n = normalize(p - my_sphere.pos);							
 		}
 	}
 
 	r.t = t_min;
+	
+	// Update the ray position to the closest intersection point with the geometry
+	r.origin = r.origin + r.dir * t_min;
+	
+	// Update ray direction
+	r.dir = n;
 }
 
 void main(void) 
