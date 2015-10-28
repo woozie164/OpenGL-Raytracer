@@ -124,7 +124,7 @@ int main() {
 	//glCreateFramebuffers(1, &framebuffer);	
 
 	/* TODO: 
-	Fix so that shaders can send data between shader invocations. It's needed when the raytracer is divided into several stages.
+	Create ray bounces by giving the rays a new position and direction after finding the intersection point with the geometry.
 	*/
 
 	// Same struct as in the glsl shader
