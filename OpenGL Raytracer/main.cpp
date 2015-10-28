@@ -124,7 +124,7 @@ int main() {
 	//glCreateFramebuffers(1, &framebuffer);	
 
 	/* TODO: 
-	Create ray bounces by giving the rays a new position and direction after finding the intersection point with the geometry.
+	Run the intersection stage several times (at least 2 times)
 	*/
 
 	// Same struct as in the glsl shader
