@@ -144,15 +144,15 @@ int main() {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(ray) * 800 * 1200, nullptr, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-
+	
 	GLuint lightBuffer = 0;
 	glGenBuffers(1, &lightBuffer);
-	glBindBuffer(GL_UNIFORM, lightBuffer);
+	glBindBuffer(GL_ARRAY_BUFFER, lightBuffer);
 	glm::vec3 lightData[20]{
 		glm::vec3(0.0), glm::vec3(1.0),
 	};
 	// * 11 because I'm pretty sure the buffer automatically. However not sure how much extra space i need.
-	glBufferData(GL_UNIFORM, sizeof(glm::vec3) * 2 * 11, lightData, GL_DYNAMIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 2 * 11, lightData, GL_DYNAMIC_DRAW);
 
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
