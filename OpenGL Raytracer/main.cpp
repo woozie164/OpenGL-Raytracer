@@ -153,14 +153,14 @@ int main() {
 		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
 		
 		/* Raytracer stuff */	
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < 4; i++)
 		{
 			GLuint currentShaderProg;
 			switch (i) 
 			{		
 			case 0: currentShaderProg = raygenprog; break;
-			case 1: currentShaderProg = rayintersectprog; break;								
-			case 2: currentShaderProg = raycolorprog; break;
+			case 1: case 2: currentShaderProg = rayintersectprog; break;								
+			case 3: currentShaderProg = raycolorprog; break;
 			}
 
 			glUseProgram(currentShaderProg);
