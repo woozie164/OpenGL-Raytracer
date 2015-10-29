@@ -153,7 +153,7 @@ int main() {
 	};
 	// * 11 because I'm pretty sure the buffer automatically. However not sure how much extra space i need.
 	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 2 * 11, lightData, GL_DYNAMIC_DRAW);
-
+	
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	while (!glfwWindowShouldClose(window)) {		

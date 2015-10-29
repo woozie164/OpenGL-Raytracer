@@ -17,6 +17,11 @@ struct triangle {
 	vec3 x, y, z;
 };
 
+struct light {
+	vec3 pos;
+	vec3 color;
+};
+
 layout (local_size_x = 32, local_size_y = 1) in;
 layout (rgba8, binding = 0) uniform image2D outTexture;
 layout (binding = 1) buffer ray_buffer { ray rays[]; };
@@ -25,6 +30,11 @@ uniform vec3 camera_pos;
 uniform vec3 camera_dir;
 uniform vec3 camera_up;
 uniform vec3 camera_right;
+
+uniform int num_lights;
+layout (binding = 2) uniform LightsBuffer {
+ light lights[10];
+};
 
 uniform vec3 light_position;
 uniform vec3 light_color;
