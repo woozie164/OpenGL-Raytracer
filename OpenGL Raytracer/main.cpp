@@ -124,7 +124,8 @@ int main() {
 	//glCreateFramebuffers(1, &framebuffer);	
 
 	/* TODO: 
-	Run the intersection stage several times (at least 2 times)
+	Support up to 10 moving point lights where each light casts shadows.
+	Support diffuse and specular lighting with light attenuation.
 	*/
 
 	// Same struct as in the glsl shader
