@@ -147,12 +147,12 @@ int main() {
 	
 	GLuint lightBuffer = 0;
 	glGenBuffers(1, &lightBuffer);
-	glBindBuffer(GL_ARRAY_BUFFER, lightBuffer);
+	glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
 	glm::vec3 lightData[20]{
-		glm::vec3(0.0), glm::vec3(1.0),
+		glm::vec3(1.0), glm::vec3(0.2),
 	};
 	// * 11 because I'm pretty sure the buffer automatically. However not sure how much extra space i need.
-	glBufferData(GL_ARRAY_BUFFER, sizeof(glm::vec3) * 2 * 11, lightData, GL_DYNAMIC_DRAW);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec3) * 2 * 11, lightData, GL_STREAM_COPY);
 	
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -185,7 +185,7 @@ int main() {
 			// Returns 0, but I was expecting 2 because of the layout (binding = 2) statement ...
 			GLuint test = glGetUniformBlockIndex(currentShaderProg, "LightsBuffer");
 			glBindBufferBase(GL_UNIFORM_BUFFER, test, lightBuffer);
-
+			
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_position"), 1, glm::value_ptr(glm::vec3(100.0f, 100.0f, 100.0f)));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
 			// Workgroup size is 32 x 1
