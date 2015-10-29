@@ -180,7 +180,7 @@ void trace(in out ray r) {
 	r.origin = r.origin + r.dir * t_min;
 	
 	// Update ray direction
-	r.dir = n;
+	r.dir = r.dir - 2 * dot(r.dir, n) * n;
 }
 
 void main(void) 
