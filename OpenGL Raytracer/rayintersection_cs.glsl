@@ -158,6 +158,8 @@ void trace(in out ray r) {
 		}
 	}	
 	
+	
+	
 	float t0, t1;
 	if(intersectSphere(r.origin, r.dir, my_sphere, t0, t1)){
 		t = min(t0, t1);
@@ -174,6 +176,23 @@ void trace(in out ray r) {
 		}
 	}
 
+	sphere my_sphere2 = sphere(vec3(-3.0f, -3.0f, -3.0f), 0.5f);	
+	
+	if(intersectSphere(r.origin, r.dir, my_sphere2, t0, t1)){
+		t = min(t0, t1);
+		if(t > 0 && t < t_min && r.primitiveID != 3) {
+			t_min = t;
+			r.primitiveID = 3;
+			r.color = vec3(0.0, 0.3, 0.3);
+			
+			// First calculate the intersection point of the ray and the sphere
+			vec3 p = r.origin + r.dir * t_min;
+			
+			// Then calculate the surface normal of the sphere
+			n = normalize(p - my_sphere2.pos);							
+		}
+	}	
+	
 	r.t = t_min;
 	
 	// Update the ray position to the closest intersection point with the geometry
