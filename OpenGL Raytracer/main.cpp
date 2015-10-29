@@ -1,4 +1,4 @@
-#include <glew.h>
+﻿#include <glew.h>
 #include "glfw3.h"
 #include <iostream>
 #include "shaders.h"
@@ -144,6 +144,14 @@ int main() {
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(ray) * 800 * 1200, nullptr, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
+	GLuint lightBuffer = 0;
+	glGenBuffers(1, &lightBuffer);
+	glBindBuffer(GL_UNIFORM, lightBuffer);
+	glm::vec3 lightData[20]{
+		glm::vec3(0.0), glm::vec3(1.0),
+	};
+	glBufferData(GL_UNIFORM, sizeof(glm::vec3) * 2 * 11, lightData, GL_DYNAMIC_DRAW);
+
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	while (!glfwWindowShouldClose(window)) {		
@@ -171,6 +179,10 @@ int main() {
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_up"), 1, glm::value_ptr(camera.getUp()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_right"), 1, glm::value_ptr(camera.getRight()));
+
+			// Returns 0, but I was expecting 2 because of the layout (binding = 2) statement ...
+			GLuint test = glGetUniformBlockIndex(currentShaderProg, "LightsBuffer");
+			glBindBufferRange(GL_UNIFORM_BUFFER, test, 0, lightBuffer, sizeof(glm::vec3) * 2 * 11);
 
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_position"), 1, glm::value_ptr(glm::vec3(100.0f, 100.0f, 100.0f)));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
