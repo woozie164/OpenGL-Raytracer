@@ -125,6 +125,7 @@ int main() {
 
 	/* TODO: 
 	Support up to 10 moving point lights where each light casts shadows.
+		-Add the new uniform declarations to all the shaders
 	Support diffuse and specular lighting with light attenuation.
 	*/
 
