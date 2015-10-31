@@ -32,7 +32,7 @@ uniform vec3 camera_up;
 uniform vec3 camera_right;
 
 uniform int num_lights;
-layout (binding = 2) uniform LightsBuffer {
+layout (binding = 0) uniform LightsBuffer {
  light lights[10];
 };
 
