@@ -47,6 +47,16 @@ GLuint compileShaderProgram(vector<ShaderInfo> & shaders)
 		if( result == GL_FALSE )
 		{
 			fprintf( stderr, "Shader compilation failed! %s\n", shaders[i].filename.c_str());
+
+			string s;
+			s.resize(shaders[i].source.size() + 1);
+			GLsizei length;
+			glGetShaderSource(shaderHandle, s.size(), &length, (GLchar *)s.data());
+			fprintf(stderr, "%s\n", s.c_str());
+			if (s != shaders[i].source) {
+				fprintf(stderr, "Warning: Original shader source code and source retrieved from the driver differs.");				
+			}
+
 			GLint logLen;
 			glGetShaderiv( shaderHandle, GL_INFO_LOG_LENGTH, &logLen );
 			if( logLen > 0 )
