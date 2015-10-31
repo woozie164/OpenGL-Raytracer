@@ -46,7 +46,7 @@ void main()
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 	//color[gl_LocalInvocationID.x] = vec4(0.0, 1.0, 0.0, 1.0);
-	imageStore(outTexture, storePos, vec4(lights[0].color, 1.0));	
+	imageStore(outTexture, storePos, vec4(lights[0].pos, 1.0));	
 	//imageStore(outTexture, storePos, vec4(rays[storePos.x + storePos.y * 800].color, 1.0));	
 	//imageStore(outTexture, storePos, vec4(0.0, 1.0, 0.0, 1.0));	
 }

@@ -150,8 +150,9 @@ int main() {
 	glGenBuffers(1, &lightBuffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
 	float lightData[]{
-		//LightPosition, LightColor, and padding (so it becomes 16 byte aligned)
-		1.0, 0.0, 0.0,	0.0, 1.0, 0.0,	0.0, 0.0,
+		//LightPosition, padding, LightColor, padding 
+		// Note: a vec3 takes up 4 floats, 3 for the vec3 and 1 float padding
+		1.0, 0.0, 0.0,	0.0,	0.0, 1.0, 0.0,	0.0,
 		1.0, 0.0, 0.0,  0.0, 1.0, 0.0,	0.0, 0.0,
 	};
 	// * 11 because I'm pretty sure the buffer automatically. However not sure how much extra space i need.
