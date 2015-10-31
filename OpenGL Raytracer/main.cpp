@@ -125,7 +125,8 @@ int main() {
 
 	/* TODO: 
 	Support up to 10 moving point lights where each light casts shadows.
-		-Add the new uniform declarations to all the shaders
+		+Add the new uniform declarations to all the shaders
+		-Debug the data that is sent to the shader
 	Support diffuse and specular lighting with light attenuation.
 	*/
 
@@ -148,9 +149,10 @@ int main() {
 	GLuint lightBuffer = 0;
 	glGenBuffers(1, &lightBuffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
-	glm::vec3 lightData[20]{
-		glm::vec3(1.0), glm::vec3(0.0, 0.0, 1.0),
-		glm::vec3(1.0, 0.0, 0.0), glm::vec3(0.0, 1.0, 0.0),
+	float lightData[]{
+		//LightPosition, LightColor, and padding (so it becomes 16 byte aligned)
+		1.0, 0.0, 0.0,	0.0, 0.0, 1.0,	0.0, 0.0,
+		1.0, 0.0, 0.0,  0.0, 1.0, 0.0,	0.0, 0.0,
 	};
 	// * 11 because I'm pretty sure the buffer automatically. However not sure how much extra space i need.
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec3) * 2 * 11, lightData, GL_STREAM_COPY);
