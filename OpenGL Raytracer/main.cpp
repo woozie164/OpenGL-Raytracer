@@ -153,7 +153,7 @@ int main() {
 		//LightPosition, padding, LightColor, padding 
 		// Note: a vec3 takes up 4 floats, 3 for the vec3 and 1 float padding
 		1.0, 0.0, 0.0,	0.0,	0.0, 1.0, 0.0,	0.0,
-		1.0, 0.0, 0.0,  0.0, 1.0, 0.0,	0.0, 0.0,
+		0.0, 1.0, 0.0,  0.0,	1.0, 0.0, 0.0,	0.0,
 	};
 	// * 11 because I'm pretty sure the buffer automatically. However not sure how much extra space i need.
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec3) * 2 * 11, lightData, GL_STREAM_COPY);
