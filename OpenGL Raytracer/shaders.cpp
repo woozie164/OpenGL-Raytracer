@@ -2,6 +2,10 @@
 #include <fstream>
 #include <sstream>
 using namespace std;
+/*TODO:
+- Add support for headers
+- Print out the source file name when a shader fails to compile or link
+*/
 
 void loadShader(std::string filename, GLenum shaderType, vector<ShaderInfo> & shaders)
 {
