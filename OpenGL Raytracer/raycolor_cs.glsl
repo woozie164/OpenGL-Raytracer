@@ -220,7 +220,7 @@ void main()
 	if(rays[i].primitiveID != -1) {	
 		vec3 intersectionPoint = camera_pos + rays[i].dir * rays[i].t;
 		int lightPrimitiveID = rays[i].primitiveID;
-		ray lightRay(intersectionPoint, normalize(light_position - intersectionPoint), vec4(0.0, 0.5, 0.0, 1.0), lightPrimitiveID, -1);
+		ray lightRay(intersectionPoint, normalize(light_position - intersectionPoint), vec4(0.0, 0.5, 0.0, 1.0), lightPrimitiveID, -1);		
 		
 		trace(lightRay);
 
@@ -241,5 +241,5 @@ void main()
 	}
 	
 	//imageStore(outTexture, storePos, vec4(lights[0].pos, 1.0));	
-	imageStore(outTexture, storePos, vec4(rays[storePos.x + storePos.y * 800].color, 1.0));		
+	imageStore(outTexture, storePos, vec4(rays[i].color, 1.0));		
 }
