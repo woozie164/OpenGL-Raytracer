@@ -5,6 +5,7 @@
 
 struct ShaderInfo
 {
+	std::string filename;
 	std::string source;
 	GLenum shaderType;
 	GLuint shaderHandle;

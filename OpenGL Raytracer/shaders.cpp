@@ -4,7 +4,6 @@
 using namespace std;
 /*TODO:
 - Add support for headers
-- Print out the source file name when a shader fails to compile or link
 */
 
 void loadShader(std::string filename, GLenum shaderType, vector<ShaderInfo> & shaders)
@@ -22,6 +21,7 @@ void loadShader(std::string filename, GLenum shaderType, vector<ShaderInfo> & sh
 	ShaderInfo shaderInfo;
 	shaderInfo.source = buffer.str();
 	shaderInfo.shaderType = shaderType;
+	shaderInfo.filename = filename;
 	shaders.push_back(shaderInfo);
 }
 
@@ -46,7 +46,7 @@ GLuint compileShaderProgram(vector<ShaderInfo> & shaders)
 		glGetShaderiv( shaderHandle, GL_COMPILE_STATUS, &result );
 		if( result == GL_FALSE )
 		{
-			fprintf( stderr, "Shader compilation failed!\n" );
+			fprintf( stderr, "Shader compilation failed! %s\n", shaders[i].filename.c_str());
 			GLint logLen;
 			glGetShaderiv( shaderHandle, GL_INFO_LOG_LENGTH, &logLen );
 			if( logLen > 0 )
@@ -69,6 +69,10 @@ GLuint compileShaderProgram(vector<ShaderInfo> & shaders)
 	if( status == GL_FALSE ) 
 	{
 		fprintf( stderr, "Failed to link shader program!\n" );
+		for (unsigned int i = 0; i < shaders.size(); i++)
+		{
+			fprintf(stderr, "%s\n", shaders[i].filename.c_str());
+		}		
 		GLint logLen;
 		glGetProgramiv(programHandle, GL_INFO_LOG_LENGTH, &logLen);
 		if( logLen > 0 )

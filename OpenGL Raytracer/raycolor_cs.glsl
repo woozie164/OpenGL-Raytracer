@@ -222,7 +222,7 @@ void main()
 		ray lightRay(intersectionPoint, normalize(light_position - intersectionPoint), vec4(0.0, 0.5, 0.0, 1.0), rays[i].primitiveID, -1);
 		
 		trace(lightRay);
-		
+
 		// The trace function doesn't count the intersections between the ray and the
 		// primitive it was created from, so if this is true
 		// it means that the light ray didn't intersect with some other primitive 
