@@ -32,6 +32,9 @@ uniform vec3 camera_up;
 uniform vec3 camera_right;
 
 uniform int num_lights;
+
+// This uniform buffer should probably be shared, since i want to share it 
+// betweeen several shader programs. But I think it's shared by default.
 layout (binding = 0) uniform LightsBuffer {
  light lights[10];
 };
@@ -220,7 +223,8 @@ void main()
 	if(rays[i].primitiveID != -1) {	
 		vec3 intersectionPoint = camera_pos + rays[i].dir * rays[i].t;
 		int lightPrimitiveID = rays[i].primitiveID;
-		ray lightRay(intersectionPoint, normalize(light_position - intersectionPoint), vec4(0.0, 0.5, 0.0, 1.0), lightPrimitiveID, -1);		
+		vec3 lightDir = normalize(light_position - intersectionPoint);
+		ray lightRay = ray(intersectionPoint, lightDir, vec3(0.0, 0.5, 0.0), lightPrimitiveID, -1);
 		
 		trace(lightRay);
 

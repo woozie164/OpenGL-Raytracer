@@ -6,6 +6,8 @@ using namespace std;
 - Add support for headers
 */
 
+//#define PRINT_SHADER_SRC_ON_ERROR;
+
 void loadShader(std::string filename, GLenum shaderType, vector<ShaderInfo> & shaders)
 {
 	ifstream file(filename);
@@ -48,15 +50,16 @@ GLuint compileShaderProgram(vector<ShaderInfo> & shaders)
 		{
 			fprintf( stderr, "Shader compilation failed! %s\n", shaders[i].filename.c_str());
 
+#ifdef PRINT_SHADER_SRC_ON_ERROR
 			string s;
 			s.resize(shaders[i].source.size() + 1);
 			GLsizei length;
-			glGetShaderSource(shaderHandle, s.size(), &length, (GLchar *)s.data());
+			glGetShaderSource(shaderHandle, s.size(), &length, (GLchar *)s.c_str());
 			fprintf(stderr, "%s\n", s.c_str());
 			if (s != shaders[i].source) {
 				fprintf(stderr, "Warning: Original shader source code and source retrieved from the driver differs.");				
 			}
-
+#endif
 			GLint logLen;
 			glGetShaderiv( shaderHandle, GL_INFO_LOG_LENGTH, &logLen );
 			if( logLen > 0 )
