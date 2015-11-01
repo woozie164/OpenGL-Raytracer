@@ -206,6 +206,8 @@ void trace(in out ray r) {
 	}	
 	
 	// This overwrites the old t-value. Should I check the value before writing?
+	// Probably shouldn't, since each trace will set the inital t to infinity 
+	// before finding the closest t-value
 	r.t = t_min;
 	
 	// Update the ray position to the closest intersection point with the geometry
