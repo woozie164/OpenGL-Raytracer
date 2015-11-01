@@ -174,8 +174,8 @@ int main() {
 			switch (i) 
 			{		
 			case 0: currentShaderProg = raygenprog; break;
-			case 1: case 3: currentShaderProg = rayintersectprog; break;								
-			case 2: case 4: currentShaderProg = raycolorprog; break;
+			case 1: /*case 3:*/ currentShaderProg = rayintersectprog; break;								
+			case 2: /*case 4:*/ currentShaderProg = raycolorprog; break;
 			}
 
 			glUseProgram(currentShaderProg);
