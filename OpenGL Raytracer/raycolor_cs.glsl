@@ -227,14 +227,18 @@ void main()
 		vec3 intersectionPoint = camera_pos + rays[i].dir * rays[i].t;
 		int lightPrimitiveID = rays[i].primitiveID;
 		vec3 lightDir = normalize(light_position - intersectionPoint);
-		lightRay = ray(intersectionPoint, lightDir, rays[i].color, lightPrimitiveID, -1);
+		lightRay = ray(intersectionPoint, lightDir, rays[i].color, -1, lightPrimitiveID);
 		
 		trace(lightRay);
 
 		// The trace function doesn't count the intersections between the ray and the
 		// primitive it was created from, so if this is true
 		// it means that the light ray didn't intersect with some other primitive 
-		if(lightPrimitiveID == lightRay.primitiveID) {						
+		if(lightPrimitiveID == lightRay.primitiveID) {		
+
+		// if t is set to infinity, there's were no collision between
+		// the lightRay and the geometry
+		//if(lightRay.t == 1.0 / 0.0) {
 			lightRay.color = light_color;			
 		} else {
 			// Shadow color
