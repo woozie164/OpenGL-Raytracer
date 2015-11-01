@@ -224,10 +224,12 @@ void main()
 	ray lightRay;
 	
 	if(rays[i].primitiveID != -1) {	
-		vec3 intersectionPoint = camera_pos + rays[i].dir * rays[i].t;
+		// No need to calcalulte the intersection point, because
+		// this is already done in the intersection stage
+		//vec3 intersectionPoint = rays[i].origin + rays[i].dir * rays[i].t;
 		int lightPrimitiveID = rays[i].primitiveID;
-		vec3 lightDir = normalize(light_position - intersectionPoint);
-		lightRay = ray(intersectionPoint, lightDir, rays[i].color, -1, lightPrimitiveID);
+		vec3 lightDir = normalize(light_position - rays[i].origin);
+		lightRay = ray(rays[i].origin, lightDir, rays[i].color, -1, lightPrimitiveID);
 		
 		trace(lightRay);
 
