@@ -105,9 +105,9 @@ bool RayVsSphere(vec3 ray_origin, vec3 ray_dir,
 bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out float t1) {
 	//Squared distance between ray origin and sphere center
     float squaredDist = dot(origin - s.pos, origin - s.pos);
-
+	float squaredRadius = s.r * s.r;
     //If the distance is less than the squared radius of the sphere...
-    if(squaredDist <= s.r)
+    if(squaredDist <= squaredRadius)
     {
         //Point is in sphere, consider as no intersection existing        
         //return vec2(MAX_SCENE_BOUNDS, MAX_SCENE_BOUNDS);
@@ -120,7 +120,7 @@ bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out fl
     //Calculating the coefficients of the quadratic equation
     float a = dot(dir,dir); // a = d*d
     float b = 2.0 * dot(dir, origin - s.pos); // b = 2d(o-C)
-    float c = dot(origin - s.pos, origin - s.pos) - (s.r*s.r); // c = (o-C)^2-R^2
+    float c = dot(origin - s.pos, origin - s.pos) - squaredRadius; // c = (o-C)^2-R^2
 
     //Calculate discriminant
     float disc = (b*b)-(4.0*a*c);
@@ -169,8 +169,6 @@ void trace(in out ray r) {
 			n = normalize(cross(u, v));
 		}
 	}	
-	
-	
 	
 	float t0, t1;
 	if(intersectSphere(r.origin, r.dir, my_sphere, t0, t1)){
