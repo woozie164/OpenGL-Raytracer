@@ -205,6 +205,7 @@ void trace(in out ray r) {
 		}
 	}	
 	
+	// This overwrites the old t-value. Should I check the value before writing?
 	r.t = t_min;
 	
 	// Update the ray position to the closest intersection point with the geometry
@@ -218,32 +219,32 @@ void main()
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 	int i = storePos.x + storePos.y * 800;
-	vec4 color;
+	ray lightRay;
 	
 	if(rays[i].primitiveID != -1) {	
 		vec3 intersectionPoint = camera_pos + rays[i].dir * rays[i].t;
 		int lightPrimitiveID = rays[i].primitiveID;
 		vec3 lightDir = normalize(light_position - intersectionPoint);
-		ray lightRay = ray(intersectionPoint, lightDir, vec3(0.0, 0.5, 0.0), lightPrimitiveID, -1);
+		lightRay = ray(intersectionPoint, lightDir, rays[i].color, lightPrimitiveID, -1);
 		
 		trace(lightRay);
 
 		// The trace function doesn't count the intersections between the ray and the
 		// primitive it was created from, so if this is true
 		// it means that the light ray didn't intersect with some other primitive 
-		if(lightPrimitiveID == rays[i].primitiveID) {						
-			color = vec4(light_color, 1.0f);			
+		if(lightPrimitiveID == lightRay.primitiveID) {						
+			lightRay.color = light_color;			
 		} else {
 			// Shadow color
 			// Shadows on the backside of geometry doesn't work because 
 			// I don't count self-intersections
-			color = vec4(0.3, 0.3, 0.3, 1.0);	
+			lightRay.color = vec3(0.3, 0.3, 0.3);	
 		}		
 	} else {
 		// Background color
-		color = vec4(0.0, 1.0, 0.0, 1.0);
+		lightRay.color = vec3(0.0, 1.0, 0.0);
 	}
 	
 	//imageStore(outTexture, storePos, vec4(lights[0].pos, 1.0));	
-	imageStore(outTexture, storePos, vec4(rays[i].color, 1.0));		
+	imageStore(outTexture, storePos, vec4(lightRay.color, 1.0));		
 }
