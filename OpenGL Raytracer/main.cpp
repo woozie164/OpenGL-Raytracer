@@ -158,8 +158,8 @@ int main() {
 		1.0, 0.0, 0.0,	0.0,	0.0, 1.0, 0.0,	0.0,
 		0.0, 1.0, 0.0,  0.0,	1.0, 0.0, 0.0,	0.0,
 	};
-	// * 11 because I'm pretty sure the buffer automatically. However not sure how much extra space i need.
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(glm::vec3) * 2 * 11, lightData, GL_STREAM_COPY);
+	// 8 floats per light (2 of those flots are padding) and 10 lights in total
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);
 	
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
