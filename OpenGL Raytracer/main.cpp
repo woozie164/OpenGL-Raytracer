@@ -195,6 +195,10 @@ int main() {
 			
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_position"), 1, glm::value_ptr(glm::vec3(100.0f, 100.0f, 100.0f)));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
+
+			glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
+			glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);
+
 			// Workgroup size is 32 x 1
 			// Dispatch 25 * 32 = 800
 			glDispatchCompute(25, 800, 1);
