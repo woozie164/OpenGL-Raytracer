@@ -126,7 +126,10 @@ int main() {
 	/* TODO: 
 	Support up to 10 moving point lights where each light casts shadows.
 		+Add the new uniform declarations to all the shaders
-		-Debug the data that is sent to the shader
+		+Debug the data that is sent to the shader
+		-Fix the shadow on the backside of the spheres
+		-Add some more lights
+		-Write some code that moves the points light and updates the uniform buffer
 	Support diffuse and specular lighting with light attenuation.
 	*/
 
