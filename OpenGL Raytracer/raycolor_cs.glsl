@@ -172,7 +172,7 @@ void trace(in out ray r) {
 	
 	float t0, t1;
 	if(intersectSphere(r.origin, r.dir, my_sphere, t0, t1)){
-		t = min(min(t0, 0), min(t1, 0));
+		t = min(t0, t1);
 		if(t > 0 && t < t_min && r.primitiveID != 1) {
 			t_min = t;
 			r.primitiveID = 1;
@@ -190,7 +190,7 @@ void trace(in out ray r) {
 	
 	if(intersectSphere(r.origin, r.dir, my_sphere2, t0, t1)){
 		// Select the smallest positive t-value.
-		t = min(min(t0, 0), min(t1, 0));
+		t = min(t0, t1);
 		if(t > 0 && t < t_min && r.primitiveID != 3) {
 			t_min = t;
 			r.primitiveID = 3;
