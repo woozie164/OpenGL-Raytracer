@@ -35,13 +35,19 @@ GLuint compileShaderProgram(vector<ShaderInfo> & shaders)
 		fprintf(stderr, "Error creating program object.\n");
 		exit(1);
 	}
+	vector<const GLchar *> shaderSrcPtr;
 
 	for(unsigned int i = 0; i < shaders.size(); i++)
 	{
+		if (SHADER_HEADER == shaders[i].shaderType) {
+			shaderSrcPtr.push_back(shaders[i].source.c_str());
+			shaders[i].shaderHandle = 0;
+			continue;
+		}
 		GLuint shaderHandle = glCreateShader(shaders[i].shaderType);
 		shaders[i].shaderHandle = shaderHandle;
-		const GLchar * source = (GLchar *)shaders[i].source.c_str();
-		glShaderSource(shaderHandle, 1, &source, 0);
+		shaderSrcPtr.push_back(shaders[i].source.c_str());		
+		glShaderSource(shaderHandle, shaderSrcPtr.size(), shaderSrcPtr.data(), 0);
 		glCompileShader(shaderHandle);
 
 		GLint result;
