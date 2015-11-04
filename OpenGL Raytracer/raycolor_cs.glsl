@@ -145,11 +145,10 @@ bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out fl
 }
 
 // Do intersection tests with all the geometry in the scene
-void trace(in out ray r) {	
+void trace(in out ray r, out vec3 n) {	
 	// Set initial value to infinity
 	float t_min = 1.0 / 0.0;	
-	float t;
-	vec3 n;
+	float t;	
 	
 	// Hardcoded geometry data (1 triangle)
 	vec3 x = vec3(-0.5f, -0.5f, 0.5f);
@@ -176,6 +175,10 @@ void trace(in out ray r) {
 	float t0, t1;
 	if(intersectSphere(r.origin, r.dir, my_sphere, t0, t1)){
 		t = min(t0, t1);
+		/*
+		if(t < 0) {
+			t = max(t0, t1);
+		}*/
 		if(t > 0 && t < t_min && r.primitiveID != 1) {
 			t_min = t;
 			r.primitiveID = 1;
@@ -194,6 +197,10 @@ void trace(in out ray r) {
 	if(intersectSphere(r.origin, r.dir, my_sphere2, t0, t1)){
 		// Select the smallest positive t-value.
 		t = min(t0, t1);
+		/*		
+		if(t < 0) {
+			t = max(t0, t1);
+		}*/
 		if(t > 0 && t < t_min && r.primitiveID != 3) {
 			t_min = t;
 			r.primitiveID = 3;
@@ -232,8 +239,8 @@ void main()
 		int lightPrimitiveID = rays[i].primitiveID;
 		vec3 lightDir = normalize(light_position - rays[i].origin);
 		lightRay = ray(rays[i].origin, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
-		
-		trace(lightRay);
+		vec3 n;
+		trace(lightRay, n);
 
 		// The trace function doesn't count the intersections between the ray and the
 		// primitive it was created from, so if this is true
@@ -242,9 +249,19 @@ void main()
 
 		// if t is set to infinity, there's were no collision between
 		// the lightRay and the geometry
-		if(lightRay.t == 1.0 / 0.0) {
-			float diffuse = max(0.0, dot(rays[i].n, lightDir));
-			lightRay.color = rays[i].color + light_color * diffuse;			
+		if(lightRay.t == 1.0 / 0.0) {		
+			// Makes the dark side of the sphere the ambient color
+			//float diffuse = max(0.0, dot(rays[i].n, lightDir));
+			
+			// Makes the dark side of the sphere completely dark
+			float diffuse = dot(rays[i].n, lightDir);
+			
+			rays[i].dir; // the reflection vector
+			// view vector, i.e. the unit vector from the surface point to the eye position
+			vec3 v = normalize(camera_pos - rays[i].origin); 
+			float k = max(dot(v, rays[i].dir), 0);
+			
+			lightRay.color = rays[i].color + light_color * diffuse;						
 		} else {
 			// Shadow color
 			// Shadows on the backside of geometry doesn't work because 
