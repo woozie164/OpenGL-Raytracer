@@ -83,8 +83,7 @@ int main() {
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	if (glDebugMessageCallback){
 		glDebugMessageCallback(openglCallbackFunction, nullptr);
-	}
-	else {
+	} else {
 		cout << "glDebugMessageCallback not available" << endl;
 	}
 	

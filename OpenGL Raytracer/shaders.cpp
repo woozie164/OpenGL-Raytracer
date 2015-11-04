@@ -38,20 +38,19 @@ GLuint compileShaderProgram(vector<ShaderInfo> & shaders)
 	vector<const GLchar *> shaderSrcPtr;
 
 	for(unsigned int i = 0; i < shaders.size(); i++)
-	{
+	{		
+		shaderSrcPtr.push_back(shaders[i].source.c_str());
+
 		// If it's a shader header, it contains code that should 
 		// be added to the next shader that isn't a shader header
-		if (SHADER_HEADER == shaders[i].shaderType) {
-			shaderSrcPtr.push_back(shaders[i].source.c_str());			
+		if (SHADER_HEADER == shaders[i].shaderType) {				
 			continue;
-		} else {
-			shaderSrcPtr.clear();
-			shaderSrcPtr.push_back(shaders[i].source.c_str());
 		}
 
 		GLuint shaderHandle = glCreateShader(shaders[i].shaderType);
 		shaders[i].shaderHandle = shaderHandle;		
 		glShaderSource(shaderHandle, shaderSrcPtr.size(), shaderSrcPtr.data(), 0);
+		shaderSrcPtr.clear();
 		glCompileShader(shaderHandle);
 
 		GLint result;
