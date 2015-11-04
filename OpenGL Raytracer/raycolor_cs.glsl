@@ -6,6 +6,9 @@ struct ray {
 	vec3 color;
 	float t;
 	int primitiveID;
+	// the surface normal from the last primitive this ray 
+	// intersected with
+	vec3 n; 
 };
 
 struct sphere {
@@ -228,7 +231,7 @@ void main()
 		//vec3 intersectionPoint = rays[i].origin + rays[i].dir * rays[i].t;
 		int lightPrimitiveID = rays[i].primitiveID;
 		vec3 lightDir = normalize(light_position - rays[i].origin);
-		lightRay = ray(rays[i].origin, lightDir, rays[i].color, -1, lightPrimitiveID);
+		lightRay = ray(rays[i].origin, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
 		
 		trace(lightRay);
 
@@ -240,7 +243,8 @@ void main()
 		// if t is set to infinity, there's were no collision between
 		// the lightRay and the geometry
 		if(lightRay.t == 1.0 / 0.0) {
-			lightRay.color = light_color;			
+			float diffuse = max(0.0, dot(rays[i].n, lightDir));
+			lightRay.color = rays[i].color + light_color * diffuse;			
 		} else {
 			// Shadow color
 			// Shadows on the backside of geometry doesn't work because 

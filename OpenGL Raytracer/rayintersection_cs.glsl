@@ -6,6 +6,9 @@ struct ray {
 	vec3 color;
 	float t;
 	int primitiveID;
+	// the surface normal from the last primitive this ray 
+	// intersected with
+	vec3 n; 
 };
 
 struct sphere {
@@ -210,6 +213,8 @@ void trace(in out ray r) {
 	
 	// Update ray direction
 	r.dir = r.dir - 2 * dot(r.dir, n) * n;
+	
+	r.n = n;
 }
 
 void main(void) 
