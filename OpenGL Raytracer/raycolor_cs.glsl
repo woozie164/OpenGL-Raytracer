@@ -256,12 +256,19 @@ void main()
 			// Makes the dark side of the sphere completely dark
 			float diffuse = dot(rays[i].n, lightDir);
 			
-			rays[i].dir; // the reflection vector
+			float k;
 			// view vector, i.e. the unit vector from the surface point to the eye position
-			vec3 v = normalize(camera_pos - rays[i].origin); 
-			float k = max(dot(v, rays[i].dir), 0);
+			vec3 v = normalize(camera_pos - rays[i].origin);
+			if(diffuse > 0) {
+				k = max(dot(v, rays[i].dir), 0);
+			} else {
+				k = 0;
+			}
+				
+			rays[i].dir; // the reflection vector					
 			
-			lightRay.color = rays[i].color + light_color * diffuse;						
+			lightRay.color = rays[i].color + light_color * diffuse + light_color * k;
+			//lightRay.color = rays[i].color + light_color * diffuse;
 		} else {
 			// Shadow color
 			// Shadows on the backside of geometry doesn't work because 
