@@ -132,20 +132,11 @@ int main() {
 	Support diffuse and specular lighting with light attenuation.
 	*/
 
-	// Same struct as in the glsl shader
-	// Should be the same size as well
-	struct ray {
-		glm::vec3 origin;
-		glm::vec3 dir;
-		glm::vec3 color;
-		float t;
-		int primitiveID;
-	};
-
+	int sizeOfRay = sizeof(float) * 4 * 6;
 	GLuint ssbo = 0;
 	glGenBuffers(1, &ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(ray) * 800 * 1200, nullptr, GL_DYNAMIC_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeOfRay * 800 * 800, nullptr, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	
 	GLuint lightBuffer = 0;

@@ -145,10 +145,11 @@ bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out fl
 }
 
 // Do intersection tests with all the geometry in the scene
-void trace(in out ray r, out vec3 n) {	
+void trace(in out ray r) {	
 	// Set initial value to infinity
 	float t_min = 1.0 / 0.0;	
 	float t;	
+	vec3 n;
 	
 	// Hardcoded geometry data (1 triangle)
 	vec3 x = vec3(-0.5f, -0.5f, 0.5f);
@@ -224,23 +225,28 @@ void trace(in out ray r, out vec3 n) {
 	
 	// Update ray direction
 	r.dir = r.dir - 2 * dot(r.dir, n) * n;
+	
+	r.n = n;
 }
 
 void main()
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 	int i = storePos.x + storePos.y * 800;
-	ray lightRay;
+	ray lightRay;	
 	
 	if(rays[i].primitiveID != -1) {	
 		// No need to calcalulte the intersection point, because
 		// this is already done in the intersection stage
 		//vec3 intersectionPoint = rays[i].origin + rays[i].dir * rays[i].t;
 		int lightPrimitiveID = rays[i].primitiveID;
-		vec3 lightDir = normalize(light_position - rays[i].origin);
+			
+		vec3 lightDir = normalize(light_position - rays[i].origin);	
+		//vec3 lightDir = normalize(rays[i].origin - light_position);		
+		
 		lightRay = ray(rays[i].origin, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
-		vec3 n;
-		trace(lightRay, n);
+		
+		trace(lightRay);
 
 		// The trace function doesn't count the intersections between the ray and the
 		// primitive it was created from, so if this is true
@@ -252,20 +258,24 @@ void main()
 		if(lightRay.t == 1.0 / 0.0) {		
 			// Makes the dark side of the sphere the ambient color
 			//float diffuse = max(0.0, dot(rays[i].n, lightDir));
-			
+								
 			// Makes the dark side of the sphere completely dark
 			float diffuse = dot(rays[i].n, lightDir);
 			
-			float k;
-			// view vector, i.e. the unit vector from the surface point to the eye position
-			vec3 v = normalize(camera_pos - rays[i].origin);
+			float k;					
 			if(diffuse > 0) {
-				k = max(dot(v, rays[i].dir), 0);
+				// view vector, i.e. the unit vector from the surface point to the eye position
+				vec3 v = normalize(camera_pos - rays[i].origin);
+				
+				// The incident vector
+				vec3 I = lightDir * -1;		
+				
+				//k = max(dot(v, reflect(I, rays[i].dir)), 0);
+				k = max(dot(v, reflect(I, rays[i].n)), 0);
+				//k = max(dot(v, rays[i].dir), 0);
 			} else {
 				k = 0;
-			}
-				
-			rays[i].dir; // the reflection vector					
+			}				
 			
 			lightRay.color = rays[i].color + light_color * diffuse + light_color * k;
 			//lightRay.color = rays[i].color + light_color * diffuse;
@@ -281,5 +291,5 @@ void main()
 	}
 	
 	//imageStore(outTexture, storePos, vec4(lights[0].pos, 1.0));	
-	imageStore(outTexture, storePos, vec4(lightRay.color, 1.0));		
+	imageStore(outTexture, storePos, vec4(lightRay.color, 1.0));
 }

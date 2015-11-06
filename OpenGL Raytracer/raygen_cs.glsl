@@ -1,6 +1,6 @@
 #version 430 core
 
-struct ray {
+struct ray {	
 	vec3 origin;
 	vec3 dir;
 	vec3 color;
@@ -8,7 +8,7 @@ struct ray {
 	int primitiveID;	
 	// the surface normal from the last primitive this ray 
 	// intersected with
-	vec3 n; 
+	vec3 n;	
 };
 
 struct sphere {
