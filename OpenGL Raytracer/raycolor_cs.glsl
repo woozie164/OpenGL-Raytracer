@@ -241,7 +241,7 @@ void main()
 		//vec3 intersectionPoint = rays[i].origin + rays[i].dir * rays[i].t;
 		int lightPrimitiveID = rays[i].primitiveID;
 			
-		vec3 lightDir = normalize(light_position - rays[i].origin);	
+		vec3 lightDir = normalize(light_position - rays[i].origin);
 		//vec3 lightDir = normalize(rays[i].origin - light_position);		
 		
 		lightRay = ray(rays[i].origin, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
@@ -265,13 +265,13 @@ void main()
 			float k;					
 			if(diffuse > 0) {
 				// view vector, i.e. the unit vector from the surface point to the eye position
-				vec3 v = normalize(camera_pos - rays[i].origin);
+				vec3 v = normalize(camera_pos - rays[i].origin);			
 				
 				// The incident vector
 				vec3 I = lightDir * -1;		
 				
 				//k = max(dot(v, reflect(I, rays[i].dir)), 0);
-				k = max(dot(v, reflect(I, rays[i].n)), 0);
+				k = max(dot(v, normalize(reflect(I, rays[i].n))), 0);
 				//k = max(dot(v, rays[i].dir), 0);
 			} else {
 				k = 0;
