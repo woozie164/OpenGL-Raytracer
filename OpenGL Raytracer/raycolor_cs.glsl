@@ -280,8 +280,13 @@ void main()
 			} else {
 				k = 0;
 			}*/	
+			
+			// Light attenuation
+			float d = length(light_position - rays[i].origin);
+			vec3 light = (light_color * diffuse + light_color * k) / d;
+			
 			//lightRay.color = rays[i].color + vec3(1.0, 0.0, 0.0) * k;
-			lightRay.color = rays[i].color + light_color * diffuse + light_color * k;
+			lightRay.color = rays[i].color + light;
 			//lightRay.color = rays[i].color + light_color * diffuse;
 		} else {
 			// Shadow color
