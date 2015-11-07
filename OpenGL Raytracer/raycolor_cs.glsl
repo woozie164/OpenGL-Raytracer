@@ -270,8 +270,11 @@ void main()
 				// The incident vector
 				vec3 I = lightDir * -1;		
 				
+				// reflection vector
+				vec3 r = normalize(reflect(I, rays[i].n));
+				
 				//k = max(dot(v, reflect(I, rays[i].dir)), 0);
-				k = max(dot(v, normalize(reflect(I, rays[i].n))), 0);
+				k = max(dot(v, r), 0);
 				//k = max(dot(v, rays[i].dir), 0);
 			} else {
 				k = 0;
