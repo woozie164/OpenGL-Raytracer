@@ -233,12 +233,16 @@ void main()
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 	int i = storePos.x + storePos.y * 800;
-	ray lightRay;	
-	vec3 finalColor = vec3(0.0);
+	// Load the current pixel color, because it might contain intermediate
+	// color calculations
+	vec3 finalColor = vec3(imageLoad(outTexture, storePos));
+	ray lightRay;		
+	bool shadowed = false;
+	vec3 light = vec3(0.0);
 	
-	if(rays[i].primitiveID != -1) {	
-		int a;
-		for(a = 0; a < num_lights; a++) {
+	if(rays[i].primitiveID != -1) {			
+		for(int a = 0; a < num_lights; a++) 
+		{			
 			// No need to calcalulte the intersection point, because
 			// this is already done in the intersection stage
 			//vec3 intersectionPoint = rays[i].origin + rays[i].dir * rays[i].t;
@@ -257,7 +261,8 @@ void main()
 
 			// if t is set to infinity, there's were no collision between
 			// the lightRay and the geometry
-			if(lightRay.t == 1.0 / 0.0) {		
+			if(lightRay.t == 1.0 / 0.0) {				
+				shadowed = false;
 				// Makes the dark side of the sphere the ambient color
 				//float diffuse = max(0.0, dot(rays[i].n, lightDir));
 									
@@ -285,18 +290,24 @@ void main()
 				
 				// Light attenuation
 				float d = length(lights[a].pos - rays[i].origin);
-				vec3 light = (lights[a].color * diffuse + lights[a].color * k) / d;
+				light += (lights[a].color * diffuse + lights[a].color * k) / d;
 				
-				//lightRay.color = rays[i].color + vec3(1.0, 0.0, 0.0) * k;
-				finalColor += rays[i].color + light;
+				//lightRay.color = rays[i].color + vec3(1.0, 0.0, 0.0) * k;			
 				//lightRay.color = rays[i].color + lights[a].color * diffuse;
 			} else {
+				shadowed = true;
 				// Shadow color
 				// Shadows on the backside of geometry doesn't work because 
 				// I don't count self-intersections
-				finalColor += vec3(0.2);	
-			}		
+				//finalColor = vec3(0.2);	
+				//light -= vec3(0.1);
+			}					
 		}
+		finalColor = lightRay.color + light;
+		
+		// This makes things look a lot buggier for some reason.
+		// Should give the same result as the other one.
+		//finalColor += lightRay.color + light;
 	} else {
 		// Background color
 		finalColor = vec3(0.0, 1.0, 0.0);
