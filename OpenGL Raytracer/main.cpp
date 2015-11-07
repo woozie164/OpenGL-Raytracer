@@ -165,7 +165,7 @@ int main() {
 		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
 		
 		/* Raytracer stuff */	
-		for (int i = 0; i < 5; i++)
+		for (int i = 0; i < 3; i++)
 		{
 			GLuint currentShaderProg;
 			switch (i) 
