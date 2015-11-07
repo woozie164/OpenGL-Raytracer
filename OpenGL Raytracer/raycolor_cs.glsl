@@ -263,7 +263,7 @@ void main()
 			float diffuse = dot(rays[i].n, lightDir);
 			
 			float k;					
-			if(diffuse > 0) {
+			//if(diffuse > 0) {
 				// view vector, i.e. the unit vector from the surface point to the eye position
 				vec3 v = normalize(camera_pos - rays[i].origin);			
 				
@@ -276,9 +276,10 @@ void main()
 				//k = max(dot(v, reflect(I, rays[i].dir)), 0);
 				k = max(dot(v, r), 0);
 				//k = max(dot(v, rays[i].dir), 0);
+				/*
 			} else {
 				k = 0;
-			}				
+			}		*/		
 			
 			lightRay.color = rays[i].color + light_color * diffuse + light_color * k;
 			//lightRay.color = rays[i].color + light_color * diffuse;
