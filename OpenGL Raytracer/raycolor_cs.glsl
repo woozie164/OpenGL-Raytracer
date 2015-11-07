@@ -237,7 +237,7 @@ void main()
 	// color calculations
 	vec3 finalColor = vec3(imageLoad(outTexture, storePos));
 	ray lightRay;		
-	bool shadowed = false;
+	bool shadowed = true;
 	vec3 light = vec3(0.0);
 	
 	if(rays[i].primitiveID != -1) {			
@@ -250,7 +250,7 @@ void main()
 				
 			vec3 lightDir = normalize(lights[a].pos - rays[i].origin);			
 			
-			lightRay = ray(rays[i].origin, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
+			lightRay = ray(rays[i].origin + lightDir * 0.1, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
 			
 			trace(lightRay);
 
@@ -295,7 +295,7 @@ void main()
 				//lightRay.color = rays[i].color + vec3(1.0, 0.0, 0.0) * k;			
 				//lightRay.color = rays[i].color + lights[a].color * diffuse;
 			} else {
-				shadowed = true;
+				//shadowed = true;
 				// Shadow color
 				// Shadows on the backside of geometry doesn't work because 
 				// I don't count self-intersections
@@ -311,6 +311,10 @@ void main()
 	} else {
 		// Background color
 		finalColor = vec3(0.0, 1.0, 0.0);
+	}
+	
+	if(shadowed) {
+		//finalColor = vec3(0.1);
 	}
 	
 	//imageStore(outTexture, storePos, vec4(lights[0].color, 1.0));	
