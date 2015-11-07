@@ -147,9 +147,10 @@ int main() {
 		// Note: a vec3 takes up 4 floats, 3 for the vec3 and 1 float padding
 		-2.0, -2.0, -2.0,		0.0,	1.0, 0.0, 0.0,	0.0,
 		-7.0, -7.0, -7.0,		0.0,	0.0, 1.0, 0.0,	0.0,
+		-8.0, -7.5, -8.0,		0.0,	1.0, 0.0, 0.0,	0.0,
 		-3.75, -3.75, -3.75,	0.0,	0.0, 0.0, 1.0,	0.0,
 	};
-	int num_lights = 3;
+	int num_lights = 4;
 	// 8 floats per light (2 of those flots are padding) and 10 lights in total
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);		
 		
