@@ -274,13 +274,13 @@ void main()
 				vec3 r = normalize(reflect(I, rays[i].n));
 				
 				//k = max(dot(v, reflect(I, rays[i].dir)), 0);
-				k = max(dot(v, r), 0);
+				k = pow(max(dot(v, r), 0), 30);
 				//k = max(dot(v, rays[i].dir), 0);
-				/*
+			/*	
 			} else {
 				k = 0;
-			}		*/		
-			
+			}*/	
+			//lightRay.color = rays[i].color + vec3(1.0, 0.0, 0.0) * k;
 			lightRay.color = rays[i].color + light_color * diffuse + light_color * k;
 			//lightRay.color = rays[i].color + light_color * diffuse;
 		} else {
