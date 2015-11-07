@@ -145,12 +145,12 @@ int main() {
 	float lightData[]{
 		//LightPosition, padding, LightColor, padding 
 		// Note: a vec3 takes up 4 floats, 3 for the vec3 and 1 float padding
-		1.0, 0.0, 0.0,	0.0,	0.0, 1.0, 0.0,	0.0,
-		0.0, 1.0, 0.0,  0.0,	1.0, 0.0, 0.0,	0.0,
+		-2.0, -2.0, -2.0,	0.0,	1.0, 0.0, 0.0,		0.0,
+		-7.0, -7.0, -7.0,	0.0,	0.0, 1.0, 0.0,		0.0,
 	};
 	// 8 floats per light (2 of those flots are padding) and 10 lights in total
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);
-	
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);		
+		
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	while (!glfwWindowShouldClose(window)) {		
@@ -177,17 +177,18 @@ int main() {
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_up"), 1, glm::value_ptr(camera.getUp()));
-			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_right"), 1, glm::value_ptr(camera.getRight()));
-
-			// Returns 0, but I was expecting 2 because of the layout (binding = 2) statement ...
-			GLuint test = glGetUniformBlockIndex(currentShaderProg, "LightsBuffer");
-			glBindBufferBase(GL_UNIFORM_BUFFER, test, lightBuffer);
+			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_right"), 1, glm::value_ptr(camera.getRight()));			
 			
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_position"), 1, glm::value_ptr(glm::vec3(-2.0f, -2.0f, -2.0f)));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
 
+			glUniform1i(glGetUniformLocation(currentShaderProg, "num_lights"), 2);
+			
 			glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
 			glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);
+			// Returns 0, but I was expecting 2 because of the layout (binding = 2) statement ...
+			GLuint test = glGetUniformBlockIndex(currentShaderProg, "LightsBuffer");
+			glBindBufferBase(GL_UNIFORM_BUFFER, test, lightBuffer);
 
 			// Workgroup size is 32 x 1
 			// Dispatch 25 * 32 = 800
