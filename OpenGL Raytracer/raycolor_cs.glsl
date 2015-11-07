@@ -234,71 +234,74 @@ void main()
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 	int i = storePos.x + storePos.y * 800;
 	ray lightRay;	
+	vec3 finalColor = vec3(0.0);
 	
 	if(rays[i].primitiveID != -1) {	
-		// No need to calcalulte the intersection point, because
-		// this is already done in the intersection stage
-		//vec3 intersectionPoint = rays[i].origin + rays[i].dir * rays[i].t;
-		int lightPrimitiveID = rays[i].primitiveID;
+		int a;
+		for(a = 0; a < num_lights; a++) {
+			// No need to calcalulte the intersection point, because
+			// this is already done in the intersection stage
+			//vec3 intersectionPoint = rays[i].origin + rays[i].dir * rays[i].t;
+			int lightPrimitiveID = rays[i].primitiveID;
+				
+			vec3 lightDir = normalize(lights[a].pos - rays[i].origin);			
 			
-		vec3 lightDir = normalize(light_position - rays[i].origin);
-		//vec3 lightDir = normalize(rays[i].origin - light_position);		
-		
-		lightRay = ray(rays[i].origin, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
-		
-		trace(lightRay);
-
-		// The trace function doesn't count the intersections between the ray and the
-		// primitive it was created from, so if this is true
-		// it means that the light ray didn't intersect with some other primitive 
-		//if(lightPrimitiveID == lightRay.primitiveID) {		
-
-		// if t is set to infinity, there's were no collision between
-		// the lightRay and the geometry
-		if(lightRay.t == 1.0 / 0.0) {		
-			// Makes the dark side of the sphere the ambient color
-			//float diffuse = max(0.0, dot(rays[i].n, lightDir));
-								
-			// Makes the dark side of the sphere completely dark
-			float diffuse = dot(rays[i].n, lightDir);
+			lightRay = ray(rays[i].origin, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
 			
-			float k;					
-			//if(diffuse > 0) {
-				// view vector, i.e. the unit vector from the surface point to the eye position
-				vec3 v = normalize(camera_pos - rays[i].origin);			
+			trace(lightRay);
+
+			// The trace function doesn't count the intersections between the ray and the
+			// primitive it was created from, so if this is true
+			// it means that the light ray didn't intersect with some other primitive 
+			//if(lightPrimitiveID == lightRay.primitiveID) {		
+
+			// if t is set to infinity, there's were no collision between
+			// the lightRay and the geometry
+			if(lightRay.t == 1.0 / 0.0) {		
+				// Makes the dark side of the sphere the ambient color
+				//float diffuse = max(0.0, dot(rays[i].n, lightDir));
+									
+				// Makes the dark side of the sphere completely dark
+				float diffuse = dot(rays[i].n, lightDir);
 				
-				// The incident vector
-				vec3 I = lightDir * -1;		
+				float k;					
+				//if(diffuse > 0) {
+					// view vector, i.e. the unit vector from the surface point to the eye position
+					vec3 v = normalize(camera_pos - rays[i].origin);			
+					
+					// The incident vector
+					vec3 I = lightDir * -1;		
+					
+					// reflection vector
+					vec3 r = normalize(reflect(I, rays[i].n));
+					
+					//k = max(dot(v, reflect(I, rays[i].dir)), 0);
+					k = pow(max(dot(v, r), 0), 30);
+					//k = max(dot(v, rays[i].dir), 0);
+				/*	
+				} else {
+					k = 0;
+				}*/	
 				
-				// reflection vector
-				vec3 r = normalize(reflect(I, rays[i].n));
+				// Light attenuation
+				float d = length(lights[a].pos - rays[i].origin);
+				vec3 light = (lights[a].color * diffuse + lights[a].color * k) / d;
 				
-				//k = max(dot(v, reflect(I, rays[i].dir)), 0);
-				k = pow(max(dot(v, r), 0), 30);
-				//k = max(dot(v, rays[i].dir), 0);
-			/*	
+				//lightRay.color = rays[i].color + vec3(1.0, 0.0, 0.0) * k;
+				finalColor += rays[i].color + light;
+				//lightRay.color = rays[i].color + lights[a].color * diffuse;
 			} else {
-				k = 0;
-			}*/	
-			
-			// Light attenuation
-			float d = length(light_position - rays[i].origin);
-			vec3 light = (light_color * diffuse + light_color * k) / d;
-			
-			//lightRay.color = rays[i].color + vec3(1.0, 0.0, 0.0) * k;
-			lightRay.color = rays[i].color + light;
-			//lightRay.color = rays[i].color + light_color * diffuse;
-		} else {
-			// Shadow color
-			// Shadows on the backside of geometry doesn't work because 
-			// I don't count self-intersections
-			lightRay.color = vec3(0.3, 0.3, 0.3);	
-		}		
+				// Shadow color
+				// Shadows on the backside of geometry doesn't work because 
+				// I don't count self-intersections
+				finalColor += vec3(0.2);	
+			}		
+		}
 	} else {
 		// Background color
-		lightRay.color = vec3(0.0, 1.0, 0.0);
+		finalColor = vec3(0.0, 1.0, 0.0);
 	}
 	
-	//imageStore(outTexture, storePos, vec4(lights[0].pos, 1.0));	
-	imageStore(outTexture, storePos, vec4(lightRay.color, 1.0));
+	//imageStore(outTexture, storePos, vec4(lights[0].color, 1.0));	
+	imageStore(outTexture, storePos, vec4(finalColor, 1.0));
 }
