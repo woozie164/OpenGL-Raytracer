@@ -160,7 +160,7 @@ void trace(in out ray r) {
 	sphere my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);	
 	
 	if(RayVsTriangle(r.origin, r.dir, x, y, z, t)) {
-		if(t > 0 && t < t_min && r.primitiveID != 0) {
+		if(t > 0 && t < t_min /*&& r.primitiveID != 0*/) {
 			t_min = t;
 			r.primitiveID = 0;
 			r.color = vec3(0.0, 1.0, 0.0);
@@ -180,7 +180,7 @@ void trace(in out ray r) {
 		if(t < 0) {
 			t = max(t0, t1);
 		}*/
-		if(t > 0 && t < t_min && r.primitiveID != 1) {
+		if(t > 0 && t < t_min /*&& r.primitiveID != 1*/) {
 			t_min = t;
 			r.primitiveID = 1;
 			r.color = vec3(0.0, 0.0, 1.0);
@@ -202,7 +202,7 @@ void trace(in out ray r) {
 		if(t < 0) {
 			t = max(t0, t1);
 		}*/
-		if(t > 0 && t < t_min && r.primitiveID != 3) {
+		if(t > 0 && t < t_min /*&& r.primitiveID != 3*/) {
 			t_min = t;
 			r.primitiveID = 3;
 			r.color = vec3(0.0, 0.3, 0.3);
@@ -250,7 +250,7 @@ void main()
 				
 			vec3 lightDir = normalize(lights[a].pos - rays[i].origin);			
 			
-			lightRay = ray(rays[i].origin + lightDir * 0.1, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
+			lightRay = ray(rays[i].origin + lightDir * 0.001, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
 			
 			trace(lightRay);
 
