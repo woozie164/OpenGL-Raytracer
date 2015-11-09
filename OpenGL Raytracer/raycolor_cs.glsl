@@ -264,13 +264,31 @@ void main()
 			// this is already done in the intersection stage
 			//vec3 intersectionPoint = rays[i].origin + rays[i].dir * rays[i].t;
 			int lightPrimitiveID = rays[i].primitiveID;
+			
+			// if collision with triangle
+			// figure out where in the texture to retrieve pixel data
+			//if(lightRay.primitiveID == 0) {
+			if(lightPrimitiveID == 0) {
+				// Some hardcoded uv-coordinates
+				vec2 uv_x = vec2(0.0);
+				vec2 uv_y = vec2(0.0, 0.1);
+				vec2 uv_z = vec2(1.0, 0.0);	
+				vec3 p = rays[i].origin;
+				// Hardcoded geometry data (1 triangle)
+				vec3 x = vec3(-0.5f, -0.5f, 0.5f);
+				vec3 y = vec3(0.5f, -0.5f, 0.5f);
+				vec3 z = vec3(0.5f, 0.5f, 0.5f);
+				float u, v, w;
+				CartesianToBarycentricCoord(x, y, z, p, u, v, w);
+				vec2 uv = u * uv_x + v * uv_y + w * uv_z;
+			}				
 				
 			vec3 lightDir = normalize(lights[a].pos - rays[i].origin);			
 			
 			lightRay = ray(rays[i].origin + lightDir * 0.001, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
 			
-			trace(lightRay);
-
+			trace(lightRay);			
+			
 			// The trace function doesn't count the intersections between the ray and the
 			// primitive it was created from, so if this is true
 			// it means that the light ray didn't intersect with some other primitive 
