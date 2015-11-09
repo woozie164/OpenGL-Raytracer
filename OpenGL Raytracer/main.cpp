@@ -5,6 +5,8 @@
 #include <vector>
 #include "camera.h"
 #include <gtc/type_ptr.hpp>
+#include <random>
+#include <functional>
 
 using namespace std;
 
@@ -64,6 +66,13 @@ void APIENTRY openglCallbackFunction(GLenum source, GLenum type, GLuint id, GLen
 	}
 	cout << endl;
 	cout << "---------------------opengl-callback-end--------------" << endl;
+}
+
+glm::vec3 RandomDir() {
+	static std::default_random_engine generator;
+	static std::uniform_int_distribution<int> distribution(-1000, 1000);
+	static auto rng = std::bind(distribution, generator);
+	return normalize(glm::vec3(rng(), rng(), rng()));
 }
 
 int main() {
@@ -158,17 +167,35 @@ int main() {
 	};
 	int num_lights = 10;
 	// 8 floats per light (2 of those flots are padding) and 10 lights in total
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);		
-		
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);			
+
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
+
+	double lastTime = glfwGetTime();
+
 	while (!glfwWindowShouldClose(window)) {		
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
-		
+				
+		double currentTime = glfwGetTime();
+		// If two seconds have elapsed
+		if (currentTime > lastTime + 2.0) {
+			lastTime = currentTime;
+			// Give the light a new position in a random direction
+			for (int i = 0; i < num_lights * 8; i += 8)
+			{
+				glm::vec3 lightPos(lightData[i], lightData[i + 1], lightData[i + 2]);			
+				lightPos += RandomDir() * 1.0f;
+				lightData[i] = lightPos.x;
+				lightData[i + 1] = lightPos.y;
+				lightData[i + 2] = lightPos.z;
+			}
+		}
+
 		/* Raytracer stuff */	
 		for (int i = 0; i < 3; i++)
 		{
