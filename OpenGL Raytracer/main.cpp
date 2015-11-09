@@ -139,7 +139,7 @@ int main() {
 		+Add some more lights
 		+Write some code that moves the points light and updates the uniform buffer
 			-Move the lights continously instead of jumping from one point to another
-		-Add code that converts Carteesian coordinates to barycentric
+		+Add code that converts Carteesian coordinates to barycentric
 		-Use the barycentric coordinates to interpolate uv-coordinates
 		-Load a mesh and render it
 	Support diffuse and specular lighting with light attenuation.

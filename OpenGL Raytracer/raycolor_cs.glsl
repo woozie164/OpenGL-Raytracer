@@ -48,6 +48,23 @@ uniform vec3 light_color;
 #define NEAR_ZERO 1e-20 // 1 * 10^-20
 #define NEAR_PLANE_DIST 1.0f
 
+// Compute barycentric coordinates (u, v, w) for
+// point p with respect to triangle (a, b, c)
+void CartesianToBarycentricCoord(vec3 a, vec3 b, vec3 c,
+ vec3 p, out float u, out float v, out float w)
+{
+	vec3 v0 = b - a, v1 = c - a, v2 = p - a;
+	float d00 = dot(v0, v0);
+	float d01 = dot(v0, v1);
+	float d11 = dot(v1, v1);
+	float d20 = dot(v2, v0);
+	float d21 = dot(v2, v1);
+	float denom = d00 * d11 - d01 * d01;
+	v = (d11 * d20 - d01 * d21) / denom;
+	w = (d00 * d21 - d01 * d20) / denom;
+	u = 1.0f - v - w;
+}
+
 bool RayVsTriangle(vec3 ray_origin, vec3 ray_dir,
  vec3 tri_x, vec3 tri_y,  vec3 tri_z,
  out float t)
