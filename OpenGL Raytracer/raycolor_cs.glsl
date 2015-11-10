@@ -281,9 +281,10 @@ void main()
 				vec3 z = vec3(0.5f, 0.5f, 0.5f);
 				float u, v, w;
 				CartesianToBarycentricCoord(x, y, z, p, u, v, w);
-				vec2 uv = u * uv_x + v * uv_y + w * uv_z;
+				ivec2 uv = ivec2(u * uv_x + v * uv_y + w * uv_z);
+				lightRay.color = vec3(imageLoad(meshTexture, uv));				
 			}				
-				
+			/*	
 			vec3 lightDir = normalize(lights[a].pos - rays[i].origin);			
 			
 			lightRay = ray(rays[i].origin + lightDir * 0.001, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
@@ -323,7 +324,7 @@ void main()
 				} else {
 					k = 0;
 				}*/	
-				
+				/*
 				// Light attenuation
 				float d = length(lights[a].pos - rays[i].origin);
 				light += (lights[a].color * diffuse + lights[a].color * k) / d;
@@ -336,8 +337,8 @@ void main()
 				// Shadows on the backside of geometry doesn't work because 
 				// I don't count self-intersections
 				//finalColor = vec3(0.2);	
-				//light -= vec3(0.1);
-			}					
+				//light -= vec3(0.1);				
+			}	*/				
 		}
 		finalColor = lightRay.color + light;
 		
@@ -352,7 +353,7 @@ void main()
 	if(shadowed) {
 		//finalColor = vec3(0.1);
 	}
-	finalColor = vec3(imageLoad(meshTexture, storePos));
+
 	//imageStore(outTexture, storePos, vec4(lights[0].color, 1.0));	
 	imageStore(outTexture, storePos, vec4(finalColor, 1.0));
 }
