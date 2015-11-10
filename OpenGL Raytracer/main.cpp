@@ -142,7 +142,9 @@ int main() {
 			-Move the lights continously instead of jumping from one point to another
 		+Add code that converts Carteesian coordinates to barycentric
 		+Use the barycentric coordinates to interpolate uv-coordinates
-		-Load a texture and render it on the test triangle
+		+Load a texture
+			+Check that the shader can use it by rendering it somewhere
+			-render it on the test triangle
 		-Load a mesh and render it
 	Support diffuse and specular lighting with light attenuation.
 	*/
