@@ -180,7 +180,7 @@ int main() {
 		"img_test.png",
 		SOIL_LOAD_AUTO,
 		SOIL_CREATE_NEW_ID,
-		SOIL_FLAG_INVERT_Y
+		SOIL_FLAG_INVERT_Y 
 		);
 	if (tex_2d == 0) {
 		printf("SOIL loading error: '%s'\n", SOIL_last_result());
@@ -225,7 +225,7 @@ int main() {
 
 			glUseProgram(currentShaderProg);
 			glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);			
-			glBindImageTexture(1, tex_2d, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA32F);
+			glBindImageTexture(1, tex_2d, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));

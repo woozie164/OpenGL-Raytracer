@@ -352,7 +352,7 @@ void main()
 	if(shadowed) {
 		//finalColor = vec3(0.1);
 	}
-	
+	finalColor = vec3(imageLoad(meshTexture, storePos));
 	//imageStore(outTexture, storePos, vec4(lights[0].color, 1.0));	
 	imageStore(outTexture, storePos, vec4(finalColor, 1.0));
 }
