@@ -272,7 +272,7 @@ void main()
 			if(lightPrimitiveID == 0) {
 				// Some hardcoded uv-coordinates
 				vec2 uv_x = vec2(0.0);
-				vec2 uv_y = vec2(0.0, 0.1);
+				vec2 uv_y = vec2(0.0, 1.0);
 				vec2 uv_z = vec2(1.0, 0.0);	
 				vec3 p = rays[i].origin;
 				// Hardcoded geometry data (1 triangle)
@@ -282,7 +282,19 @@ void main()
 				float u, v, w;
 				CartesianToBarycentricCoord(x, y, z, p, u, v, w);
 				ivec2 uv = ivec2(u * uv_x + v * uv_y + w * uv_z);
+				
+				// Renders a green triangle. Was expecting to see half of img_test.png
 				lightRay.color = vec3(imageLoad(meshTexture, uv));				
+				
+				// Gives the texture as a "reflection" inside the triangle
+				//lightRay.color = vec3(imageLoad(meshTexture, storePos));				
+				
+				// Gives a triangle with 3 different colors. Looks right IMO.
+				//lightRay.color = vec3(u, v, w);				
+				
+				// Should give a triangle that's red, green and black in
+				// each corner, but it gives a completely black triangle.
+				//lightRay.color = vec3(uv, 0);				
 			}				
 			/*	
 			vec3 lightDir = normalize(lights[a].pos - rays[i].origin);			
@@ -347,13 +359,13 @@ void main()
 		//finalColor += lightRay.color + light;
 	} else {
 		// Background color
-		finalColor = vec3(0.0, 1.0, 0.0);
+		finalColor = vec3(0.0, 0.3, 0.0);
 	}
 	
 	if(shadowed) {
 		//finalColor = vec3(0.1);
 	}
-
+	//finalColor = vec3(imageLoad(meshTexture, storePos));				
 	//imageStore(outTexture, storePos, vec4(lights[0].color, 1.0));	
 	imageStore(outTexture, storePos, vec4(finalColor, 1.0));
 }
