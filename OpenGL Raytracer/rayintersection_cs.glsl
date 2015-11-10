@@ -27,6 +27,7 @@ struct light {
 
 layout (local_size_x = 32, local_size_y = 1) in;
 layout (rgba8, binding = 0) uniform image2D outTexture;
+layout (rgba8, binding = 1) uniform image2D meshTexture;
 layout (binding = 1) buffer ray_buffer { ray rays[]; };
 
 uniform vec3 camera_pos;

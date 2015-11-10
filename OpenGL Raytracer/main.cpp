@@ -174,6 +174,7 @@ int main() {
 	int num_lights = 10;
 	// 8 floats per light (2 of those flots are padding) and 10 lights in total
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);			
+
 	GLuint tex_2d = SOIL_load_OGL_texture
 		(
 		"img.png",
@@ -221,7 +222,8 @@ int main() {
 			}
 
 			glUseProgram(currentShaderProg);
-			glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);			
+			glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
+			glBindImageTexture(1, tex_2d, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
