@@ -7,6 +7,7 @@
 #include <gtc/type_ptr.hpp>
 #include <random>
 #include <functional>
+#include "SOIL\src\SOIL.h"
 
 using namespace std;
 
@@ -173,6 +174,13 @@ int main() {
 	int num_lights = 10;
 	// 8 floats per light (2 of those flots are padding) and 10 lights in total
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);			
+	GLuint tex_2d = SOIL_load_OGL_texture
+		(
+		"img.png",
+		SOIL_LOAD_AUTO,
+		SOIL_CREATE_NEW_ID,
+		SOIL_FLAG_MIPMAPS | SOIL_FLAG_INVERT_Y | SOIL_FLAG_NTSC_SAFE_RGB | SOIL_FLAG_COMPRESS_TO_DXT
+		);
 
 	Camera camera;
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);

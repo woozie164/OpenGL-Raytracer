@@ -39,8 +39,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>.\glm;.\glew-1.13.0\include\GL;.\glfw-3.1.1.bin.WIN32\include\GLFW;$(IncludePath)</IncludePath>
-    <LibraryPath>.\glfw-3.1.1.bin.WIN32\lib-vc2013;.\glew-1.13.0\lib\Release\Win32;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\glm;.\glew-1.13.0\include\GL;.\glfw-3.1.1.bin.WIN32\include\GLFW;.\SOIL\src;$(IncludePath)</IncludePath>
+    <LibraryPath>.\glfw-3.1.1.bin.WIN32\lib-vc2013;.\glew-1.13.0\lib\Release\Win32;.\SOIL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -50,7 +50,7 @@
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;opengl32.lib;glew32.lib;SOIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:\Users\woozie\Documents\GitHub\OpenGL Raytracer\OpenGL Raytracer\glfw-3.1.1.bin.WIN32\lib-vc2013;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
