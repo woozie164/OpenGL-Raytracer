@@ -27,7 +27,7 @@ struct light {
 
 layout (local_size_x = 32, local_size_y = 1) in;
 layout (rgba8, binding = 0) uniform image2D outTexture;
-layout (binding = 1) uniform sampler2D meshSampler;
+layout (rgba8, binding = 1) uniform image2D meshTexture;
 layout (binding = 1) buffer ray_buffer { ray rays[]; };
 
 uniform vec3 camera_pos;
@@ -282,9 +282,12 @@ void main()
 				float u, v, w;
 				CartesianToBarycentricCoord(x, y, z, p, u, v, w);
 				vec2 uv = vec2(u * uv_x + v * uv_y + w * uv_z);
-				
+				ivec2 pixelCoord = ivec2(uv * 256);
 				// Renders a green triangle. Was expecting to see half of img_test.png
-				lightRay.color = vec3(texture(meshSampler, vec2(0.0)));				
+				lightRay.color = vec3(imageLoad(meshTexture, pixelCoord));
+				
+				// Should be able to use a sampler2D, but I always get a black triangle
+				//lightRay.color = vec3(texture(meshSampler, vec2(0.0)));				
 				
 				// Gives the texture as a "reflection" inside the triangle
 				//lightRay.color = vec3(imageLoad(meshTexture, storePos));				
