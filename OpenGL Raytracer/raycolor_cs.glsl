@@ -27,7 +27,7 @@ struct light {
 
 layout (local_size_x = 32, local_size_y = 1) in;
 layout (rgba8, binding = 0) uniform image2D outTexture;
-layout (rgba8, binding = 1) uniform image2D meshTexture;
+layout (binding = 1) uniform sampler2D meshSampler;
 layout (binding = 1) buffer ray_buffer { ray rays[]; };
 
 uniform vec3 camera_pos;
@@ -273,7 +273,7 @@ void main()
 				// Some hardcoded uv-coordinates
 				vec2 uv_x = vec2(0.0);
 				vec2 uv_y = vec2(0.0, 1.0);
-				vec2 uv_z = vec2(1.0, 0.0);	
+				vec2 uv_z = vec2(1.0, 1.0);	
 				vec3 p = rays[i].origin;
 				// Hardcoded geometry data (1 triangle)
 				vec3 x = vec3(-0.5f, -0.5f, 0.5f);
@@ -281,10 +281,10 @@ void main()
 				vec3 z = vec3(0.5f, 0.5f, 0.5f);
 				float u, v, w;
 				CartesianToBarycentricCoord(x, y, z, p, u, v, w);
-				ivec2 uv = ivec2(u * uv_x + v * uv_y + w * uv_z);
+				vec2 uv = vec2(u * uv_x + v * uv_y + w * uv_z);
 				
 				// Renders a green triangle. Was expecting to see half of img_test.png
-				lightRay.color = vec3(imageLoad(meshTexture, uv));				
+				lightRay.color = vec3(texture(meshSampler, vec2(0.0)));				
 				
 				// Gives the texture as a "reflection" inside the triangle
 				//lightRay.color = vec3(imageLoad(meshTexture, storePos));				
