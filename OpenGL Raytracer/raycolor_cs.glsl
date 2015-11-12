@@ -257,49 +257,40 @@ void main()
 	ray lightRay;		
 	bool shadowed = true;
 	vec3 light = vec3(0.0);
+	vec3 texColor = vec3(0.0);
 	
-	if(rays[i].primitiveID != -1) {			
+	if(rays[i].primitiveID != -1) {
+		int lightPrimitiveID = rays[i].primitiveID;
+		if(lightPrimitiveID == 0) {
+			// Some hardcoded uv-coordinates
+			vec2 uv_x = vec2(0.0);
+			vec2 uv_y = vec2(0.0, 1.0);
+			vec2 uv_z = vec2(1.0, 1.0);	
+			vec3 p = rays[i].origin;
+			// Hardcoded geometry data (1 triangle)
+			vec3 x = vec3(-0.5f, -0.5f, 0.5f);
+			vec3 y = vec3(0.5f, -0.5f, 0.5f);
+			vec3 z = vec3(0.5f, 0.5f, 0.5f);
+			float u, v, w;
+			CartesianToBarycentricCoord(x, y, z, p, u, v, w);
+			vec2 uv = vec2(u * uv_x + v * uv_y + w * uv_z);
+			ivec2 pixelCoord = ivec2(uv * 256);			
+			texColor = vec3(imageLoad(meshTexture, pixelCoord));
+			
+			// Should be able to use a sampler2D, but I always get a black triangle
+			//lightRay.color = vec3(texture(meshSampler, uv));				
+			
+			// Gives the texture as a "reflection" inside the triangle
+			//lightRay.color = vec3(imageLoad(meshTexture, storePos));				
+			
+			// Gives a triangle with 3 different colors. Looks right IMO.
+			//lightRay.color = vec3(u, v, w);					
+		}				
 		for(int a = 0; a < num_lights; a++) 
 		{			
-			// No need to calcalulte the intersection point, because
+			// No need to calculate the intersection point, because
 			// this is already done in the intersection stage
-			//vec3 intersectionPoint = rays[i].origin + rays[i].dir * rays[i].t;
-			int lightPrimitiveID = rays[i].primitiveID;
-			
-			// if collision with triangle
-			// figure out where in the texture to retrieve pixel data
-			//if(lightRay.primitiveID == 0) {
-			if(lightPrimitiveID == 0) {
-				// Some hardcoded uv-coordinates
-				vec2 uv_x = vec2(0.0);
-				vec2 uv_y = vec2(0.0, 1.0);
-				vec2 uv_z = vec2(1.0, 1.0);	
-				vec3 p = rays[i].origin;
-				// Hardcoded geometry data (1 triangle)
-				vec3 x = vec3(-0.5f, -0.5f, 0.5f);
-				vec3 y = vec3(0.5f, -0.5f, 0.5f);
-				vec3 z = vec3(0.5f, 0.5f, 0.5f);
-				float u, v, w;
-				CartesianToBarycentricCoord(x, y, z, p, u, v, w);
-				vec2 uv = vec2(u * uv_x + v * uv_y + w * uv_z);
-				ivec2 pixelCoord = ivec2(uv * 256);
-				// Renders a green triangle. Was expecting to see half of img_test.png
-				lightRay.color = vec3(imageLoad(meshTexture, pixelCoord));
-				
-				// Should be able to use a sampler2D, but I always get a black triangle
-				//lightRay.color = vec3(texture(meshSampler, vec2(0.0)));				
-				
-				// Gives the texture as a "reflection" inside the triangle
-				//lightRay.color = vec3(imageLoad(meshTexture, storePos));				
-				
-				// Gives a triangle with 3 different colors. Looks right IMO.
-				//lightRay.color = vec3(u, v, w);				
-				
-				// Should give a triangle that's red, green and black in
-				// each corner, but it gives a completely black triangle.
-				//lightRay.color = vec3(uv, 0);				
-			}				
-			/*	
+			//vec3 intersectionPoint = rays[i].origin + rays[i].dir * rays[i].t;			
 			vec3 lightDir = normalize(lights[a].pos - rays[i].origin);			
 			
 			lightRay = ray(rays[i].origin + lightDir * 0.001, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
@@ -339,7 +330,7 @@ void main()
 				} else {
 					k = 0;
 				}*/	
-				/*
+				
 				// Light attenuation
 				float d = length(lights[a].pos - rays[i].origin);
 				light += (lights[a].color * diffuse + lights[a].color * k) / d;
@@ -353,7 +344,7 @@ void main()
 				// I don't count self-intersections
 				//finalColor = vec3(0.2);	
 				//light -= vec3(0.1);				
-			}	*/				
+			}			
 		}
 		finalColor = lightRay.color + light;
 		
@@ -368,6 +359,8 @@ void main()
 	if(shadowed) {
 		//finalColor = vec3(0.1);
 	}
+	
+	finalColor += texColor;
 	//finalColor = vec3(imageLoad(meshTexture, storePos));				
 	//imageStore(outTexture, storePos, vec4(lights[0].color, 1.0));	
 	imageStore(outTexture, storePos, vec4(finalColor, 1.0));
