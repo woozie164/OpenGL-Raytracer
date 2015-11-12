@@ -8,6 +8,7 @@
 #include <random>
 #include <functional>
 #include "SOIL\src\SOIL.h"
+#include "OBJ.h"
 
 using namespace std;
 
@@ -191,6 +192,10 @@ int main() {
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
 	double lastTime = glfwGetTime();
+
+	Mesh swordMesh;
+	//swordMesh.LoadFromObjFile("sword/sword.obj");
+	swordMesh.LoadFromObjFile("C:/Users/woozie/Dropbox/3D-programmering/bth_logo_obj_tga/", "bth.obj"); 
 
 	while (!glfwWindowShouldClose(window)) {		
 		glClear(GL_COLOR_BUFFER_BIT);
