@@ -79,19 +79,20 @@ glm::vec3 RandomDir() {
 
 // Takes some position and texture coordiantes and moves them into an
 // Shader Storage Buffer Object (SSBO)
-GLuint UploadToSSBO(glm::vec3 * position,glm::vec2 * texCoord, unsigned int numVertices)
+GLuint UploadToSSBO(VertexData * vertexData, unsigned int numVertices)
 {
 	vector<float> data;
 	data.reserve(numVertices * 8);
 	for (unsigned int i = 0; i < numVertices; i++)
 	{
-		data.push_back(position[i].x);
-		data.push_back(position[i].y);
-		data.push_back(position[i].z);
+		
+		data.push_back(vertexData[i].point.x);
+		data.push_back(vertexData[i].point.y);
+		data.push_back(vertexData[i].point.z);
 		data.push_back(0.0);
 
-		data.push_back(texCoord[i].x);
-		data.push_back(texCoord[i].y);
+		data.push_back(vertexData[i].texCoord.x);
+		data.push_back(vertexData[i].texCoord.y);
 		data.push_back(0.0);
 		data.push_back(0.0);
 	}	
@@ -226,6 +227,7 @@ int main() {
 	Mesh swordMesh;
 	//swordMesh.LoadFromObjFile("sword/sword.obj");
 	swordMesh.LoadFromObjFile("C:/Users/woozie/Dropbox/3D-programmering/bth_logo_obj_tga/", "bth.obj"); 
+
 
 	double lastTime = glfwGetTime();
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
