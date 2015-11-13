@@ -79,7 +79,7 @@ glm::vec3 RandomDir() {
 
 // Takes some position and texture coordiantes and moves them into an
 // Shader Storage Buffer Object (SSBO)
-GLuint UploadToSSBO(VertexData * vertexData, unsigned int numVertices)
+GLuint UploadToSSBO(const VertexData * vertexData, unsigned int numVertices)
 {
 	vector<float> data;
 	data.reserve(numVertices * 8);
@@ -227,7 +227,8 @@ int main() {
 	Mesh swordMesh;
 	//swordMesh.LoadFromObjFile("sword/sword.obj");
 	swordMesh.LoadFromObjFile("C:/Users/woozie/Dropbox/3D-programmering/bth_logo_obj_tga/", "bth.obj"); 
-
+	GLuint swordData = UploadToSSBO(swordMesh.GetVertexData(0), swordMesh.GetVertexCount(0));
+	
 
 	double lastTime = glfwGetTime();
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -268,6 +269,7 @@ int main() {
 			glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);			
 			glBindImageTexture(1, tex_2d, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, swordData);
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_up"), 1, glm::value_ptr(camera.getUp()));
