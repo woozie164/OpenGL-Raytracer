@@ -77,6 +77,36 @@ glm::vec3 RandomDir() {
 	return normalize(glm::vec3(rng(), rng(), rng()));
 }
 
+// Takes some position and texture coordiantes and moves them into an
+// Shader Storage Buffer Object (SSBO)
+GLuint UploadToSSBO(glm::vec3 * position,glm::vec2 * texCoord, unsigned int numVertices)
+{
+	vector<float> data;
+	data.reserve(numVertices * 8);
+	for (unsigned int i = 0; i < numVertices; i++)
+	{
+		data.push_back(position[i].x);
+		data.push_back(position[i].y);
+		data.push_back(position[i].z);
+		data.push_back(0.0);
+
+		data.push_back(texCoord[i].x);
+		data.push_back(texCoord[i].y);
+		data.push_back(0.0);
+		data.push_back(0.0);
+	}	
+
+	// 3 floats for a vec3 + 1 float padding
+	// then 2 floats for a vec3 + 2 floats padding
+	GLuint vertexSize = sizeof(float) * 8;
+	GLuint ssbo = 0;
+	glGenBuffers(1, &ssbo);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, vertexSize, data.data(), GL_DYNAMIC_COPY);
+	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
+	return ssbo;
+}
+
 int main() {
 	glfwSetErrorCallback(glfw_error_callback);
 	glfwInit();
@@ -145,8 +175,10 @@ int main() {
 		+Use the barycentric coordinates to interpolate uv-coordinates
 		+Load a texture
 			+Check that the shader can use it by rendering it somewhere
-			-render it on the test triangle
-		-Load a mesh and render it
+			+render it on the test triangle
+		+Load a mesh 
+		-send mesh to GPU
+		-render mesh
 	Support diffuse and specular lighting with light attenuation.
 	*/
 
@@ -189,14 +221,14 @@ int main() {
 		printf("SOIL loading error: '%s'\n", SOIL_last_result());
 	}
 	Camera camera;
-	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
-	double lastTime = glfwGetTime();
 
 	Mesh swordMesh;
 	//swordMesh.LoadFromObjFile("sword/sword.obj");
 	swordMesh.LoadFromObjFile("C:/Users/woozie/Dropbox/3D-programmering/bth_logo_obj_tga/", "bth.obj"); 
 
+	double lastTime = glfwGetTime();
+	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	while (!glfwWindowShouldClose(window)) {		
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();

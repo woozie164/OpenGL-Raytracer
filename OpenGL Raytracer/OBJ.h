@@ -55,9 +55,20 @@ struct VertexGroup
 
 class Mesh
 {
+	/*
+	GLuint bufferHandle[1];
+	GLuint VAOHandle[1];
+	bool buffersInitialized = false;
+	*/
 	std::vector<VertexGroup> groups;
-	
+
+	void InitBuffers();
+
 public:
+	//~Mesh();
+
+	void Draw();
+
 	void LoadMaterialData(std::string filepath, std::vector<MeshMaterialData> & data);
 	void LoadFromObjFile(std::string dir, std::string filename);
 

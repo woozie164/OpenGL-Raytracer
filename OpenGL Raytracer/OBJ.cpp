@@ -1,4 +1,5 @@
 #include "OBJ.h"
+#include "glew-1.13.0\include\GL\glew.h"
 #include <fstream>
 #include <iostream>
 
@@ -196,3 +197,35 @@ void Mesh::LoadMaterialData(std::string filepath, vector<MeshMaterialData> & dat
 		}
 	}
 }
+/*
+// Getting a weird undeclared identifier issue here
+void Mesh::InitBuffers()
+{
+	// Maybe fix so multiple groups can be handled?
+	glGenBuffers(1, bufferHandle);
+	glBindBuffer(GL_ARRAY_BUFFER, bufferHandle[0]);
+	glBufferData(GL_ARRAY_BUFFER, GetVertexDataSize(0), GetVertexData(0), GL_STATIC_DRAW);
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glGenVertexArrays(1, VAOHandle);
+	glBindVertexArray(VAOHandle[0]);
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VertexData), (GLvoid *)(3 * sizeof(float)));
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(VertexData), (GLvoid *)(5 * sizeof(float)));
+	glBindVertexArray(0);
+}
+void Mesh::Draw()
+{
+	glBindVertexArray(VAOHandle[0]);
+	glDrawArrays(GL_TRIANGLES, 0, GetVertexCount(0));
+	glBindVertexArray(0);
+}
+Mesh::~Mesh()
+{
+	glDeleteBuffers(1, bufferHandle);
+	glDeleteVertexArrays(1, VAOHandle);
+}
+*/
