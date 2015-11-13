@@ -35,6 +35,7 @@ layout (rgba8, binding = 0) uniform image2D outTexture;
 layout (rgba8, binding = 1) uniform image2D meshTexture;
 layout (binding = 1) buffer ray_buffer { ray rays[]; };
 layout (binding = 2) buffer sword_buffer { vertex vertices[]; };
+uniform int num_vertices;
 
 uniform vec3 camera_pos;
 uniform vec3 camera_dir;
@@ -156,6 +157,9 @@ void trace(in out ray r) {
 	float t;
 	vec3 n;
 	
+	for(int i = 0; i < num_vertices; i++) {
+		
+	}
 	// Hardcoded geometry data (1 triangle)
 	vec3 x = vec3(-0.5f, -0.5f, 0.5f);
 	vec3 y = vec3(0.5f, -0.5f, 0.5f);

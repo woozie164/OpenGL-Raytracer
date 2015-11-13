@@ -179,6 +179,7 @@ int main() {
 			+render it on the test triangle
 		+Load a mesh 
 		-send mesh to GPU
+			- sent some data, but I think it's not all of it. Seems like I need to send indicies as well. The OBJ-file has normals as well, but I don't have to send them.
 		-render mesh
 	Support diffuse and specular lighting with light attenuation.
 	*/
@@ -227,7 +228,7 @@ int main() {
 	Mesh swordMesh;
 	//swordMesh.LoadFromObjFile("sword/sword.obj");
 	swordMesh.LoadFromObjFile("C:/Users/woozie/Dropbox/3D-programmering/bth_logo_obj_tga/", "bth.obj"); 
-	GLuint swordData = UploadToSSBO(swordMesh.GetVertexData(0), swordMesh.GetVertexCount(0));
+	GLuint swordDataHandle = UploadToSSBO(swordMesh.GetVertexData(0), swordMesh.GetVertexCount(0));
 	
 
 	double lastTime = glfwGetTime();
@@ -269,7 +270,7 @@ int main() {
 			glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);			
 			glBindImageTexture(1, tex_2d, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);
-			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, swordData);
+			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, swordDataHandle);
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_up"), 1, glm::value_ptr(camera.getUp()));
@@ -278,6 +279,7 @@ int main() {
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_position"), 1, glm::value_ptr(glm::vec3(-2.0f, -2.0f, -2.0f)));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
 
+			glUniform1i(glGetUniformLocation(currentShaderProg, "num_vertices"), swordMesh.GetVertexCount(0));
 			glUniform1i(glGetUniformLocation(currentShaderProg, "num_lights"), num_lights);
 			
 			glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
