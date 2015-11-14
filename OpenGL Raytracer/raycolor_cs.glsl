@@ -265,8 +265,6 @@ void main()
 	vec3 light = vec3(0.0);
 	vec3 texColor = vec3(0.0);
 	
-	imageStore(outTexture, storePos, vec4(rays[i].color, 1.0));
-	return;
 	if(rays[i].primitiveID != -1) {
 		int lightPrimitiveID = rays[i].primitiveID;
 		if(lightPrimitiveID == 0) {
@@ -282,7 +280,10 @@ void main()
 			float u, v, w;
 			CartesianToBarycentricCoord(x, y, z, p, u, v, w);
 			vec2 uv = vec2(u * uv_x + v * uv_y + w * uv_z);
-			ivec2 pixelCoord = ivec2(uv * 256);			
+			
+			// Hardcoded texture size
+			ivec2 meshTexSize = imageSize(meshTexture);			
+			ivec2 pixelCoord = ivec2(uv * meshTexSize);			
 			texColor = vec3(imageLoad(meshTexture, pixelCoord));
 			
 			// Should be able to use a sampler2D, but I always get a black triangle
@@ -293,7 +294,8 @@ void main()
 			
 			// Gives a triangle with 3 different colors. Looks right IMO.
 			//lightRay.color = vec3(u, v, w);					
-		}				
+		}	
+/*		
 		for(int a = 0; a < num_lights; a++) 
 		{			
 			// No need to calculate the intersection point, because
@@ -309,7 +311,7 @@ void main()
 			// primitive it was created from, so if this is true
 			// it means that the light ray didn't intersect with some other primitive 
 			//if(lightPrimitiveID == lightRay.primitiveID) {		
-
+			
 			// if t is set to infinity, there's were no collision between
 			// the lightRay and the geometry
 			if(lightRay.t == 1.0 / 0.0) {				
@@ -320,25 +322,19 @@ void main()
 				// Makes the dark side of the sphere completely dark
 				float diffuse = dot(rays[i].n, lightDir);
 				
-				float k;					
-				//if(diffuse > 0) {
-					// view vector, i.e. the unit vector from the surface point to the eye position
-					vec3 v = normalize(camera_pos - rays[i].origin);			
-					
-					// The incident vector
-					vec3 I = lightDir * -1;		
-					
-					// reflection vector
-					vec3 r = normalize(reflect(I, rays[i].n));
-					
-					//k = max(dot(v, reflect(I, rays[i].dir)), 0);
-					k = pow(max(dot(v, r), 0), 30);
-					//k = max(dot(v, rays[i].dir), 0);
-				/*	
-				} else {
-					k = 0;
-				}*/	
+				// view vector, i.e. the unit vector from the surface point to the eye position
+				vec3 v = normalize(camera_pos - rays[i].origin);			
 				
+				// The incident vector
+				vec3 I = lightDir * -1;		
+				
+				// reflection vector
+				vec3 r = normalize(reflect(I, rays[i].n));
+				
+				//k = max(dot(v, reflect(I, rays[i].dir)), 0);
+				float k = pow(max(dot(v, r), 0), 30);
+				//k = max(dot(v, rays[i].dir), 0);
+
 				// Light attenuation
 				float d = length(lights[a].pos - rays[i].origin);
 				light += (lights[a].color * diffuse + lights[a].color * k) / d;
@@ -354,8 +350,9 @@ void main()
 				//light -= vec3(0.1);				
 			}			
 		}
-		finalColor = lightRay.color + light;
 		
+		finalColor = lightRay.color + light;
+		*/
 		// This makes things look a lot buggier for some reason.
 		// Should give the same result as the other one.
 		//finalColor += lightRay.color + light;
