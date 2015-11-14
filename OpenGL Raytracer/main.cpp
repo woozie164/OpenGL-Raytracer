@@ -103,7 +103,7 @@ GLuint UploadToSSBO(const VertexData * vertexData, unsigned int numVertices)
 	GLuint ssbo = 0;
 	glGenBuffers(1, &ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, vertexSize, data.data(), GL_DYNAMIC_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, vertexSize * numVertices, data.data(), GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	return ssbo;
 }
