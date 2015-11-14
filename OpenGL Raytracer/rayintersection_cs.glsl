@@ -156,6 +156,7 @@ void trace(in out ray r) {
 	float t_min = 1.0 / 0.0;	
 	float t;
 	vec3 n;
+	int triangleID = 0;
 	
 	for(int i = 0; i < num_vertices; i += 3) {
 		vertex x = vertices[i];
@@ -164,7 +165,7 @@ void trace(in out ray r) {
 		if(RayVsTriangle(r.origin, r.dir, x.pos, y.pos, z.pos, t)) {
 			if(t > 0 && t < t_min) {
 				t_min = t;
-				r.primitiveID = 0;
+				r.primitiveID = triangleID;
 				r.color = vec3(0.0);
 				
 				// Calculate the surface normal of the triangle			
@@ -173,30 +174,11 @@ void trace(in out ray r) {
 				n = normalize(cross(u, v));
 			}
 		}
+		triangleID++;
 	}
-	// Hardcoded geometry data (1 triangle)
-	
-	vec3 x = vec3(-0.5f, -0.5f, 0.5f);
-	vec3 y = vec3(0.5f, -0.5f, 0.5f);
-	vec3 z = vec3(0.5f, 0.5f, 0.5f);
 	
 	// And 1 sphere
 	sphere my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);	
-	
-	if(RayVsTriangle(r.origin, r.dir, x, y, z, t)) {
-		if(t > 0 && t < t_min && r.primitiveID != 0) {
-			t_min = t;
-			r.primitiveID = 0;
-			r.color = vec3(0.0, 1.0, 0.0);
-			
-			// Calculate the surface normal of the triangle			
-			vec3 u = x - z;
-			vec3 v = y - z;
-			n = normalize(cross(u, v));
-		}
-	}	
-	
-	
 	
 	float t0, t1;
 	if(intersectSphere(r.origin, r.dir, my_sphere, t0, t1)){

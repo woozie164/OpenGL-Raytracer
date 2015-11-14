@@ -266,22 +266,26 @@ void main()
 	vec3 texColor = vec3(0.0);
 	
 	if(rays[i].primitiveID != -1) {
-		int lightPrimitiveID = rays[i].primitiveID;
-		if(lightPrimitiveID == 0) {
+		int lightPrimitiveID = rays[i].primitiveID;		
+		
+			vertex a = vertices[lightPrimitiveID * 3];
+			vertex b = vertices[lightPrimitiveID * 3 + 1];
+			vertex c = vertices[lightPrimitiveID * 3 + 2];
+			/*
 			// Some hardcoded uv-coordinates
 			vec2 uv_x = vec2(0.0);
 			vec2 uv_y = vec2(0.0, 1.0);
 			vec2 uv_z = vec2(1.0, 1.0);	
-			vec3 p = rays[i].origin;
+			
 			// Hardcoded geometry data (1 triangle)
 			vec3 x = vec3(-0.5f, -0.5f, 0.5f);
 			vec3 y = vec3(0.5f, -0.5f, 0.5f);
 			vec3 z = vec3(0.5f, 0.5f, 0.5f);
+			*/			
 			float u, v, w;
-			CartesianToBarycentricCoord(x, y, z, p, u, v, w);
-			vec2 uv = vec2(u * uv_x + v * uv_y + w * uv_z);
-			
-			// Hardcoded texture size
+			CartesianToBarycentricCoord(a.pos, b.pos, c.pos, rays[i].origin, u, v, w);
+			vec2 uv = vec2(u * a.texCoord + v * b.texCoord + w * c.texCoord);
+						
 			ivec2 meshTexSize = imageSize(meshTexture);			
 			ivec2 pixelCoord = ivec2(uv * meshTexSize);			
 			texColor = vec3(imageLoad(meshTexture, pixelCoord));
@@ -294,7 +298,7 @@ void main()
 			
 			// Gives a triangle with 3 different colors. Looks right IMO.
 			//lightRay.color = vec3(u, v, w);					
-		}	
+		
 /*		
 		for(int a = 0; a < num_lights; a++) 
 		{			
