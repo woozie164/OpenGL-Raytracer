@@ -110,7 +110,14 @@ void Mesh::LoadFromObjFile(std::string dir, std::string filename)
 			{
 				if(it->Name == mtlname)
 				{
-					groups.back().materialData = *it;
+					if (groups.size() != 0) {
+						groups.back().materialData = *it;
+					} else {
+						VertexGroup g;
+						g.name = "default";
+						g.materialData = *it;
+						groups.push_back(g);
+					}
 					break;
 				}
 			}					

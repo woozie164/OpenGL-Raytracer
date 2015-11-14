@@ -230,11 +230,10 @@ int main() {
 
 
 	Mesh swordMesh;
-	//swordMesh.LoadFromObjFile("sword/sword.obj");
-	swordMesh.LoadFromObjFile("C:/Users/woozie/Dropbox/3D-programmering/bth_logo_obj_tga/", "bth.obj"); 
+	swordMesh.LoadFromObjFile("sword/", "sword.obj");
+	//swordMesh.LoadFromObjFile("C:/Users/woozie/Dropbox/3D-programmering/bth_logo_obj_tga/", "bth.obj"); 
 	GLuint swordDataHandle = UploadToSSBO(swordMesh.GetVertexData(0), swordMesh.GetVertexCount(0));
 	
-
 	double lastTime = glfwGetTime();
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	while (!glfwWindowShouldClose(window)) {		
