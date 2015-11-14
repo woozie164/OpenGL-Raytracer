@@ -178,13 +178,9 @@ int main() {
 			+Check that the shader can use it by rendering it somewhere
 			+render it on the test triangle
 		+Load a mesh 
-		-send mesh to GPU
-			- sent some data, but I think it's not all of it. Seems like I need 
-			to send indicies as well. The OBJ-file has normals as well, but I don't have to send them. 
-			Actually, my Mesh doesn't contain indices. Pretty sure I'm  duplicating 
-			vertex data so I don't have indices.
-
-		-render mesh
+		+send mesh to GPU			
+		+render mesh
+		-render mesh with texture
 	Support diffuse and specular lighting with light attenuation.
 	*/
 
