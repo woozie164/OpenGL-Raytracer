@@ -265,6 +265,8 @@ void main()
 	vec3 light = vec3(0.0);
 	vec3 texColor = vec3(0.0);
 	
+	imageStore(outTexture, storePos, vec4(rays[i].color, 1.0));
+	return;
 	if(rays[i].primitiveID != -1) {
 		int lightPrimitiveID = rays[i].primitiveID;
 		if(lightPrimitiveID == 0) {
