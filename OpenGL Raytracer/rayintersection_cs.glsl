@@ -157,7 +157,7 @@ void trace(in out ray r) {
 	float t;
 	vec3 n;
 	
-	for(int i = 0; i < num_vertices / 3; i += 3) {
+	for(int i = 0; i < num_vertices; i += 3) {
 		vertex x = vertices[i];
 		vertex y = vertices[i+1];
 		vertex z = vertices[i+2];
