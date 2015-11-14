@@ -214,6 +214,7 @@ int main() {
 
 	GLuint tex_2d = SOIL_load_OGL_texture
 		(
+		//"sword/sword.dds",
 		"img_test.png",
 		SOIL_LOAD_AUTO,
 		SOIL_CREATE_NEW_ID,
