@@ -266,40 +266,28 @@ void main()
 	vec3 texColor = vec3(0.0);
 	
 	if(rays[i].primitiveID != -1) {
-		int lightPrimitiveID = rays[i].primitiveID;		
+		int lightPrimitiveID = rays[i].primitiveID;				
+		vertex a = vertices[lightPrimitiveID * 3];
+		vertex b = vertices[lightPrimitiveID * 3 + 1];
+		vertex c = vertices[lightPrimitiveID * 3 + 2];
+	
+		float u, v, w;
+		CartesianToBarycentricCoord(a.pos, b.pos, c.pos, rays[i].origin, u, v, w);
+		vec2 uv = vec2(u * a.texCoord + v * b.texCoord + w * c.texCoord);
+					
+		ivec2 meshTexSize = imageSize(meshTexture);			
+		ivec2 pixelCoord = ivec2(uv * meshTexSize);			
+		texColor = vec3(imageLoad(meshTexture, pixelCoord));
 		
-			vertex a = vertices[lightPrimitiveID * 3];
-			vertex b = vertices[lightPrimitiveID * 3 + 1];
-			vertex c = vertices[lightPrimitiveID * 3 + 2];
-			/*
-			// Some hardcoded uv-coordinates
-			vec2 uv_x = vec2(0.0);
-			vec2 uv_y = vec2(0.0, 1.0);
-			vec2 uv_z = vec2(1.0, 1.0);	
-			
-			// Hardcoded geometry data (1 triangle)
-			vec3 x = vec3(-0.5f, -0.5f, 0.5f);
-			vec3 y = vec3(0.5f, -0.5f, 0.5f);
-			vec3 z = vec3(0.5f, 0.5f, 0.5f);
-			*/			
-			float u, v, w;
-			CartesianToBarycentricCoord(a.pos, b.pos, c.pos, rays[i].origin, u, v, w);
-			vec2 uv = vec2(u * a.texCoord + v * b.texCoord + w * c.texCoord);
-						
-			ivec2 meshTexSize = imageSize(meshTexture);			
-			ivec2 pixelCoord = ivec2(uv * meshTexSize);			
-			texColor = vec3(imageLoad(meshTexture, pixelCoord));
-			
-			// Should be able to use a sampler2D, but I always get a black triangle
-			//lightRay.color = vec3(texture(meshSampler, uv));				
-			
-			// Gives the texture as a "reflection" inside the triangle
-			//lightRay.color = vec3(imageLoad(meshTexture, storePos));				
-			
-			// Gives a triangle with 3 different colors. Looks right IMO.
-			//lightRay.color = vec3(u, v, w);					
+		// Should be able to use a sampler2D, but I always get a black triangle
+		//lightRay.color = vec3(texture(meshSampler, uv));				
 		
-/*		
+		// Gives the texture as a "reflection" inside the triangle
+		//lightRay.color = vec3(imageLoad(meshTexture, storePos));				
+		
+		// Gives a triangle with 3 different colors. Looks right IMO.
+		//lightRay.color = vec3(u, v, w);					
+		
 		for(int a = 0; a < num_lights; a++) 
 		{			
 			// No need to calculate the intersection point, because
@@ -356,7 +344,7 @@ void main()
 		}
 		
 		finalColor = lightRay.color + light;
-		*/
+		
 		// This makes things look a lot buggier for some reason.
 		// Should give the same result as the other one.
 		//finalColor += lightRay.color + light;
