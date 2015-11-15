@@ -140,6 +140,7 @@ int main() {
 	GLuint raytracerprog = compileShaderProgram(shaders);	
 
 	shaders.clear();
+	loadShader("definitions.glsl", SHADER_HEADER, shaders);
 	loadShader("raygen_cs.glsl", GL_COMPUTE_SHADER, shaders);
 	GLuint raygenprog = compileShaderProgram(shaders);	
 
