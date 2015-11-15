@@ -102,7 +102,7 @@ void trace(in out ray r) {
 	float t_min = 1.0 / 0.0;	
 	float t;
 	vec3 n;
-	int triangleID = 0;
+	int primitiveID = 0;
 	
 	for(int i = 0; i < num_vertices; i += 3) {
 		vertex x = vertices[i];
@@ -111,7 +111,7 @@ void trace(in out ray r) {
 		if(RayVsTriangle(r.origin, r.dir, x.pos, y.pos, z.pos, t)) {
 			if(t > 0 && t < t_min) {
 				t_min = t;
-				r.primitiveID = triangleID;
+				r.primitiveID = primitiveID;
 				r.color = vec3(0.0);
 				
 				// Calculate the surface normal of the triangle			
@@ -120,7 +120,7 @@ void trace(in out ray r) {
 				n = normalize(cross(u, v));
 			}
 		}
-		triangleID++;
+		primitiveID++;
 	}
 	
 	// And 1 sphere
@@ -129,9 +129,9 @@ void trace(in out ray r) {
 	float t0, t1;
 	if(intersectSphere(r.origin, r.dir, my_sphere, t0, t1)){
 		t = min(t0, t1);
-		if(t > 0 && t < t_min && r.primitiveID != 1) {
+		if(t > 0 && t < t_min) {
 			t_min = t;
-			r.primitiveID = 1;
+			r.primitiveID = primitiveID + 1;
 			r.color = vec3(0.0, 0.0, 1.0);
 			
 			// First calculate the intersection point of the ray and the sphere
@@ -146,9 +146,9 @@ void trace(in out ray r) {
 	
 	if(intersectSphere(r.origin, r.dir, my_sphere2, t0, t1)){
 		t = min(t0, t1);
-		if(t > 0 && t < t_min && r.primitiveID != 3) {
+		if(t > 0 && t < t_min) {
 			t_min = t;
-			r.primitiveID = 3;
+			r.primitiveID = primitiveID + 2;
 			r.color = vec3(0.0, 0.3, 0.3);
 			
 			// First calculate the intersection point of the ray and the sphere
