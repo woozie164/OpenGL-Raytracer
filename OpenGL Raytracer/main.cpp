@@ -109,12 +109,59 @@ GLuint UploadToSSBO(const VertexData * vertexData, unsigned int numVertices)
 	return ssbo;
 }
 
+void CompileRaytracerShader(int threadGroupSize, GLuint & raygenprog,
+	GLuint & rayintersectprog, GLuint & raycolorprog)
+{
+	string threadGrpShaderFile;
+	switch (threadGroupSize)
+	{
+	case 16:
+		threadGrpShaderFile = "threadGrpSize16.glsl";
+		break;
+	case 32:
+		threadGrpShaderFile = "threadGrpSize32.glsl";
+		break;
+	case 64:
+		threadGrpShaderFile = "threadGrpSize64.glsl";
+		break;
+	default:
+		throw("Unknown option threadGroupSize = " + threadGroupSize);
+		break;
+	}
+
+	vector<ShaderInfo> shaders;	
+	loadShader(threadGrpShaderFile, SHADER_HEADER, shaders);
+	loadShader("definitions.glsl", SHADER_HEADER, shaders);
+	loadShader("raygen_cs.glsl", GL_COMPUTE_SHADER, shaders);
+	raygenprog = compileShaderProgram(shaders);
+
+	shaders.clear();
+	loadShader(threadGrpShaderFile, SHADER_HEADER, shaders);
+	loadShader("definitions.glsl", SHADER_HEADER, shaders);
+	loadShader("trace.glsl", SHADER_HEADER, shaders);
+	loadShader("rayintersect_cs.glsl", GL_COMPUTE_SHADER, shaders);	
+	rayintersectprog = compileShaderProgram(shaders);
+
+	shaders.clear();
+	loadShader(threadGrpShaderFile, SHADER_HEADER, shaders);
+	loadShader("definitions.glsl", SHADER_HEADER, shaders);
+	loadShader("trace.glsl", SHADER_HEADER, shaders);
+	loadShader("raycol_cs.glsl", GL_COMPUTE_SHADER, shaders);	
+	raycolorprog = compileShaderProgram(shaders);
+}
+
 int main() {
+	int windowWidth = 800;
+	int windowHeight = 800;
+	int threadGrpSize = 32;
+	int traceDepth = 2;
+	int numLights = 2;
+
 	glfwSetErrorCallback(glfw_error_callback);
 	glfwInit();
 
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-	GLFWwindow * window = glfwCreateWindow(800, 800, "OpenGL Raytracer", 0, 0);
+	GLFWwindow * window = glfwCreateWindow(windowWidth, windowHeight, "OpenGL Raytracer", 0, 0);
 	if (!window) {
 		glfwTerminate();
 		return -1;
@@ -128,42 +175,16 @@ int main() {
 		glDebugMessageCallback(openglCallbackFunction, nullptr);
 	} else {
 		cout << "glDebugMessageCallback not available" << endl;
-	}
-	
-	vector<ShaderInfo> shaders;
-	loadShader("simple_vert.glsl", GL_VERTEX_SHADER, shaders);
-	loadShader("simple_frag.glsl", GL_FRAGMENT_SHADER, shaders);
-	GLuint simple = compileShaderProgram(shaders);
-	glUseProgram(simple);
-	shaders.clear();
+	}		
 
-	loadShader("raytracer_cs.glsl", GL_COMPUTE_SHADER, shaders);
-	GLuint raytracerprog = compileShaderProgram(shaders);	
-
-	shaders.clear();
-	loadShader("definitions.glsl", SHADER_HEADER, shaders);
-	loadShader("raygen_cs.glsl", GL_COMPUTE_SHADER, shaders);
-	GLuint raygenprog = compileShaderProgram(shaders);	
-
-	shaders.clear();
-	loadShader("definitions.glsl", SHADER_HEADER, shaders);
-	loadShader("trace.glsl", SHADER_HEADER, shaders);
-	loadShader("rayintersect_cs.glsl", GL_COMPUTE_SHADER, shaders);
-	//loadShader("rayintersection_cs.glsl", GL_COMPUTE_SHADER, shaders);
-	GLuint rayintersectprog = compileShaderProgram(shaders);
-
-	shaders.clear();
-	loadShader("definitions.glsl", SHADER_HEADER, shaders);
-	loadShader("trace.glsl", SHADER_HEADER, shaders);
-	loadShader("raycol_cs.glsl", GL_COMPUTE_SHADER, shaders);
-	//loadShader("raycolor_cs.glsl", GL_COMPUTE_SHADER, shaders);
-	GLuint raycolorprog = compileShaderProgram(shaders);	
+	GLuint raygenprog, rayintersectprog, raycolorprog;
+	CompileRaytracerShader(threadGrpSize, raygenprog, rayintersectprog, raycolorprog);
 	
 	// Create a texture that the computer shader will render into
 	GLuint tex;
 	glGenTextures(1, &tex);
 	glBindTexture(GL_TEXTURE_2D, tex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 800, 800, 0, GL_RGBA, GL_FLOAT, nullptr);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
 
 	GLuint framebuffer;
 	glGenFramebuffers(1, &framebuffer);	
@@ -199,7 +220,7 @@ int main() {
 	GLuint ssbo = 0;
 	glGenBuffers(1, &ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeOfRay * 800 * 800, nullptr, GL_DYNAMIC_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeOfRay * windowWidth * windowHeight, nullptr, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 	
 	GLuint lightBuffer = 0;
@@ -219,7 +240,7 @@ int main() {
 		-6.3, -6.75, -4.06,		0.0,	0.0, 0.0, 1.0,	0.0,
 		2.16, 1.63, 2.22,		0.0,	0.5, 0.0, 0.5,	0.0,
 	};
-	int num_lights = 2;
+	
 	// 8 floats per light (2 of those flots are padding) and 10 lights in total
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);			
 
@@ -243,6 +264,7 @@ int main() {
 	swordMesh.LoadFromObjFile("sword/", "sword.obj");
 	//swordMesh.LoadFromObjFile("C:/Users/woozie/Dropbox/3D-programmering/bth_logo_obj_tga/", "bth.obj"); 
 	GLuint swordDataHandle = UploadToSSBO(swordMesh.GetVertexData(0), swordMesh.GetVertexCount(0));
+	int numVertices = swordMesh.GetVertexCount(0);
 	
 	double lastTime = glfwGetTime();
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
@@ -267,7 +289,7 @@ int main() {
 			/*
 			// Make the lights rotate around the sword
 			float s = 0;
-			for (int i = 0; i < num_lights * 8; i += 8)
+			for (int i = 0; i < numLights * 8; i += 8)
 			{
 				glm::vec2 pos1(0.1f, 0.0f);
 				glm::vec2 pos2(0.0f, 0.1f);				
@@ -280,7 +302,7 @@ int main() {
 			*/
 			
 			// Give the light a new position in a random direction
-			for (int i = 0; i < num_lights * 8; i += 8)
+			for (int i = 0; i < numLights * 8; i += 8)
 			{
 				glm::vec3 lightPos(lightData[i], lightData[i + 1], lightData[i + 2]);			
 				lightPos += RandomDir() * 1.0f;
@@ -290,7 +312,7 @@ int main() {
 			}
 			
 		}
-		int passes = 2;
+		
 		/* Raytracer stuff */	
 		for (int i = 0; i < 3; i++)
 		{
@@ -300,11 +322,11 @@ int main() {
 			case 0: currentShaderProg = raygenprog; break;
 			case 1: currentShaderProg = rayintersectprog; break;								
 			case 2: 
-				currentShaderProg = raycolorprog; 
-				// One entire pass done, now start over again with the intersection stage
-				if (passes > 1) {
+				currentShaderProg = raycolorprog; 				
+				if (traceDepth > 1) {
+					// One entire pass done, now start over again with the intersection stage
 					i = 0;
-					passes--; 
+					traceDepth--; 
 				}
 				break;
 			}
@@ -322,8 +344,8 @@ int main() {
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_position"), 1, glm::value_ptr(glm::vec3(-2.0f, -2.0f, -2.0f)));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
 
-			glUniform1i(glGetUniformLocation(currentShaderProg, "num_vertices"), swordMesh.GetVertexCount(0));
-			glUniform1i(glGetUniformLocation(currentShaderProg, "num_lights"), num_lights);
+			glUniform1i(glGetUniformLocation(currentShaderProg, "num_vertices"), numVertices);
+			glUniform1i(glGetUniformLocation(currentShaderProg, "num_lights"), numLights);
 			
 			glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
 			glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);
@@ -333,32 +355,16 @@ int main() {
 
 			// Workgroup size is 32 x 1
 			// Dispatch 25 * 32 = 800
-			glDispatchCompute(25, 800, 1);
+			// x * threadGrpSize = windowWidth
+			glDispatchCompute(windowWidth / threadGrpSize, 800, 1);
 			glMemoryBarrier(GL_ALL_BARRIER_BITS);
-		}
-		
-		
-		/* Rasterizer code 
-		glUniformMatrix4fv(glGetUniformLocation(simple, "projection"), 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
-		glUniformMatrix4fv(glGetUniformLocation(simple, "view"), 1, GL_FALSE, glm::value_ptr(camera.getViewMatrix()));
-		
-		
-		glBegin(GL_TRIANGLES);
-		glVertex3f(-0.5f, -0.5f, 1.0f);
-		glVertex3f(0.5f, -0.5f, 1.0f);
-		glVertex3f(0.5f, 0.5f, 1.0f);
-		
-		glVertex3f(-0.5f, -0.5f, 0.5f);
-		glVertex3f(0.5f, -0.5f, 0.5f);
-		glVertex3f(0.5f, 0.5f, 0.5f);
-		
-		glEnd();
-		*/
+		}	
 		
 		//glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		glBlitFramebuffer(0, 0, 800, 800, 0, 0, 800, 800, GL_COLOR_BUFFER_BIT, GL_NEAREST);
+		glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight,
+			GL_COLOR_BUFFER_BIT, GL_NEAREST);
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
