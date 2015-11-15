@@ -31,5 +31,12 @@ public:
 	glm::vec3 getDirection() { return direction; }
 	glm::vec3 getRight()	 { return right; }
 	glm::vec3 getUp()		 { return up; }
+	float getVerticalAngle() { return verticalAngle; }
+	float getHorizontalAngle() { return horizontalAngle; }
+
+	void setPosition(float x, float y, float z) { cameraPosition = glm::vec3(x, y, z); }
+	void setPosition(glm::vec3 pos) { cameraPosition = pos; }
+	void setVerticalAngle(float angle) { verticalAngle = angle; }
+	void setHorizontalAngle(float angle) { horizontalAngle= angle; }
 };
 

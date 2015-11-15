@@ -218,7 +218,7 @@ int main() {
 		-6.3, -6.75, -4.06,		0.0,	0.0, 0.0, 1.0,	0.0,
 		2.16, 1.63, 2.22,		0.0,	0.5, 0.0, 0.5,	0.0,
 	};
-	int num_lights = 10;
+	int num_lights = 1;
 	// 8 floats per light (2 of those flots are padding) and 10 lights in total
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);			
 
@@ -234,7 +234,9 @@ int main() {
 		printf("SOIL loading error: '%s'\n", SOIL_last_result());
 	}
 	Camera camera;
-
+	camera.setPosition(2.77904, 0.594951, -1.95046);
+	camera.setVerticalAngle(24.82);
+	camera.setHorizontalAngle(-82.44);
 
 	Mesh swordMesh;
 	swordMesh.LoadFromObjFile("sword/", "sword.obj");
@@ -246,6 +248,13 @@ int main() {
 	while (!glfwWindowShouldClose(window)) {		
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
+
+		if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) { 			
+			cout << "Camera pos: " << camera.getPosition().x << " "
+				<< camera.getPosition().y << " " << camera.getPosition().z << endl;
+
+			cout << "Camera angles: " << camera.getVerticalAngle() << " " << camera.getHorizontalAngle() << endl;
+		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
