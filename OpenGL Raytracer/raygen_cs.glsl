@@ -1,6 +1,8 @@
 void main(void) 
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
+	if(storePos.x > windowWidth) return;
+	
 	float halfWindowWidth = windowWidth / 2.0f;
 	float halfWindowHeight = windowHeight / 2.0f;
 	float dx = (storePos.x - halfWindowWidth) / halfWindowWidth; 

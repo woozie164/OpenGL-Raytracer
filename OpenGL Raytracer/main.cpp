@@ -353,13 +353,13 @@ int main() {
 			glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
 			glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);
 			// Returns 0, but I was expecting 2 because of the layout (binding = 2) statement ...
-			GLuint test = glGetUniformBlockIndex(currentShaderProg, "LightsBuffer");
-			glBindBufferBase(GL_UNIFORM_BUFFER, test, lightBuffer);
+			//GLuint test = glGetUniformBlockIndex(currentShaderProg, "LightsBuffer");
+			glBindBufferBase(GL_UNIFORM_BUFFER, glGetUniformBlockIndex(currentShaderProg, "LightsBuffer"), lightBuffer);
 
 			// Workgroup size is 32 x 1
 			// Dispatch 25 * 32 = 800
-			// x * threadGrpSize = windowWidth
-			glDispatchCompute(ceil(windowWidth / threadGrpSize), windowHeight, 1);
+			// x * threadGrpSize = windowWidth			
+			glDispatchCompute(ceil(windowWidth / (float)threadGrpSize), windowHeight, 1);
 			glMemoryBarrier(GL_ALL_BARRIER_BITS);
 		}	
 		
