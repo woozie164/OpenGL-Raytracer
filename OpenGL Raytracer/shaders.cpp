@@ -6,7 +6,7 @@ using namespace std;
 - Add support for headers
 */
 
-//#define PRINT_SHADER_SRC_ON_ERROR;
+//#define PRINT_SHADER_SRC_ON_ERROR
 
 void loadShader(std::string filename, GLenum shaderType, vector<ShaderInfo> & shaders)
 {
