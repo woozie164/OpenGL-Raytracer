@@ -222,6 +222,8 @@ int main(int argc, char * argv) {
 		+render mesh
 		+render mesh with texture
 		-make things pretty
+			-lightning is kinda ugly
+			-reflections broken. Works in 103b74e though.
 		-do performance analysis
 		-write report on implementation and performance analysis
 	Support diffuse and specular lighting with light attenuation.
