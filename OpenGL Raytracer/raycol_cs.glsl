@@ -21,7 +21,7 @@ void CartesianToBarycentricCoord(vec3 a, vec3 b, vec3 c,
 void main()
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
-	int i = storePos.x + storePos.y * 800;
+	int i = storePos.x + storePos.y * windowHeight;
 	// Load the current pixel color, because it might contain intermediate
 	// color calculations
 	vec3 finalColor = vec3(imageLoad(outTexture, storePos));

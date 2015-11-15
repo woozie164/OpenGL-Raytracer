@@ -151,8 +151,8 @@ void CompileRaytracerShader(int threadGroupSize, GLuint & raygenprog,
 }
 
 int main() {
-	int windowWidth = 800;
-	int windowHeight = 800;
+	int windowWidth = 400;
+	int windowHeight = 400;
 	int threadGrpSize = 32;
 	int traceDepth = 2;
 	int numLights = 2;
@@ -340,6 +340,9 @@ int main() {
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_up"), 1, glm::value_ptr(camera.getUp()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_right"), 1, glm::value_ptr(camera.getRight()));			
+
+			glUniform1i(glGetUniformLocation(currentShaderProg, "windowWidth"), windowWidth);
+			glUniform1i(glGetUniformLocation(currentShaderProg, "windowHeight"), windowHeight);
 			
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_position"), 1, glm::value_ptr(glm::vec3(-2.0f, -2.0f, -2.0f)));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
@@ -356,7 +359,7 @@ int main() {
 			// Workgroup size is 32 x 1
 			// Dispatch 25 * 32 = 800
 			// x * threadGrpSize = windowWidth
-			glDispatchCompute(windowWidth / threadGrpSize, 800, 1);
+			glDispatchCompute(ceil(windowWidth / threadGrpSize), windowHeight, 1);
 			glMemoryBarrier(GL_ALL_BARRIER_BITS);
 		}	
 		

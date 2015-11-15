@@ -42,6 +42,9 @@ uniform vec3 camera_dir;
 uniform vec3 camera_up;
 uniform vec3 camera_right;
 
+uniform int windowWidth;
+uniform int windowHeight;
+
 uniform int num_lights;
 layout (binding = 0) uniform LightsBuffer {
  light lights[10];
