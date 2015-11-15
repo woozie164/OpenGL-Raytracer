@@ -10,6 +10,8 @@
 #include <functional>
 #include "SOIL\src\SOIL.h"
 #include "OBJ.h"
+#include "OpenGLTimer.h"
+#include <fstream>
 
 using namespace std;
 
@@ -85,8 +87,7 @@ GLuint UploadToSSBO(const VertexData * vertexData, unsigned int numVertices)
 	vector<float> data;
 	data.reserve(numVertices * 8);
 	for (unsigned int i = 0; i < numVertices; i++)
-	{
-		
+	{		
 		data.push_back(vertexData[i].point.x);
 		data.push_back(vertexData[i].point.y);
 		data.push_back(vertexData[i].point.z);
@@ -150,7 +151,17 @@ void CompileRaytracerShader(int threadGroupSize, GLuint & raygenprog,
 	raycolorprog = compileShaderProgram(shaders);
 }
 
-int main() {
+void WriteBenchmarkResultsToCSVFile(int threadGrpSize, int screenWidth, int screenHeight,
+	int traceDepth, int numLights, int numTriangles, int rayCreationTime, int intersectionTime, int colorTime)
+{	
+	fstream f("benchmarkresults.csv", ios::out | ios::app);
+	//f << "Thread group size,Screen resolution,Trace depth,Number of lights,Number of triangles,Ray Creation Time(ms),Intersection Time(ms),Color Time(ms),Total time (ms)\n";
+	f << threadGrpSize << ',' << screenWidth << 'x' << screenHeight << ',' << traceDepth << ','
+		<< numLights << ',' << numTriangles << ',' << rayCreationTime << ',' << intersectionTime << ',' 
+		<< colorTime << ',' << rayCreationTime + intersectionTime + colorTime << endl;
+}
+
+int main(int argc, char * argv) {
 	int windowWidth = 400;
 	int windowHeight = 400;
 	int threadGrpSize = 32;
@@ -269,6 +280,7 @@ int main() {
 	double lastTime = glfwGetTime();
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	while (!glfwWindowShouldClose(window)) {		
+	//for (int frame = 0; frame < 10; frame++) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
 
@@ -312,10 +324,12 @@ int main() {
 			}
 			
 		}
-		
+		vector<int> time(3);
 		/* Raytracer stuff */	
 		for (int i = 0; i < 3; i++)
 		{
+			OpenGLTimer timer;
+			timer.Start();
 			GLuint currentShaderProg;
 			switch (i) 
 			{		
@@ -359,10 +373,12 @@ int main() {
 			// Workgroup size is 32 x 1
 			// Dispatch 25 * 32 = 800
 			// x * threadGrpSize = windowWidth			
-			glDispatchCompute(ceil(windowWidth / (float)threadGrpSize), windowHeight, 1);
+			glDispatchCompute(ceil(windowWidth / (float)threadGrpSize), windowHeight, 1);			
 			glMemoryBarrier(GL_ALL_BARRIER_BITS);
+			timer.End();
+			time[i] += timer.GetElapsedTime();			
 		}	
-		
+						
 		//glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -371,6 +387,9 @@ int main() {
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+
+		WriteBenchmarkResultsToCSVFile(threadGrpSize, windowWidth, windowHeight, traceDepth, numLights,
+			numVertices / 3, time[0], time[1], time[2]);
 	}
 
 	glfwTerminate();
