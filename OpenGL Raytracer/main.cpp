@@ -5,6 +5,7 @@
 #include <vector>
 #include "camera.h"
 #include <gtc/type_ptr.hpp>
+#include "glm\gtx\compatibility.hpp"
 #include <random>
 #include <functional>
 #include "SOIL\src\SOIL.h"
@@ -207,7 +208,7 @@ int main() {
 	float lightData[]{
 		//LightPosition, padding, LightColor, padding 
 		// Note: a vec3 takes up 4 floats, 3 for the vec3 and 1 float padding
-		-2.0, -2.0, -2.0,		0.0,	1.0, 0.0, 0.0,	0.0,
+		-0.1, -0.1, -0.1,		0.0,	1.0, 0.0, 0.0,	0.0,
 		-7.0, -7.0, -7.0,		0.0,	0.0, 1.0, 0.0,	0.0,
 		-8.0, -7.5, -8.0,		0.0,	1.0, 0.0, 0.0,	0.0,
 		-3.75, -3.75, -3.75,	0.0,	0.0, 0.0, 1.0,	0.0,
@@ -218,7 +219,7 @@ int main() {
 		-6.3, -6.75, -4.06,		0.0,	0.0, 0.0, 1.0,	0.0,
 		2.16, 1.63, 2.22,		0.0,	0.5, 0.0, 0.5,	0.0,
 	};
-	int num_lights = 1;
+	int num_lights = 2;
 	// 8 floats per light (2 of those flots are padding) and 10 lights in total
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);			
 
@@ -263,6 +264,21 @@ int main() {
 		// If two seconds have elapsed
 		if (currentTime > lastTime + 2.0) {
 			lastTime = currentTime;
+			/*
+			// Make the lights rotate around the sword
+			float s = 0;
+			for (int i = 0; i < num_lights * 8; i += 8)
+			{
+				glm::vec2 pos1(0.1f, 0.0f);
+				glm::vec2 pos2(0.0f, 0.1f);				
+				float angle = glm::lerp(0.0f, 2 * 3.14f, s);
+				glm::vec2 nextPos(pos1 * cos(angle) + pos2 * sin(angle));
+				s += 0.1;
+				lightData[i] = nextPos.x;
+				lightData[i + 2] = nextPos.y;
+			}
+			*/
+			
 			// Give the light a new position in a random direction
 			for (int i = 0; i < num_lights * 8; i += 8)
 			{
@@ -272,8 +288,9 @@ int main() {
 				lightData[i + 1] = lightPos.y;
 				lightData[i + 2] = lightPos.z;
 			}
+			
 		}
-
+		int passes = 2;
 		/* Raytracer stuff */	
 		for (int i = 0; i < 3; i++)
 		{
@@ -281,8 +298,15 @@ int main() {
 			switch (i) 
 			{		
 			case 0: currentShaderProg = raygenprog; break;
-			case 1: /*case 3:*/ currentShaderProg = rayintersectprog; break;								
-			case 2: /*case 4:*/ currentShaderProg = raycolorprog; break;
+			case 1: currentShaderProg = rayintersectprog; break;								
+			case 2: 
+				currentShaderProg = raycolorprog; 
+				// One entire pass done, now start over again with the intersection stage
+				if (passes > 1) {
+					i = 0;
+					passes--; 
+				}
+				break;
 			}
 
 			glUseProgram(currentShaderProg);
