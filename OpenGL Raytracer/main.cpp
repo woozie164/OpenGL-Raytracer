@@ -152,11 +152,11 @@ void CompileRaytracerShader(int threadGroupSize, GLuint & raygenprog,
 }
 
 void WriteBenchmarkResultsToCSVFile(int threadGrpSize, int screenWidth, int screenHeight,
-	int traceDepth, int numLights, int numTriangles, int rayCreationTime, int intersectionTime, int colorTime)
+	int passes, int numLights, int numTriangles, int rayCreationTime, int intersectionTime, int colorTime)
 {	
 	fstream f("benchmarkresults.csv", ios::out | ios::app);
 	//f << "Thread group size,Screen resolution,Trace depth,Number of lights,Number of triangles,Ray Creation Time(ms),Intersection Time(ms),Color Time(ms),Total time (ms)\n";
-	f << threadGrpSize << ',' << screenWidth << 'x' << screenHeight << ',' << traceDepth << ','
+	f << threadGrpSize << ',' << screenWidth << 'x' << screenHeight << ',' << passes << ','
 		<< numLights << ',' << numTriangles << ',' << rayCreationTime << ',' << intersectionTime << ',' 
 		<< colorTime << ',' << rayCreationTime + intersectionTime + colorTime << endl;
 }
@@ -165,7 +165,7 @@ int main(int argc, char * argv) {
 	int windowWidth = 400;
 	int windowHeight = 400;
 	int threadGrpSize = 32;
-	int traceDepth = 2;
+	int passes = 2;
 	int numLights = 2;
 
 	glfwSetErrorCallback(glfw_error_callback);
@@ -339,10 +339,10 @@ int main(int argc, char * argv) {
 			case 1: currentShaderProg = rayintersectprog; break;								
 			case 2: 
 				currentShaderProg = raycolorprog; 				
-				if (traceDepth > 1) {
+				if (passes > 1) {
 					// One entire pass done, now start over again with the intersection stage
 					i = 0;
-					traceDepth--; 
+					passes--; 
 				}
 				break;
 			}
@@ -390,7 +390,7 @@ int main(int argc, char * argv) {
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 
-		WriteBenchmarkResultsToCSVFile(threadGrpSize, windowWidth, windowHeight, traceDepth, numLights,
+		WriteBenchmarkResultsToCSVFile(threadGrpSize, windowWidth, windowHeight, passes, numLights,
 			numVertices / 3, time[0], time[1], time[2]);
 	}
 
