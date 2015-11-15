@@ -144,11 +144,17 @@ int main() {
 	GLuint raygenprog = compileShaderProgram(shaders);	
 
 	shaders.clear();
-	loadShader("rayintersection_cs.glsl", GL_COMPUTE_SHADER, shaders);
+	loadShader("definitions.glsl", SHADER_HEADER, shaders);
+	loadShader("trace.glsl", SHADER_HEADER, shaders);
+	loadShader("rayintersect_cs.glsl", GL_COMPUTE_SHADER, shaders);
+	//loadShader("rayintersection_cs.glsl", GL_COMPUTE_SHADER, shaders);
 	GLuint rayintersectprog = compileShaderProgram(shaders);
 
 	shaders.clear();
-	loadShader("raycolor_cs.glsl", GL_COMPUTE_SHADER, shaders);
+	loadShader("definitions.glsl", SHADER_HEADER, shaders);
+	loadShader("trace.glsl", SHADER_HEADER, shaders);
+	loadShader("raycol_cs.glsl", GL_COMPUTE_SHADER, shaders);
+	//loadShader("raycolor_cs.glsl", GL_COMPUTE_SHADER, shaders);
 	GLuint raycolorprog = compileShaderProgram(shaders);	
 	
 	// Create a texture that the computer shader will render into
