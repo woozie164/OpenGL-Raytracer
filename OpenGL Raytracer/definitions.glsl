@@ -1,4 +1,3 @@
-#version 430 core
 
 struct ray {
 	vec3 origin;
@@ -30,7 +29,7 @@ struct vertex {
 	vec2 texCoord;
 };
 
-layout (local_size_x = 32, local_size_y = 1) in;
+
 layout (rgba8, binding = 0) uniform image2D outTexture;
 layout (rgba8, binding = 1) uniform image2D meshTexture;
 
