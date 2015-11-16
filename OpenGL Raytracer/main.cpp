@@ -165,7 +165,7 @@ int main(int argc, char * argv) {
 	int windowWidth = 800;
 	int windowHeight = 800;
 	int threadGrpSize = 32;
-	int passes = 2;
+	const int MAX_PASSES = 2;
 	int numLights = 2;
 
 	glfwSetErrorCallback(glfw_error_callback);
@@ -326,6 +326,7 @@ int main(int argc, char * argv) {
 			}
 			
 		}
+		int passes = MAX_PASSES;
 		vector<int> time(3);
 		/* Raytracer stuff */	
 		for (int i = 0; i < 3; i++)
