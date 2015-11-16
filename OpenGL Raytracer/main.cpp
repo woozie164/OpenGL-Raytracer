@@ -162,8 +162,8 @@ void WriteBenchmarkResultsToCSVFile(int threadGrpSize, int screenWidth, int scre
 }
 
 int main(int argc, char * argv) {
-	int windowWidth = 400;
-	int windowHeight = 400;
+	int windowWidth = 800;
+	int windowHeight = 800;
 	int threadGrpSize = 32;
 	int passes = 2;
 	int numLights = 2;
@@ -389,9 +389,10 @@ int main(int argc, char * argv) {
 		
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-
+		/*
 		WriteBenchmarkResultsToCSVFile(threadGrpSize, windowWidth, windowHeight, passes, numLights,
 			numVertices / 3, time[0], time[1], time[2]);
+		*/
 	}
 
 	glfwTerminate();
