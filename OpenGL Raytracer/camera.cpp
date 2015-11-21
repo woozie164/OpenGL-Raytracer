@@ -13,6 +13,7 @@ Camera::Camera()
 	mouseSpeed = 0.005f;
 	scrollWheelY = 0.0f;
 	firstTime = true;
+	cameraControlEnabled = true;
 }
 
 Camera::~Camera()
@@ -35,16 +36,16 @@ void Camera::Update(){
 	double xpos, ypos;
 	GLFWwindow * window = glfwGetCurrentContext();
 	glfwGetCursorPos(window, &xpos, &ypos);
+	if (cameraControlEnabled) {
+		// Reset mouse position for next frame
+		int windowWidth, windowHeight;
+		glfwGetWindowSize(window, &windowWidth, &windowHeight);
+		glfwSetCursorPos(window, windowWidth / 2.0, windowHeight / 2.0);
 
-	// Reset mouse position for next frame
-	int windowWidth, windowHeight;
-	glfwGetWindowSize(window, &windowWidth, &windowHeight);
-	glfwSetCursorPos(window, windowWidth / 2.0, windowHeight / 2.0);
-
-	// Compute new orientation
-	horizontalAngle += mouseSpeed * float(windowWidth / 2 - xpos);
-	verticalAngle += mouseSpeed * float(windowHeight / 2 - ypos);
-
+		// Compute new orientation
+		horizontalAngle += mouseSpeed * float(windowWidth / 2 - xpos);
+		verticalAngle += mouseSpeed * float(windowHeight / 2 - ypos);
+	}
 	// Direction : Spherical coordinates to Cartesian coordinates conversion
 	direction = vec3(
 		cos(verticalAngle) * sin(horizontalAngle),

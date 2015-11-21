@@ -19,6 +19,8 @@ class Camera
 	double lastTime;
 
 public:
+	bool cameraControlEnabled;
+
 	Camera();
 	~Camera();
 

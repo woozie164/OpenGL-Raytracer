@@ -276,9 +276,9 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 	double lastTime = glfwGetTime();
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-
+	if (numFrames != 0) camera.cameraControlEnabled = false;
 	int frame = 0;
-	while (!glfwWindowShouldClose(window) && (frame < numFrames)) {	
+	while (!glfwWindowShouldClose(window) && (frame <= numFrames)) {	
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
 
@@ -391,7 +391,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		numVertices / 3, time[0], time[1], time[2]);
 		*/
 
-		if (numFrames != -1) {
+		if (numFrames != 0) {
 			frame++;
 		}
 	}
@@ -408,8 +408,8 @@ int main(int argc, char * argv) {
 	int renderPasses = 2;
 	int numLights = 2;
 	*/
-
-	RunRaytracer(800, 800, 32, 2, 2, 5);
-	RunRaytracer(400, 400, 32, 2, 2, 5);
-	
+	while (true) {
+		RunRaytracer(800, 800, 32, 2, 2, 0);
+		RunRaytracer(400, 400, 32, 2, 2, 5);
+	}
 }
