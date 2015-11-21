@@ -161,13 +161,7 @@ void WriteBenchmarkResultsToCSVFile(int threadGrpSize, int screenWidth, int scre
 		<< colorTime << ',' << rayCreationTime + intersectionTime + colorTime << endl;
 }
 
-int main(int argc, char * argv) {
-	int windowWidth = 800;
-	int windowHeight = 800;
-	int threadGrpSize = 32;
-	const int MAX_PASSES = 2;
-	int numLights = 2;
-
+int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int renderPasses, int numLights, int numFrames) {
 	glfwSetErrorCallback(glfw_error_callback);
 	glfwInit();
 
@@ -177,20 +171,21 @@ int main(int argc, char * argv) {
 		glfwTerminate();
 		return -1;
 	}
-	glfwMakeContextCurrent(window);	
+	glfwMakeContextCurrent(window);
 	glewInit();
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	if (glDebugMessageCallback){
 		glDebugMessageCallback(openglCallbackFunction, nullptr);
-	} else {
+	}
+	else {
 		cout << "glDebugMessageCallback not available" << endl;
-	}		
+	}
 
 	GLuint raygenprog, rayintersectprog, raycolorprog;
-	CompileRaytracerShader(threadGrpSize, raygenprog, rayintersectprog, raycolorprog);
-	
+	CompileRaytracerShader(threadGroupSize, raygenprog, rayintersectprog, raycolorprog);
+
 	// Create a texture that the computer shader will render into
 	GLuint tex;
 	glGenTextures(1, &tex);
@@ -198,34 +193,34 @@ int main(int argc, char * argv) {
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
 
 	GLuint framebuffer;
-	glGenFramebuffers(1, &framebuffer);	
+	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
 	// wtf is the difference vs glGenFrameBuffers? Different inital state - which contains what?
 	//glCreateFramebuffers(1, &framebuffer);	
 
-	/* TODO: 
+	/* TODO:
 	Support up to 10 moving point lights where each light casts shadows.
-		+Add the new uniform declarations to all the shaders
-		+Debug the data that is sent to the shader
-		-Fix the shadow on the backside of the spheres
-		+Add some more lights
-		+Write some code that moves the points light and updates the uniform buffer
-			-Move the lights continously instead of jumping from one point to another
-		+Add code that converts Carteesian coordinates to barycentric
-		+Use the barycentric coordinates to interpolate uv-coordinates
-		+Load a texture
-			+Check that the shader can use it by rendering it somewhere
-			+render it on the test triangle
-		+Load a mesh 
-		+send mesh to GPU			
-		+render mesh
-		+render mesh with texture
-		-make things pretty
-			-lightning is kinda ugly
-			+reflections broken. Works in 103b74e though.
-		-do performance analysis
-		-write report on implementation and performance analysis
+	+Add the new uniform declarations to all the shaders
+	+Debug the data that is sent to the shader
+	-Fix the shadow on the backside of the spheres
+	+Add some more lights
+	+Write some code that moves the points light and updates the uniform buffer
+	-Move the lights continously instead of jumping from one point to another
+	+Add code that converts Carteesian coordinates to barycentric
+	+Use the barycentric coordinates to interpolate uv-coordinates
+	+Load a texture
+	+Check that the shader can use it by rendering it somewhere
+	+render it on the test triangle
+	+Load a mesh
+	+send mesh to GPU
+	+render mesh
+	+render mesh with texture
+	-make things pretty
+	-lightning is kinda ugly
+	+reflections broken. Works in 103b74e though.
+	-do performance analysis
+	-write report on implementation and performance analysis
 	Support diffuse and specular lighting with light attenuation.
 	*/
 
@@ -235,27 +230,27 @@ int main(int argc, char * argv) {
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
 	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeOfRay * windowWidth * windowHeight, nullptr, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
-	
+
 	GLuint lightBuffer = 0;
 	glGenBuffers(1, &lightBuffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
 	float lightData[]{
 		//LightPosition, padding, LightColor, padding 
 		// Note: a vec3 takes up 4 floats, 3 for the vec3 and 1 float padding
-		-0.1, -0.1, -0.1,		0.0,	1.0, 0.0, 0.0,	0.0,
-		-7.0, -7.0, -7.0,		0.0,	0.0, 1.0, 0.0,	0.0,
-		-8.0, -7.5, -8.0,		0.0,	1.0, 0.0, 0.0,	0.0,
-		-3.75, -3.75, -3.75,	0.0,	0.0, 0.0, 1.0,	0.0,
-		-2.16, 1.63, -2.22,		0.0,	0.5, 0.0, 0.5,	0.0,
-		-2.0, -3.0, -2.0,		0.0,	1.0, 0.0, 0.0,	0.0,
-		-7.0, -8.0, -7.0,		0.0,	0.0, 1.0, 0.0,	0.0,
-		-8.0, -8.5, -8.0,		0.0,	1.0, 0.0, 0.0,	0.0,
-		-6.3, -6.75, -4.06,		0.0,	0.0, 0.0, 1.0,	0.0,
-		2.16, 1.63, 2.22,		0.0,	0.5, 0.0, 0.5,	0.0,
+		-0.1, -0.1, -0.1, 0.0, 1.0, 0.0, 0.0, 0.0,
+			-7.0, -7.0, -7.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+			-8.0, -7.5, -8.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+			-3.75, -3.75, -3.75, 0.0, 0.0, 0.0, 1.0, 0.0,
+			-2.16, 1.63, -2.22, 0.0, 0.5, 0.0, 0.5, 0.0,
+			-2.0, -3.0, -2.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+			-7.0, -8.0, -7.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+			-8.0, -8.5, -8.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+			-6.3, -6.75, -4.06, 0.0, 0.0, 0.0, 1.0, 0.0,
+			2.16, 1.63, 2.22, 0.0, 0.5, 0.0, 0.5, 0.0,
 	};
-	
+
 	// 8 floats per light (2 of those flots are padding) and 10 lights in total
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);			
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);
 
 	GLuint tex_2d = SOIL_load_OGL_texture
 		(
@@ -278,15 +273,16 @@ int main(int argc, char * argv) {
 	//swordMesh.LoadFromObjFile("C:/Users/woozie/Dropbox/3D-programmering/bth_logo_obj_tga/", "bth.obj"); 
 	GLuint swordDataHandle = UploadToSSBO(swordMesh.GetVertexData(0), swordMesh.GetVertexCount(0));
 	int numVertices = swordMesh.GetVertexCount(0);
-	
+
 	double lastTime = glfwGetTime();
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-	while (!glfwWindowShouldClose(window)) {		
-	//for (int frame = 0; frame < 10; frame++) {
+
+	int frame = 0;
+	while (!glfwWindowShouldClose(window) && (frame < numFrames)) {	
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
 
-		if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) { 			
+		if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
 			cout << "Camera pos: " << camera.getPosition().x << " "
 				<< camera.getPosition().y << " " << camera.getPosition().z << endl;
 
@@ -295,7 +291,7 @@ int main(int argc, char * argv) {
 
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
-				
+
 		double currentTime = glfwGetTime();
 		// If two seconds have elapsed
 		if (currentTime > lastTime + 2.0) {
@@ -305,68 +301,68 @@ int main(int argc, char * argv) {
 			float s = 0;
 			for (int i = 0; i < numLights * 8; i += 8)
 			{
-				glm::vec2 pos1(0.1f, 0.0f);
-				glm::vec2 pos2(0.0f, 0.1f);				
-				float angle = glm::lerp(0.0f, 2 * 3.14f, s);
-				glm::vec2 nextPos(pos1 * cos(angle) + pos2 * sin(angle));
-				s += 0.1;
-				lightData[i] = nextPos.x;
-				lightData[i + 2] = nextPos.y;
+			glm::vec2 pos1(0.1f, 0.0f);
+			glm::vec2 pos2(0.0f, 0.1f);
+			float angle = glm::lerp(0.0f, 2 * 3.14f, s);
+			glm::vec2 nextPos(pos1 * cos(angle) + pos2 * sin(angle));
+			s += 0.1;
+			lightData[i] = nextPos.x;
+			lightData[i + 2] = nextPos.y;
 			}
 			*/
-			
+
 			// Give the light a new position in a random direction
 			for (int i = 0; i < numLights * 8; i += 8)
 			{
-				glm::vec3 lightPos(lightData[i], lightData[i + 1], lightData[i + 2]);			
+				glm::vec3 lightPos(lightData[i], lightData[i + 1], lightData[i + 2]);
 				lightPos += RandomDir() * 1.0f;
 				lightData[i] = lightPos.x;
 				lightData[i + 1] = lightPos.y;
 				lightData[i + 2] = lightPos.z;
 			}
-			
+
 		}
-		int passes = MAX_PASSES;
+		int passes = renderPasses;
 		vector<int> time(3);
-		/* Raytracer stuff */	
+		/* Raytracer stuff */
 		for (int i = 0; i < 3; i++)
 		{
 			OpenGLTimer timer;
 			timer.Start();
 			GLuint currentShaderProg;
-			switch (i) 
-			{		
+			switch (i)
+			{
 			case 0: currentShaderProg = raygenprog; break;
-			case 1: currentShaderProg = rayintersectprog; break;								
-			case 2: 
-				currentShaderProg = raycolorprog; 				
+			case 1: currentShaderProg = rayintersectprog; break;
+			case 2:
+				currentShaderProg = raycolorprog;
 				if (passes > 1) {
 					// One entire pass done, now start over again with the intersection stage
 					i = 0;
-					passes--; 
+					passes--;
 				}
 				break;
 			}
 
 			glUseProgram(currentShaderProg);
-			glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);			
+			glBindImageTexture(0, tex, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
 			glBindImageTexture(1, tex_2d, 0, GL_FALSE, 0, GL_READ_WRITE, GL_RGBA8);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 1, ssbo);
 			glBindBufferBase(GL_SHADER_STORAGE_BUFFER, 2, swordDataHandle);
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_pos"), 1, glm::value_ptr(camera.getPosition()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_dir"), 1, glm::value_ptr(camera.getDirection()));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_up"), 1, glm::value_ptr(camera.getUp()));
-			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_right"), 1, glm::value_ptr(camera.getRight()));			
+			glUniform3fv(glGetUniformLocation(currentShaderProg, "camera_right"), 1, glm::value_ptr(camera.getRight()));
 
 			glUniform1i(glGetUniformLocation(currentShaderProg, "windowWidth"), windowWidth);
 			glUniform1i(glGetUniformLocation(currentShaderProg, "windowHeight"), windowHeight);
-			
+
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_position"), 1, glm::value_ptr(glm::vec3(-2.0f, -2.0f, -2.0f)));
 			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
 
 			glUniform1i(glGetUniformLocation(currentShaderProg, "num_vertices"), numVertices);
 			glUniform1i(glGetUniformLocation(currentShaderProg, "num_lights"), numLights);
-			
+
 			glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
 			glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);
 			// Returns 0, but I was expecting 2 because of the layout (binding = 2) statement ...
@@ -376,26 +372,44 @@ int main(int argc, char * argv) {
 			// Workgroup size is 32 x 1
 			// Dispatch 25 * 32 = 800
 			// x * threadGrpSize = windowWidth			
-			glDispatchCompute(ceil(windowWidth / (float)threadGrpSize), windowHeight, 1);			
+			glDispatchCompute(ceil(windowWidth / (float)threadGroupSize), windowHeight, 1);
 			glMemoryBarrier(GL_ALL_BARRIER_BITS);
 			timer.End();
-			time[i] += timer.GetElapsedTime();			
-		}	
-						
+			time[i] += timer.GetElapsedTime();
+		}
+
 		//glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight,
 			GL_COLOR_BUFFER_BIT, GL_NEAREST);
-		
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		/*
 		WriteBenchmarkResultsToCSVFile(threadGrpSize, windowWidth, windowHeight, passes, numLights,
-			numVertices / 3, time[0], time[1], time[2]);
+		numVertices / 3, time[0], time[1], time[2]);
 		*/
+
+		if (numFrames != -1) {
+			frame++;
+		}
 	}
 
 	glfwTerminate();
 	return 0;
+}
+
+int main(int argc, char * argv) {
+	/*
+	int windowWidth = 800;
+	int windowHeight = 800;
+	int threadGrpSize = 32;
+	int renderPasses = 2;
+	int numLights = 2;
+	*/
+
+	RunRaytracer(800, 800, 32, 2, 2, 5);
+	RunRaytracer(400, 400, 32, 2, 2, 5);
+	
 }
