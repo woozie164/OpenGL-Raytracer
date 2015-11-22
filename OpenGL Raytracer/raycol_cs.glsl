@@ -109,7 +109,8 @@ void main()
 			}			
 		}
 		
-		finalColor = lightRay.color + light;
+		finalColor = rays[i].color + light;
+		//finalColor = light;
 		
 		// This makes things look a lot buggier for some reason.
 		// Should give the same result as the other one.
