@@ -130,7 +130,7 @@ void trace(in out ray r) {
 	}
 	
 	// And 1 sphere
-	sphere my_sphere = sphere(vec3(-5.0f, -5.0f, -5.0f), 1.0f);	
+	sphere my_sphere = sphere(vec3(0.0f, -0.7f, 2.0f), 0.5f);	
 	
 	float t0, t1;
 	if(intersectSphere(r.origin, r.dir, my_sphere, t0, t1)){
@@ -148,7 +148,7 @@ void trace(in out ray r) {
 		}
 	}
 
-	sphere my_sphere2 = sphere(vec3(-3.0f, -3.0f, -3.0f), 0.5f);	
+	sphere my_sphere2 = sphere(vec3(-2.0f, -00f, 0.0f), 0.2f);	
 	
 	if(intersectSphere(r.origin, r.dir, my_sphere2, t0, t1)){
 		t = min(t0, t1);
