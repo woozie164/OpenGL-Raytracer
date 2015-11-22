@@ -102,6 +102,12 @@ void trace(in out ray r) {
 	float t_min = 1.0 / 0.0;	
 	float t;
 	vec3 n;
+	
+	// Nvidia insight gave a warning that lightRay.color might sometimes
+	// be unitialized. Not sure how this affects the rendered image,
+	// or what to do about it.
+	//r.color = vec3(1.0, 0.0, 0.0);
+	
 	int primitiveID = 0;
 	
 	for(int i = 0; i < num_vertices; i += 3) {
