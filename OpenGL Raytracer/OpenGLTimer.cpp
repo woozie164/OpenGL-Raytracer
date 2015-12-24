@@ -10,12 +10,14 @@ OpenGLTimer::OpenGLTimer()
 
 OpenGLTimer::~OpenGLTimer()
 {
+	glDeleteQueries(1, &startQuery);
+	glDeleteQueries(1, &endQuery);
 }
 
 
 void OpenGLTimer::Start()
 {
-	glQueryCounter(startQuery, GL_TIMESTAMP);
+	glQueryCounter(startQuery, GL_TIMESTAMP);
 }
 
 
