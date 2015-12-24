@@ -160,7 +160,7 @@ void WriteBenchmarkResultsToCSVFile(int threadGrpSize, int screenWidth, int scre
 		<< screenHeight		<< ',' << passes			<< ','
 		<< numLights		<< ',' << numTriangles		<< ',' 
 		<< rayCreationTime	<< ',' << intersectionTime	<< ',' 		
-		<< colorTime		<< ',' << colorTime			<< endl;
+		<< colorTime		<< endl;
 }
 
 int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int renderPasses, int numLights, int numFrames) {
