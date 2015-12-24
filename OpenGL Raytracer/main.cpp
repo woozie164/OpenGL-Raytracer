@@ -402,8 +402,27 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 int main(int argc, char * argv) {
 	// Run raytracer with camera control and no limits on number of frames rendered before quitting.
-	RunRaytracer(640, 480, 32, 2, 2, 0);
+	RunRaytracer(800, 800, 32, 1, 2, 0);
 
-
+	// Different resolutions
 	RunRaytracer(400, 400, 32, 2, 2, 5);	
+	RunRaytracer(800, 800, 32, 2, 2, 5);
+	RunRaytracer(1200, 1200, 32, 2, 2, 5);
+
+	// Thread group size
+	RunRaytracer(800, 800, 16, 2, 2, 5);	
+	RunRaytracer(800, 800, 32, 2, 2, 5);
+	RunRaytracer(800, 800, 64, 2, 2, 5);
+
+	// Number of Renderpasses
+	RunRaytracer(800, 800, 32, 1, 2, 5);
+	RunRaytracer(800, 800, 32, 2, 2, 5);
+	RunRaytracer(800, 800, 32, 3, 2, 5);
+
+	// Number of lights
+	RunRaytracer(800, 800, 32, 2, 0, 5);
+	RunRaytracer(800, 800, 32, 2, 1, 5);
+	RunRaytracer(800, 800, 32, 2, 2, 5);
+	RunRaytracer(800, 800, 32, 2, 3, 5);
+	RunRaytracer(800, 800, 32, 2, 4, 5);
 }
