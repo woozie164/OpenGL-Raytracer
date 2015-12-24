@@ -64,19 +64,19 @@ void Camera::Update(){
 	up = cross(right, direction);
 
 	// Move forward
-	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS){
+	if (glfwGetKey(window, GLFW_KEY_UP) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
 		cameraPosition += direction * deltaTime * speed;
 	}
 	// Move backward
-	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS){
+	if (glfwGetKey(window, GLFW_KEY_DOWN) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS){
 		cameraPosition -= direction * deltaTime * speed;
 	}
 	// Strafe right
-	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS){
+	if (glfwGetKey(window, GLFW_KEY_RIGHT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS){
 		cameraPosition += right * deltaTime * speed;
 	}
 	// Strafe left
-	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS){
+	if (glfwGetKey(window, GLFW_KEY_LEFT) == GLFW_PRESS || glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS){
 		cameraPosition -= right * deltaTime * speed;
 	}
 
