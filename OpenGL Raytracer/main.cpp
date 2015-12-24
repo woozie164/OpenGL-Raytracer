@@ -156,9 +156,11 @@ void WriteBenchmarkResultsToCSVFile(int threadGrpSize, int screenWidth, int scre
 {	
 	fstream f("benchmarkresults.csv", ios::out | ios::app);
 	//f << "Thread group size,Screen resolution,Trace depth,Number of lights,Number of triangles,Ray Creation Time(ms),Intersection Time(ms),Color Time(ms),Total time (ms)\n";
-	f << threadGrpSize << ',' << screenWidth << 'x' << screenHeight << ',' << passes << ','
-		<< numLights << ',' << numTriangles << ',' << rayCreationTime << ',' << intersectionTime << ',' 
-		<< colorTime << ',' << rayCreationTime + intersectionTime + colorTime << endl;
+	f	<< threadGrpSize	<< ',' << screenWidth		<< ',' 
+		<< screenHeight		<< ',' << passes			<< ','
+		<< numLights		<< ',' << numTriangles		<< ',' 
+		<< rayCreationTime	<< ',' << intersectionTime	<< ',' 		
+		<< colorTime		<< ',' << colorTime			<< endl;
 }
 
 int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int renderPasses, int numLights, int numFrames) {
@@ -391,6 +393,11 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		numVertices / 3, time[0], time[1], time[2]);
 		*/
 
+		cout << "Frame #" << frame << ": " << endl;
+		cout << "Raygen " << time[0] << " ms" << endl;
+		cout << "Rayintersect " << time[1] << " ms" << endl;
+		cout << "Raycolor " << time[2] << " ms" << endl;
+
 		if (numFrames != 0) {
 			frame++;
 		}
@@ -402,7 +409,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 int main(int argc, char * argv) {
 	// Run raytracer with camera control and no limits on number of frames rendered before quitting.
-	RunRaytracer(800, 800, 32, 1, 2, 0);
+	//RunRaytracer(800, 800, 32, 1, 2, 0);
 
 	// Different resolutions
 	RunRaytracer(400, 400, 32, 2, 2, 5);	
