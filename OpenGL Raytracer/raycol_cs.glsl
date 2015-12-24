@@ -63,7 +63,7 @@ void main()
 			
 			lightRay = ray(rays[i].origin + lightDir * 0.001, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
 			
-			trace(lightRay);			
+			trace(lightRay, true);			
 			
 			// The trace function doesn't count the intersections between the ray and the
 			// primitive it was created from, so if this is true

@@ -97,7 +97,7 @@ bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out fl
 }
 
 // Do intersection tests with all the geometry in the scene
-void trace(in out ray r) {	
+void trace(in out ray r, bool earlyExit = false) {	
 	// Set initial value to infinity
 	float t_min = 1.0 / 0.0;	
 	float t;
@@ -124,6 +124,7 @@ void trace(in out ray r) {
 				vec3 u = x.pos - z.pos;
 				vec3 v = y.pos - z.pos;
 				n = normalize(cross(u, v));
+				if(earlyExit) return;
 			}
 		}
 		primitiveID++;
@@ -145,6 +146,8 @@ void trace(in out ray r) {
 			
 			// Then calculate the surface normal of the sphere
 			n = normalize(p - my_sphere.pos);							
+			
+			if(earlyExit) return;
 		}
 	}
 
@@ -162,6 +165,8 @@ void trace(in out ray r) {
 			
 			// Then calculate the surface normal of the sphere
 			n = normalize(p - my_sphere2.pos);							
+			
+			if(earlyExit) return;
 		}
 	}	
 	
