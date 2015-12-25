@@ -180,8 +180,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	if (glDebugMessageCallback){
 		glDebugMessageCallback(openglCallbackFunction, nullptr);
-	}
-	else {
+	} else {
 		cout << "glDebugMessageCallback not available" << endl;
 	}
 
@@ -278,7 +277,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 	double lastTime = glfwGetTime();
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-	if (numFrames != 0) camera.cameraControlEnabled = false;
+	if (numFrames != 0) camera.cameraMouseControlEnabled = false;
 	int frame = 0;
 	while (!glfwWindowShouldClose(window) && (frame <= numFrames)) {	
 		glClear(GL_COLOR_BUFFER_BIT);

@@ -13,7 +13,7 @@ Camera::Camera()
 	mouseSpeed = 0.005f;
 	scrollWheelY = 0.0f;
 	firstTime = true;
-	cameraControlEnabled = true;
+	cameraMouseControlEnabled = true;
 }
 
 Camera::~Camera()
@@ -36,7 +36,7 @@ void Camera::Update(){
 	double xpos, ypos;
 	GLFWwindow * window = glfwGetCurrentContext();
 	glfwGetCursorPos(window, &xpos, &ypos);
-	if (cameraControlEnabled) {
+	if (cameraMouseControlEnabled) {
 		// Reset mouse position for next frame
 		int windowWidth, windowHeight;
 		glfwGetWindowSize(window, &windowWidth, &windowHeight);
