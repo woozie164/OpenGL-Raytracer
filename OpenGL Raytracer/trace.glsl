@@ -108,7 +108,7 @@ void trace(in out ray r, bool earlyExit = false) {
 	// or what to do about it.
 	//r.color = vec3(1.0, 0.0, 0.0);
 	
-	int primitiveID = 0;
+	int primitiveID = -1;
 	
 	for(int i = 0; i < num_vertices; i += 3) {
 		vertex x = vertices[i];

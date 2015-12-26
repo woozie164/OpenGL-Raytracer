@@ -31,7 +31,7 @@ void main()
 	vec3 light = vec3(0.0);
 	vec3 texColor = vec3(0.0);
 	
-	if(rays[i].primitiveID != -1) {
+	if(rays[i].t != 1.0 / 0.0) {
 		int lightPrimitiveID = rays[i].primitiveID;				
 		vertex a = vertices[lightPrimitiveID * 3];
 		vertex b = vertices[lightPrimitiveID * 3 + 1];
@@ -107,17 +107,11 @@ void main()
 				//finalColor = vec3(0.2);	
 				//light -= vec3(0.1);				
 			}			
-		}
-		
+		}		
 		finalColor = rays[i].color + light;
-		//finalColor = light;
-		
-		// This makes things look a lot buggier for some reason.
-		// Should give the same result as the other one.
-		//finalColor += lightRay.color + light;
 	} else {
 		// Background color
-		finalColor = vec3(0.0, 0.3, 0.0);
+		finalColor = vec3(0.0, 0.0, 0.0);
 	}
 	
 	if(shadowed) {
