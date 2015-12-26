@@ -99,23 +99,16 @@ void main()
 				
 				//lightRay.color = rays[i].color + vec3(1.0, 0.0, 0.0) * k;			
 				//lightRay.color = rays[i].color + lights[a].color * diffuse;
-			} else {
-				//shadowed = true;
-				// Shadow color
-				// Shadows on the backside of geometry doesn't work because 
-				// I don't count self-intersections
-				//finalColor = vec3(0.2);	
-				light -= vec3(0.1);					
+			} else {		
+				// Make this pixel a bit darker for each light source that
+				// doesn't contribute with light.
+				light -= vec3(0.05);					
 			}			
 		}		
 		finalColor = rays[i].color + light;
 	} else {
 		// Background color
 		finalColor = vec3(0.0, 0.0, 0.0);
-	}
-	
-	if(shadowed) {
-		//finalColor = vec3(0.1);
 	}
 	
 	finalColor += texColor;
