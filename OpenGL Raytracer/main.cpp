@@ -312,6 +312,9 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			}
 			*/
 
+			// Issue: when running the benchmarks, sometimes the benchmark is so short
+			// that the lights don't move before the benchmark is over.
+			// In some benchmarks, the frames take so long to render the lights change.
 			// Give the light a new position in a random direction
 			for (int i = 0; i < numLights * 8; i += 8)
 			{
