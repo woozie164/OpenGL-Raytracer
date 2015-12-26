@@ -105,7 +105,7 @@ void main()
 				// Shadows on the backside of geometry doesn't work because 
 				// I don't count self-intersections
 				//finalColor = vec3(0.2);	
-				//light -= vec3(0.1);				
+				light -= vec3(0.1);					
 			}			
 		}		
 		finalColor = rays[i].color + light;
