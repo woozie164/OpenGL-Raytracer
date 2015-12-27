@@ -15,6 +15,8 @@
 
 using namespace std;
 
+const int UNLIMITED_FRAMES = 0;
+
 void glfw_error_callback(int error, const char* description)
 {
 	std::cerr << description << std::endl;
@@ -277,9 +279,13 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 	double lastTime = glfwGetTime();
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
-	if (numFrames != 0) camera.cameraMouseControlEnabled = false;
+
+	// Disable the camera controls if you're running benchmark mode.
+	// Just so that you don't accidently move the camera.
+	if (numFrames != UNLIMITED_FRAMES) camera.cameraMouseControlEnabled = false;
+
 	int frame = 0;
-	while (!glfwWindowShouldClose(window) && ((numFrames == 0) || (frame < numFrames)) ) {	
+	while (!glfwWindowShouldClose(window) && ((numFrames == UNLIMITED_FRAMES) || (frame < numFrames))) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
 
@@ -403,7 +409,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		cout << "Rayintersect " << time[1] << " ms" << endl;
 		cout << "Raycolor " << time[2] << " ms" << endl;
 		*/
-		if (numFrames != 0) {
+		if (numFrames != UNLIMITED_FRAMES) {
 			frame++;
 		}
 	}
@@ -414,7 +420,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 int main(int argc, char * argv) {
 	// Run raytracer with camera control and no limits on number of frames rendered before quitting.
-	//RunRaytracer(800, 800, 32, 1, 2, 0);
+	//RunRaytracer(800, 800, 32, 1, 2, UNLIMITED_FRAMES);
 
 	// Different resolutions
 	RunRaytracer(400, 400, 32, 2, 2, 5, "resolution_results.csv");	
