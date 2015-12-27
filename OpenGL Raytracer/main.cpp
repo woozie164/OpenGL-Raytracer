@@ -151,10 +151,10 @@ void CompileRaytracerShader(int threadGroupSize, GLuint & raygenprog,
 	raycolorprog = compileShaderProgram(shaders);
 }
 
-void WriteBenchmarkResultsToCSVFile(int threadGrpSize, int screenWidth, int screenHeight,
+void WriteBenchmarkResultsToCSVFile(const char * filename, int threadGrpSize, int screenWidth, int screenHeight,
 	int passes, int numLights, int numTriangles, int rayCreationTime, int intersectionTime, int colorTime)
 {	
-	fstream f("benchmarkresults.csv", ios::out | ios::app);
+	fstream f(filename, ios::out | ios::app);
 	//f << "Thread group size,Screen resolution,Trace depth,Number of lights,Number of triangles,Ray Creation Time(ms),Intersection Time(ms),Color Time(ms),Total time (ms)\n";
 	f	<< threadGrpSize	<< ',' << screenWidth		<< ',' 
 		<< screenHeight		<< ',' << passes			<< ','
@@ -163,7 +163,7 @@ void WriteBenchmarkResultsToCSVFile(int threadGrpSize, int screenWidth, int scre
 		<< colorTime		<< endl;
 }
 
-int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int renderPasses, int numLights, int numFrames) {
+int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int renderPasses, int numLights, int numFrames, const char * benchmarkOutputFile = nullptr) {
 	glfwSetErrorCallback(glfw_error_callback);
 	glfwInit();
 
@@ -390,16 +390,19 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 		glfwSwapBuffers(window);
 		glfwPollEvents();
+		
+		if (benchmarkOutputFile)
+		{
+			WriteBenchmarkResultsToCSVFile(benchmarkOutputFile, threadGroupSize,
+				windowWidth, windowHeight, passes, numLights, 
+				numVertices / 3, time[0], time[1], time[2]);	
+		}
 		/*
-		WriteBenchmarkResultsToCSVFile(threadGrpSize, windowWidth, windowHeight, passes, numLights,
-		numVertices / 3, time[0], time[1], time[2]);
-		*/
-
 		cout << "Frame #" << frame << ": " << endl;
 		cout << "Raygen " << time[0] << " ms" << endl;
 		cout << "Rayintersect " << time[1] << " ms" << endl;
 		cout << "Raycolor " << time[2] << " ms" << endl;
-
+		*/
 		if (numFrames != 0) {
 			frame++;
 		}
@@ -414,24 +417,24 @@ int main(int argc, char * argv) {
 	//RunRaytracer(800, 800, 32, 1, 2, 0);
 
 	// Different resolutions
-	RunRaytracer(400, 400, 32, 2, 2, 5);	
-	RunRaytracer(800, 800, 32, 2, 2, 5);
-	RunRaytracer(1200, 1200, 32, 2, 2, 5);
+	RunRaytracer(400, 400, 32, 2, 2, 5, "resolution_results.csv");	
+	RunRaytracer(800, 800, 32, 2, 2, 5, "resolution_results.csv");
+	RunRaytracer(1200, 1200, 32, 2, 2, 5, "resolution_results.csv");
 
 	// Thread group size
-	RunRaytracer(800, 800, 16, 2, 2, 5);	
-	RunRaytracer(800, 800, 32, 2, 2, 5);
-	RunRaytracer(800, 800, 64, 2, 2, 5);
+	RunRaytracer(800, 800, 16, 2, 2, 5, "treadgroup_results.csv");
+	RunRaytracer(800, 800, 32, 2, 2, 5, "treadgroup_results.csv");
+	RunRaytracer(800, 800, 64, 2, 2, 5, "treadgroup_results.csv");
 
 	// Number of Renderpasses
-	RunRaytracer(800, 800, 32, 1, 2, 5);
-	RunRaytracer(800, 800, 32, 2, 2, 5);
-	RunRaytracer(800, 800, 32, 3, 2, 5);
+	RunRaytracer(800, 800, 32, 1, 2, 5, "renderpasses_results.csv");
+	RunRaytracer(800, 800, 32, 2, 2, 5, "renderpasses_results.csv");
+	RunRaytracer(800, 800, 32, 3, 2, 5, "renderpasses_results.csv");
 
 	// Number of lights
-	RunRaytracer(800, 800, 32, 2, 0, 5);
-	RunRaytracer(800, 800, 32, 2, 1, 5);
-	RunRaytracer(800, 800, 32, 2, 2, 5);
-	RunRaytracer(800, 800, 32, 2, 3, 5);
-	RunRaytracer(800, 800, 32, 2, 4, 5);
+	RunRaytracer(800, 800, 32, 2, 0, 5, "lights_results.csv");
+	RunRaytracer(800, 800, 32, 2, 1, 5, "lights_results.csv");
+	RunRaytracer(800, 800, 32, 2, 2, 5, "lights_results.csv");
+	RunRaytracer(800, 800, 32, 2, 3, 5, "lights_results.csv");
+	RunRaytracer(800, 800, 32, 2, 4, 5, "lights_results.csv");
 }
