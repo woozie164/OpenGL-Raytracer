@@ -279,7 +279,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 	if (numFrames != 0) camera.cameraMouseControlEnabled = false;
 	int frame = 0;
-	while (!glfwWindowShouldClose(window) && (frame <= numFrames)) {	
+	while (!glfwWindowShouldClose(window) && ((numFrames == 0) || (frame < numFrames)) ) {	
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
 
