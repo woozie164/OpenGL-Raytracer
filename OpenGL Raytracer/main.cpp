@@ -344,9 +344,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			{
 			case 0: currentShaderProg = raygenprog; break;
 			case 1: currentShaderProg = rayintersectprog; break;
-			case 2: currentShaderProg = raycolorprog;
-		
-				break;
+			case 2: currentShaderProg = raycolorprog; break;
 			}
 
 			glUseProgram(currentShaderProg);
@@ -422,7 +420,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 int main(int argc, char * argv) {
 	// Run raytracer with camera control and no limits on number of frames rendered before quitting.
-	//RunRaytracer(800, 800, 32, 1, 2, UNLIMITED_FRAMES);
+	RunRaytracer(800, 800, 32, 1, 2, UNLIMITED_FRAMES);
 	/*
 	// Different resolutions
 	RunRaytracer(400, 400, 32, 2, 2, 5, "resolution_results.csv");	
