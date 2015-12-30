@@ -344,13 +344,8 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			{
 			case 0: currentShaderProg = raygenprog; break;
 			case 1: currentShaderProg = rayintersectprog; break;
-			case 2:
-				currentShaderProg = raycolorprog;
-				if (passes > 1) {
-					// One entire pass done, now start over again with the intersection stage
-					i = 0;
-					passes--;
-				}
+			case 2: currentShaderProg = raycolorprog;
+		
 				break;
 			}
 
@@ -386,6 +381,13 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			glMemoryBarrier(GL_ALL_BARRIER_BITS);
 			timer.End();
 			time[i] += timer.GetElapsedTime();
+
+			if (passes > 1 && currentShaderProg == raycolorprog) {
+				// One entire pass done, now start over again 
+				// starting with the intersection stage
+				i = 0;
+				passes--;
+			}
 		}
 
 		//glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
@@ -421,7 +423,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 int main(int argc, char * argv) {
 	// Run raytracer with camera control and no limits on number of frames rendered before quitting.
 	//RunRaytracer(800, 800, 32, 1, 2, UNLIMITED_FRAMES);
-
+	/*
 	// Different resolutions
 	RunRaytracer(400, 400, 32, 2, 2, 5, "resolution_results.csv");	
 	RunRaytracer(800, 800, 32, 2, 2, 5, "resolution_results.csv");
@@ -443,4 +445,11 @@ int main(int argc, char * argv) {
 	RunRaytracer(800, 800, 32, 2, 2, 5, "lights_results.csv");
 	RunRaytracer(800, 800, 32, 2, 3, 5, "lights_results.csv");
 	RunRaytracer(800, 800, 32, 2, 4, 5, "lights_results.csv");
+	*/
+	// Number of lights
+	RunRaytracer(800, 800, 32, 2, 0, 5);
+	RunRaytracer(800, 800, 32, 2, 1, 5);
+	RunRaytracer(800, 800, 32, 2, 2, 5);
+	RunRaytracer(800, 800, 32, 2, 3, 5);
+	RunRaytracer(800, 800, 32, 2, 4, 5);
 }
