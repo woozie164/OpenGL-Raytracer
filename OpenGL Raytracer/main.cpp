@@ -400,7 +400,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		if (benchmarkOutputFile)
 		{
 			WriteBenchmarkResultsToCSVFile(benchmarkOutputFile, threadGroupSize,
-				windowWidth, windowHeight, passes, numLights, 
+				windowWidth, windowHeight, renderPasses, numLights,
 				numVertices / 3, time[0], time[1], time[2]);	
 		}
 		/*
