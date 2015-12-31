@@ -278,6 +278,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	int numVertices = swordMesh.GetVertexCount(0);
 
 	double lastTime = glfwGetTime();
+	float lastFrame = glfwGetTime();
 	glClearColor(0.5f, 0.5f, 0.5f, 1.0f);
 
 	// Disable the camera controls if you're running benchmark mode.
@@ -285,6 +286,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	if (numFrames != UNLIMITED_FRAMES) camera.cameraMouseControlEnabled = false;
 
 	int frame = 0;
+	float s = 0;
 	while (!glfwWindowShouldClose(window) && ((numFrames == UNLIMITED_FRAMES) || (frame < numFrames))) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
@@ -297,26 +299,34 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		}
 
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
+		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));		
 
+		float timeNow = glfwGetTime();
+		float dt = timeNow - lastFrame;
+		lastFrame = timeNow;
+		
+		// Make the lights rotate around the sword
+		
+		for (int i = 0; i < numLights * 8; i += 8)
+		{
+			glm::vec2 pos1(1.0f, 0.0f);
+			glm::vec2 pos2(0.0f, 1.0f);
+			float angle = glm::lerp(0.0f, 2 * 3.14f, s);
+			glm::vec2 nextPos(pos1 * cos(angle) + pos2 * sin(angle));
+
+			lightData[i] = nextPos.x;
+			lightData[i + 2] = nextPos.y;
+		}
+		s += 0.1 * dt;
+		if (s >= 1.0f) {
+			//s = s - 1.0f;
+			s = 0.0f;
+		}
+		/*
 		double currentTime = glfwGetTime();
 		// If two seconds have elapsed
 		if (currentTime > lastTime + 2.0) {
 			lastTime = currentTime;
-			/*
-			// Make the lights rotate around the sword
-			float s = 0;
-			for (int i = 0; i < numLights * 8; i += 8)
-			{
-			glm::vec2 pos1(0.1f, 0.0f);
-			glm::vec2 pos2(0.0f, 0.1f);
-			float angle = glm::lerp(0.0f, 2 * 3.14f, s);
-			glm::vec2 nextPos(pos1 * cos(angle) + pos2 * sin(angle));
-			s += 0.1;
-			lightData[i] = nextPos.x;
-			lightData[i + 2] = nextPos.y;
-			}
-			*/
 
 			// Issue: when running the benchmarks, sometimes the benchmark is so short
 			// that the lights don't move before the benchmark is over.
@@ -332,6 +342,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			}
 
 		}
+		*/
 		int passes = renderPasses;
 		vector<int> time(3);
 		/* Raytracer stuff */
