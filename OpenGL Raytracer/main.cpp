@@ -203,28 +203,10 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	//glCreateFramebuffers(1, &framebuffer);	
 
 	/* TODO:
-	Support up to 10 moving point lights where each light casts shadows.
-	+Add the new uniform declarations to all the shaders
-	+Debug the data that is sent to the shader
-	-Fix the shadow on the backside of the spheres
-	+Add some more lights
-	+Write some code that moves the points light and updates the uniform buffer
-	-Move the lights continously instead of jumping from one point to another
-	+Add code that converts Carteesian coordinates to barycentric
-	+Use the barycentric coordinates to interpolate uv-coordinates
-	+Load a texture
-	+Check that the shader can use it by rendering it somewhere
-	+render it on the test triangle
-	+Load a mesh
-	+send mesh to GPU
-	+render mesh
-	+render mesh with texture
 	-make things pretty
-	-lightning is kinda ugly
-	+reflections broken. Works in 103b74e though.
+		-lightning is kinda ugly
 	-do performance analysis
-	-write report on implementation and performance analysis
-	Support diffuse and specular lighting with light attenuation.
+	-write report on implementation and performance analysis	
 	*/
 
 	int sizeOfRay = sizeof(float) * 4 * 6;
@@ -305,8 +287,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		float dt = timeNow - lastFrame;
 		lastFrame = timeNow;
 		
-		// Make the lights rotate around the sword
-		
+		// Make the lights rotate around the sword	
 		for (int i = 0; i < numLights * 8; i += 8)
 		{
 			glm::vec2 pos1(1.0f, 0.0f);
