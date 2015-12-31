@@ -31,6 +31,9 @@ void main()
 	vec3 light = vec3(0.0);
 	vec3 texColor = vec3(0.0);
 	
+	// A bit worried there's a bug here that's triggered in the latest Nvidia driver.
+	// use isinf instead? I have no need to check for negative infinity though
+	// so I'm not sure if that changes anything.
 	if(rays[i].t != 1.0 / 0.0) {
 		int lightPrimitiveID = rays[i].primitiveID;				
 		vertex a = vertices[lightPrimitiveID * 3];
@@ -102,6 +105,8 @@ void main()
 			} else {		
 				// Make this pixel a bit darker for each light source that
 				// doesn't contribute with light.
+				// Problem: The more lights I have in the scene,
+				// the darker the unlit parts of the scene becomes.
 				light -= vec3(0.05);					
 			}			
 		}		
