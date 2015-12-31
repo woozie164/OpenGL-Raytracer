@@ -109,8 +109,12 @@ void main()
 				// the darker the unlit parts of the scene becomes.
 				light -= vec3(0.05);					
 			}			
-		}		
-		finalColor = rays[i].color + light;
+		}
+		// With ambient color
+		//finalColor = rays[i].color + light;
+		
+		// No ambient color
+		finalColor = light;
 	} else {
 		// Background color
 		finalColor = vec3(0.0, 0.0, 0.0);
