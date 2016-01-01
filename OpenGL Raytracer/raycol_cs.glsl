@@ -96,9 +96,14 @@ void main()
 				float k = pow(max(dot(v, r), 0), 30);
 				//k = max(dot(v, rays[i].dir), 0);
 
-				// Light attenuation
+				// Distance to the light source
 				float d = length(lights[a].pos - rays[i].origin);
-				light += (lights[a].color * diffuse + lights[a].color * k) / d;
+				
+				// Linear Light attenuation
+				float attentuation = 1.0 / (1.0 * d);
+				
+				//light += (lights[a].color * diffuse + lights[a].color * k) / d;
+				light += ((diffuse + k) * lights[a].color) * attentuation;
 				
 				//lightRay.color = rays[i].color + vec3(1.0, 0.0, 0.0) * k;			
 				//lightRay.color = rays[i].color + lights[a].color * diffuse;
