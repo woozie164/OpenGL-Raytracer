@@ -30,11 +30,8 @@ void main()
 	bool shadowed = true;
 	vec3 light = vec3(0.0);
 	vec3 texColor = vec3(0.0);
-	
-	// A bit worried there's a bug here that's triggered in the latest Nvidia driver.
-	// use isinf instead? I have no need to check for negative infinity though
-	// so I'm not sure if that changes anything.
-	if(rays[i].t != 1.0 / 0.0) {
+		
+	if(!isinf(rays[i].t)) {
 		int lightPrimitiveID = rays[i].primitiveID;				
 		vertex a = vertices[lightPrimitiveID * 3];
 		vertex b = vertices[lightPrimitiveID * 3 + 1];
@@ -125,7 +122,7 @@ void main()
 		finalColor = vec3(0.0, 0.0, 0.0);
 	}
 	
-	finalColor += texColor;
+	finalColor += texColor;	
 	//finalColor = vec3(imageLoad(meshTexture, storePos));				
 	//imageStore(outTexture, storePos, vec4(lights[0].color, 1.0));	
 	imageStore(outTexture, storePos, vec4(finalColor, 1.0));

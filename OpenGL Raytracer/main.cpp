@@ -188,12 +188,14 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 	GLuint raygenprog, rayintersectprog, raycolorprog;
 	CompileRaytracerShader(threadGroupSize, raygenprog, rayintersectprog, raycolorprog);
-
+	
 	// Create a texture that the computer shader will render into
 	GLuint tex;
 	glGenTextures(1, &tex);
 	glBindTexture(GL_TEXTURE_2D, tex);
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	GLuint framebuffer;
 	glGenFramebuffers(1, &framebuffer);
