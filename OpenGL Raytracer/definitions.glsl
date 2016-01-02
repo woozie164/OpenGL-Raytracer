@@ -50,8 +50,5 @@ layout (binding = 0) uniform LightsBuffer {
  light lights[10];
 };
 
-uniform vec3 light_position;
-uniform vec3 light_color;
-
 #define NEAR_ZERO 1e-20 // 1 * 10^-20
 #define NEAR_PLANE_DIST 1.0f

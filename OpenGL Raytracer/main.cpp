@@ -275,13 +275,6 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
 
-		if (glfwGetKey(window, GLFW_KEY_ENTER) == GLFW_PRESS) {
-			cout << "Camera pos: " << camera.getPosition().x << " "
-				<< camera.getPosition().y << " " << camera.getPosition().z << endl;
-
-			cout << "Camera angles: " << camera.getVerticalAngle() << " " << camera.getHorizontalAngle() << endl;
-		}
-
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));		
 
@@ -305,27 +298,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			//s = s - 1.0f;
 			s = 0.0f;
 		}
-		/*
-		double currentTime = glfwGetTime();
-		// If two seconds have elapsed
-		if (currentTime > lastTime + 2.0) {
-			lastTime = currentTime;
-
-			// Issue: when running the benchmarks, sometimes the benchmark is so short
-			// that the lights don't move before the benchmark is over.
-			// In some benchmarks, the frames take so long to render the lights change.
-			// Give the light a new position in a random direction
-			for (int i = 0; i < numLights * 8; i += 8)
-			{
-				glm::vec3 lightPos(lightData[i], lightData[i + 1], lightData[i + 2]);
-				lightPos += RandomDir() * 1.0f;
-				lightData[i] = lightPos.x;
-				lightData[i + 1] = lightPos.y;
-				lightData[i + 2] = lightPos.z;
-			}
-
-		}
-		*/
+		
 		int passes = renderPasses;
 		vector<int> time(3);
 		/* Raytracer stuff */
@@ -353,10 +326,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 			glUniform1i(glGetUniformLocation(currentShaderProg, "windowWidth"), windowWidth);
 			glUniform1i(glGetUniformLocation(currentShaderProg, "windowHeight"), windowHeight);
-
-			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_position"), 1, glm::value_ptr(glm::vec3(-2.0f, -2.0f, -2.0f)));
-			glUniform3fv(glGetUniformLocation(currentShaderProg, "light_color"), 1, glm::value_ptr(glm::vec3(1.0f)));
-
+	
 			glUniform1i(glGetUniformLocation(currentShaderProg, "num_vertices"), numVertices);
 			glUniform1i(glGetUniformLocation(currentShaderProg, "num_lights"), numLights);
 
