@@ -315,8 +315,8 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		// Make the lights rotate around the sword	
 		for (int i = 0; i < numLights * 8; i += 8)
 		{
-			glm::vec2 pos1(1.0f, 0.0f);
-			glm::vec2 pos2(0.0f, 1.0f);
+			glm::vec2 pos1(2.0f, 0.0f);
+			glm::vec2 pos2(0.0f, 2.0f);
 			float angle = glm::lerp(0.0f, 2 * 3.14f, s);
 			angle += i * 0.2f;
 			glm::vec2 nextPos(pos1 * cos(angle) + pos2 * sin(angle));
@@ -415,7 +415,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 int main(int argc, char * argv) {
 	// Run raytracer with camera control and no limits on number of frames rendered before quitting.
-	RunRaytracer(800, 800, 32, 1, 8, UNLIMITED_FRAMES);
+	RunRaytracer(800, 800, 32, 1, 3, UNLIMITED_FRAMES);
 	
 	// Has weird stuff at the edges of the screen
 	RunRaytracer(400, 300, 32, 1, 2, UNLIMITED_FRAMES);

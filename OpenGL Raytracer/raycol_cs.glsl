@@ -109,7 +109,7 @@ void main()
 				// doesn't contribute with light.
 				// Problem: The more lights I have in the scene,
 				// the darker the unlit parts of the scene becomes.
-				light -= vec3(0.05);					
+				//light -= vec3(0.05);					
 			}			
 		}
 		// With ambient color
