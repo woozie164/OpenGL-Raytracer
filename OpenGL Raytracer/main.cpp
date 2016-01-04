@@ -145,24 +145,7 @@ void CompileRaytracerShader(int threadGroupSize, GLuint & raygenprog,
 		"layout(local_size_x = ";
 	threadGroupStr += to_string(threadGroupSize);
 	threadGroupStr += ", local_size_y = 1) in;\n";
-	/*
-	string threadGrpShaderFile;
-	switch (threadGroupSize)
-	{
-	case 16:
-		threadGrpShaderFile = "threadGrpSize16.glsl";
-		break;
-	case 32:
-		threadGrpShaderFile = "threadGrpSize32.glsl";
-		break;
-	case 64:
-		threadGrpShaderFile = "threadGrpSize64.glsl";
-		break;
-	default:
-		throw("Unknown option threadGroupSize = " + threadGroupSize);
-		break;
-	}
-	*/
+
 	vector<ShaderInfo> shaders;
 
 	ShaderInfo threadGroupShaderInfo;	
@@ -410,12 +393,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 				windowWidth, windowHeight, renderPasses, numLights,
 				numVertices / 3, time[0], time[1], time[2]);	
 		}
-		/*
-		cout << "Frame #" << frame << ": " << endl;
-		cout << "Raygen " << time[0] << " ms" << endl;
-		cout << "Rayintersect " << time[1] << " ms" << endl;
-		cout << "Raycolor " << time[2] << " ms" << endl;
-		*/
+
 		if (numFrames != UNLIMITED_FRAMES) {
 			frame++;
 		}
