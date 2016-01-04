@@ -17,6 +17,31 @@ using namespace std;
 
 const int UNLIMITED_FRAMES = 0;
 
+void PrintComputeShaderLimits()
+{
+	int workGrpInvocations;
+	glGetIntegerv(GL_MAX_COMPUTE_WORK_GROUP_INVOCATIONS, &workGrpInvocations);
+	cout << "MAX_COMPUTE_WORK_GROUP_INVOCATIONS: " << workGrpInvocations << endl;
+
+	int X, Y, Z;
+	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &X);
+	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &Y);
+	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &Z);
+	cout << "GL_MAX_COMPUTE_WORK_GROUP_COUNT: " << endl
+		<< " X: " << X << endl
+		<< " Y: " << Y << endl
+		<< " Z: " << Z << endl;		
+	
+	int sizeX, sizeY, sizeZ;
+	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &sizeX);
+	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &sizeY);
+	glGetIntegeri_v(GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &sizeZ);
+	cout << "GL_MAX_COMPUTE_WORK_GROUP_SIZE: " << endl
+		<< " X: " << sizeX << endl
+		<< " Y: " << sizeY << endl
+		<< " Z: " << sizeZ << endl;
+}
+
 void glfw_error_callback(int error, const char* description)
 {
 	std::cerr << description << std::endl;
@@ -186,6 +211,8 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		cout << "glDebugMessageCallback not available" << endl;
 	}
 
+	PrintComputeShaderLimits();
+
 	GLuint raygenprog, rayintersectprog, raycolorprog;
 	CompileRaytracerShader(threadGroupSize, raygenprog, rayintersectprog, raycolorprog);
 	
@@ -201,6 +228,9 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
+	GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (e != GL_FRAMEBUFFER_COMPLETE)
+		printf("There is a problem with the FBO\n");
 	// wtf is the difference vs glGenFrameBuffers? Different inital state - which contains what?
 	//glCreateFramebuffers(1, &framebuffer);	
 
@@ -224,16 +254,16 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	float lightData[]{
 		//LightPosition, padding, LightColor, padding 
 		// Note: a vec3 takes up 4 floats, 3 for the vec3 and 1 float padding
-		-0.1, -0.1, -0.1, 0.0, 1.0, 0.0, 0.0, 0.0,
-			-7.0, -7.0, -7.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-			-8.0, -7.5, -8.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-			-3.75, -3.75, -3.75, 0.0, 0.0, 0.0, 1.0, 0.0,
-			-2.16, 1.63, -2.22, 0.0, 0.5, 0.0, 0.5, 0.0,
-			-2.0, -3.0, -2.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-			-7.0, -8.0, -7.0, 0.0, 0.0, 1.0, 0.0, 0.0,
-			-8.0, -8.5, -8.0, 0.0, 1.0, 0.0, 0.0, 0.0,
-			-6.3, -6.75, -4.06, 0.0, 0.0, 0.0, 1.0, 0.0,
-			2.16, 1.63, 2.22, 0.0, 0.5, 0.0, 0.5, 0.0,
+			-0.1,	-0.1, -0.1, 0.0, 1.0, 0.0, 0.0, 0.0,
+			-7.0,	-0.1, -7.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+			-8.0,	-0.1, -8.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+			-3.75,	-0.1, -3.75, 0.0, 0.0, 0.0, 1.0, 0.0,
+			-2.16,	-0.1, -2.22, 0.0, 0.5, 0.0, 0.5, 0.0,
+			-2.0,	-0.1, -2.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+			-7.0,	-0.1, -7.0, 0.0, 0.0, 1.0, 0.0, 0.0,
+			-8.0,	-0.1, -8.0, 0.0, 1.0, 0.0, 0.0, 0.0,
+			-6.3,	-0.1, -4.06, 0.0, 0.0, 0.0, 1.0, 0.0,
+			2.16,	-0.1, 2.22, 0.0, 0.5, 0.0, 0.5, 0.0,
 	};
 
 	// 8 floats per light (2 of those flots are padding) and 10 lights in total
@@ -288,6 +318,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			glm::vec2 pos1(1.0f, 0.0f);
 			glm::vec2 pos2(0.0f, 1.0f);
 			float angle = glm::lerp(0.0f, 2 * 3.14f, s);
+			angle += i * 0.2f;
 			glm::vec2 nextPos(pos1 * cos(angle) + pos2 * sin(angle));
 
 			lightData[i] = nextPos.x;
@@ -384,7 +415,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 int main(int argc, char * argv) {
 	// Run raytracer with camera control and no limits on number of frames rendered before quitting.
-	RunRaytracer(800, 800, 32, 1, 2, UNLIMITED_FRAMES);
+	RunRaytracer(800, 800, 32, 1, 3, UNLIMITED_FRAMES);
 	
 	// Has weird stuff at the edges of the screen
 	RunRaytracer(400, 300, 32, 1, 2, UNLIMITED_FRAMES);
