@@ -216,8 +216,6 @@ FakesAssemblies/
 **/*.Server/GeneratedArtifacts
 **/*.Server/ModelManifest.xml
 _Pvt_Extensions
-OpenGL Raytracer/benchmarkresults.csv
-OpenGL Raytracer/lights_results.csv
-OpenGL Raytracer/treadgroup_results.csv
-OpenGL Raytracer/resolution_results.csv
-OpenGL Raytracer/renderpasses_results.csv
+
+// The project saves benchmark data in csv-files
+*.csv
