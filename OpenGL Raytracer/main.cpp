@@ -282,7 +282,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 	Mesh swordMesh;
 	swordMesh.LoadFromObjFile("sword/", "sword.obj");
-	//swordMesh.LoadFromObjFile("C:/Users/woozie/Dropbox/3D-programmering/bth_logo_obj_tga/", "bth.obj"); 
+	//swordMesh.LoadFromObjFile("bth_logo_obj_tga/", "bth.obj"); 
 	GLuint swordDataHandle = UploadToSSBO(swordMesh.GetVertexData(0), swordMesh.GetVertexCount(0));
 	int numVertices = swordMesh.GetVertexCount(0);
 
@@ -404,17 +404,19 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 }
 
 int main(int argc, char * argv) {
-	/*
+	
 	// Run raytracer with camera control and no limits on number of frames rendered before quitting.
-	RunRaytracer(800, 800, 32, 1, 3, UNLIMITED_FRAMES);
+	RunRaytracer(800, 800, 32, 2, 3, UNLIMITED_FRAMES);
 	
 	// Has weird stuff at the edges of the screen
 	RunRaytracer(400, 300, 32, 1, 2, UNLIMITED_FRAMES);
 
 	// Top part of the screen is brown. Like nothing is being rendered there.
 	RunRaytracer(300, 400, 32, 1, 2, UNLIMITED_FRAMES);
-	*/
-	
+
+	//RunRaytracer(800, 800, 32, 2, 2, 5, "numtriangles_results.csv");
+
+	/*
 	// Different resolutions
 	RunRaytracer(400, 400, 32, 2, 2, 5, "resolution_results.csv");	
 	RunRaytracer(800, 800, 32, 2, 2, 5, "resolution_results.csv");
@@ -441,13 +443,5 @@ int main(int argc, char * argv) {
 	RunRaytracer(800, 800, 32, 2, 2, 5, "lights_results.csv");
 	RunRaytracer(800, 800, 32, 2, 3, 5, "lights_results.csv");
 	RunRaytracer(800, 800, 32, 2, 4, 5, "lights_results.csv");
-	
-	/*
-	// Number of lights
-	RunRaytracer(800, 800, 32, 2, 0, 5);
-	RunRaytracer(800, 800, 32, 2, 1, 5);
-	RunRaytracer(800, 800, 32, 2, 2, 5);
-	RunRaytracer(800, 800, 32, 2, 3, 5);
-	RunRaytracer(800, 800, 32, 2, 4, 5);
 	*/
 }

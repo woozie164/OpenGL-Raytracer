@@ -116,7 +116,7 @@ void main()
 		//finalColor = rays[i].color + light;
 		
 		// No ambient color
-		finalColor = light;
+		finalColor += light;
 	} else {
 		// Background color
 		finalColor = vec3(0.0, 0.0, 0.0);
