@@ -77,7 +77,7 @@ void main()
 			if(lightRay.t == 1.0 / 0.0) {	
 				shadowed = false;
 				// Makes the dark side of the sphere completely dark
-				float diffuse = dot(rays[i].n, lightDir);
+				float diffuse = max(dot(rays[i].n, lightDir), 0);
 				
 				// view vector, i.e. the unit vector from the surface point to the eye position
 				vec3 v = normalize(camera_pos - rays[i].origin);			
