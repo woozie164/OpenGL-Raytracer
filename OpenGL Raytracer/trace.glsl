@@ -64,7 +64,7 @@ bool RaySphereIntersect(vec3 o, vec3 d, vec3 c, float r, out float t)
 	// The length of l squared
 	float l_sqr = dot(l, l);
 	float r_sqr = r * r;
-	bool rayOutsideSphere = l_sqr > r_sqr
+	bool rayOutsideSphere = l_sqr > r_sqr;
 	if(s < 0 && rayOutsideSphere) return false;
 	
 	float m_sqr = l_sqr - r_sqr;
