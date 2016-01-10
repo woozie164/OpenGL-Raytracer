@@ -58,7 +58,9 @@ void main()
 		{			
 			// No need to calculate the intersection point, because
 			// this is already done in the intersection stage
-			//vec3 intersectionPoint = rays[i].origin + rays[i].dir * rays[i].t;			
+			//vec3 intersectionPoint = rays[i].origin + rays[i].dir * rays[i].t;
+			
+			// A vector from the intersection point pointing towards the light
 			vec3 lightDir = normalize(lights[a].pos - rays[i].origin);			
 			
 			lightRay = ray(rays[i].origin + lightDir * 0.001, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
@@ -93,6 +95,8 @@ void main()
 				
 				// Linear Light attenuation
 				float attentuation = 1.0 / (1.0 * d);
+				
+				//float attentuation = 1.0 / (1.0 + 0.0 * d + 0.9 * d * d);				
 				//float attentuation = 1.0;
 				
 				//light += (lights[a].color * diffuse + lights[a].color * k) / d;
