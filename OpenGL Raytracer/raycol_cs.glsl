@@ -72,7 +72,8 @@ void main()
 			
 			// if t is set to infinity, there's were no collision between
 			// the lightRay and the geometry
-			if(lightRay.t == 1.0 / 0.0) {				
+			if(lightRay.t == 1.0 / 0.0) {	
+				shadowed = false;
 				// Makes the dark side of the sphere completely dark
 				float diffuse = dot(rays[i].n, lightDir);
 				
@@ -92,9 +93,11 @@ void main()
 				
 				// Linear Light attenuation
 				float attentuation = 1.0 / (1.0 * d);
+				//float attentuation = 1.0;
 				
 				//light += (lights[a].color * diffuse + lights[a].color * k) / d;
 				light += ((diffuse + k) * lights[a].color) * attentuation;
+				//light += lights[a].color;
 			}		
 		}
 		// No ambient color
@@ -103,7 +106,9 @@ void main()
 		// Background color
 		finalColor = vec3(0.0, 0.0, 0.0);
 	}
+	if(shadowed == false) {
+		finalColor += texColor;		
+	}
 	
-	finalColor += texColor;		
 	imageStore(outTexture, storePos, vec4(finalColor, 1.0));
 }
