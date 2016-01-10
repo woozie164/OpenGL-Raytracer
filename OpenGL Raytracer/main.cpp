@@ -307,8 +307,8 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		// Make the lights rotate around the sword	
 		for (int i = 0; i < numLights * 8; i += 8)
 		{
-			glm::vec2 pos1(2.0f, 0.0f);
-			glm::vec2 pos2(0.0f, 2.0f);
+			glm::vec2 pos1(1.0f, 0.0f);
+			glm::vec2 pos2(0.0f, 1.0f);
 			float angle = glm::lerp(0.0f, 2 * 3.14f, s);
 			angle += i * 0.2f;
 			glm::vec2 nextPos(pos1 * cos(angle) + pos2 * sin(angle));
