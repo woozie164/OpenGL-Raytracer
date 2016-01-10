@@ -56,6 +56,29 @@ bool RayVsSphere(vec3 ray_origin, vec3 ray_dir,
 	}	
 }
 
+bool RaySphereIntersect(vec3 o, vec3 d, vec3 c, float r, out float t)
+{
+	vec3 l = c - o;
+	float s = dot(l, d);
+	
+	// The length of l squared
+	float l_sqr = dot(l, l);
+	float r_sqr = r * r;
+	bool rayOutsideSphere = l_sqr > r_sqr
+	if(s < 0 && rayOutsideSphere) return false;
+	
+	float m_sqr = l_sqr - r_sqr;
+	if(m_sqr > r_sqr) return false;
+	
+	float q = sqrt(r_sqr - m_sqr);	
+	if(rayOutsideSphere) {
+		t = s - q;
+	} else {
+		t = s + q;
+	}
+	return true;
+}
+
 
 bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out float t1) {
 	//Squared distance between ray origin and sphere center
@@ -134,8 +157,9 @@ void trace(in out ray r, bool earlyExit = false) {
 	sphere my_sphere = sphere(vec3(0.0f, -0.7f, 2.0f), 0.5f);	
 	
 	float t0, t1;
-	if(intersectSphere(r.origin, r.dir, my_sphere, t0, t1)){
-		t = min(t0, t1);
+	//if(intersectSphere(r.origin, r.dir, my_sphere, t0, t1)){
+	if(RaySphereIntersect(r.origin, r.dir, my_sphere.pos, my_sphere.r, t)) {
+		//t = min(t0, t1);
 		if(t > 0 && t < t_min) {
 			t_min = t;
 			r.primitiveID = primitiveID + 1;
@@ -153,8 +177,9 @@ void trace(in out ray r, bool earlyExit = false) {
 
 	sphere my_sphere2 = sphere(vec3(-2.0f, -00f, 0.0f), 0.2f);	
 	
-	if(intersectSphere(r.origin, r.dir, my_sphere2, t0, t1)){
-		t = min(t0, t1);
+	//if(intersectSphere(r.origin, r.dir, my_sphere2, t0, t1)){
+	if(RaySphereIntersect(r.origin, r.dir, my_sphere2.pos, my_sphere2.r, t)) {
+		//t = min(t0, t1);
 		if(t > 0 && t < t_min) {
 			t_min = t;
 			r.primitiveID = primitiveID + 2;
