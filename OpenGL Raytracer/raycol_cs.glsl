@@ -73,10 +73,6 @@ void main()
 			// if t is set to infinity, there's were no collision between
 			// the lightRay and the geometry
 			if(lightRay.t == 1.0 / 0.0) {				
-				shadowed = false;
-				// Makes the dark side of the sphere the ambient color
-				//float diffuse = max(0.0, dot(rays[i].n, lightDir));
-									
 				// Makes the dark side of the sphere completely dark
 				float diffuse = dot(rays[i].n, lightDir);
 				
@@ -89,9 +85,7 @@ void main()
 				// reflection vector
 				vec3 r = normalize(reflect(I, rays[i].n));
 				
-				//k = max(dot(v, reflect(I, rays[i].dir)), 0);
 				float k = pow(max(dot(v, r), 0), 30);
-				//k = max(dot(v, rays[i].dir), 0);
 
 				// Distance to the light source
 				float d = length(lights[a].pos - rays[i].origin);
@@ -101,20 +95,8 @@ void main()
 				
 				//light += (lights[a].color * diffuse + lights[a].color * k) / d;
 				light += ((diffuse + k) * lights[a].color) * attentuation;
-				
-				//lightRay.color = rays[i].color + vec3(1.0, 0.0, 0.0) * k;			
-				//lightRay.color = rays[i].color + lights[a].color * diffuse;
-			} else {		
-				// Make this pixel a bit darker for each light source that
-				// doesn't contribute with light.
-				// Problem: The more lights I have in the scene,
-				// the darker the unlit parts of the scene becomes.
-				//light -= vec3(0.05);					
-			}			
+			}		
 		}
-		// With ambient color
-		//finalColor = rays[i].color + light;
-		
 		// No ambient color
 		finalColor += light;
 	} else {
@@ -122,8 +104,6 @@ void main()
 		finalColor = vec3(0.0, 0.0, 0.0);
 	}
 	
-	finalColor += texColor;	
-	//finalColor = vec3(imageLoad(meshTexture, storePos));				
-	//imageStore(outTexture, storePos, vec4(lights[0].color, 1.0));	
+	finalColor += texColor;		
 	imageStore(outTexture, storePos, vec4(finalColor, 1.0));
 }
