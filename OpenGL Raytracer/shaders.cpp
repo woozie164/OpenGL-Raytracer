@@ -2,9 +2,6 @@
 #include <fstream>
 #include <sstream>
 using namespace std;
-/*TODO:
-- Add support for headers
-*/
 
 //#define PRINT_SHADER_SRC_ON_ERROR
 

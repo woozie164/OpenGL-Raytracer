@@ -140,19 +140,16 @@ GLuint UploadToSSBO(const VertexData * vertexData, unsigned int numVertices)
 void CompileRaytracerShader(int threadGroupSize, GLuint & raygenprog,
 	GLuint & rayintersectprog, GLuint & raycolorprog)
 {
-	string threadGroupStr =
+	ShaderInfo threadGroupShaderInfo;	
+	threadGroupShaderInfo.source =
 		"#version 430 core\n"
 		"layout(local_size_x = ";
-	threadGroupStr += to_string(threadGroupSize);
-	threadGroupStr += ", local_size_y = 1) in;\n";
-
-	vector<ShaderInfo> shaders;
-
-	ShaderInfo threadGroupShaderInfo;	
-	threadGroupShaderInfo.source = threadGroupStr;
+	threadGroupShaderInfo.source += to_string(threadGroupSize);
+	threadGroupShaderInfo.source += ", local_size_y = 1) in;\n";
 	threadGroupShaderInfo.shaderType = SHADER_HEADER;
 	threadGroupShaderInfo.filename = "No file"; // Only used for debugging
-	
+
+	vector<ShaderInfo> shaders;
 	shaders.push_back(threadGroupShaderInfo);
 	loadShader("definitions.glsl", SHADER_HEADER, shaders);
 	loadShader("raygen_cs.glsl", GL_COMPUTE_SHADER, shaders);
@@ -409,7 +406,7 @@ int main(int argc, char * argv) {
 	RunRaytracer(800, 800, 32, 2, 3, UNLIMITED_FRAMES);
 	
 	// Has weird stuff at the edges of the screen
-	RunRaytracer(400, 300, 32, 1, 2, UNLIMITED_FRAMES);
+	RunRaytracer(800, 600, 32, 1, 2, UNLIMITED_FRAMES);
 
 	// Top part of the screen is brown. Like nothing is being rendered there.
 	RunRaytracer(300, 400, 32, 1, 2, UNLIMITED_FRAMES);
