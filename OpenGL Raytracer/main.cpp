@@ -293,6 +293,8 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 	int frame = 0;
 	float s = 0;
+
+	int enterKeyLastFrame = GLFW_RELEASE;
 	while (!glfwWindowShouldClose(window) && ((numFrames == UNLIMITED_FRAMES) || (frame < numFrames))) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
@@ -303,7 +305,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		float timeNow = glfwGetTime();
 		float dt = timeNow - lastFrame;
 		lastFrame = timeNow;
-		
+		/*
 		// Make the lights rotate around the sword	
 		for (int i = 0; i < numLights * 8; i += 8)
 		{
@@ -321,7 +323,16 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			//s = s - 1.0f;
 			s = 0.0f;
 		}
-		
+		*/
+
+		// Manual light controls
+		if (glfwGetKey(window, GLFW_KEY_J))  lightData[0] -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_L)) lightData[0] += 0.01;
+		if (glfwGetKey(window, GLFW_KEY_I))	lightData[1] -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_K))	lightData[1] += 0.01;
+		if (glfwGetKey(window, GLFW_KEY_O))	lightData[2] -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_P))	lightData[2] += 0.01;
+
 		int passes = renderPasses;
 		vector<int> time(3);
 		/* Raytracer stuff */
@@ -394,6 +405,13 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		if (numFrames != UNLIMITED_FRAMES) {
 			frame++;
 		}
+
+		int enterKeyPressed = glfwGetKey(window, GLFW_KEY_ENTER);
+		if (enterKeyLastFrame == GLFW_RELEASE && enterKeyPressed == GLFW_PRESS)
+		{
+			CompileRaytracerShader(threadGroupSize, raygenprog, rayintersectprog, raycolorprog);
+		}
+		enterKeyLastFrame = enterKeyPressed;
 	}
 
 	glfwTerminate();
@@ -401,9 +419,8 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 }
 
 int main(int argc, char * argv) {
-	
 	// Run raytracer with camera control and no limits on number of frames rendered before quitting.
-	RunRaytracer(800, 800, 32, 1, 3, UNLIMITED_FRAMES);
+	RunRaytracer(800, 800, 32, 1, 1, UNLIMITED_FRAMES);
 	
 	// Has weird stuff at the edges of the screen
 	RunRaytracer(800, 600, 32, 1, 2, UNLIMITED_FRAMES);
