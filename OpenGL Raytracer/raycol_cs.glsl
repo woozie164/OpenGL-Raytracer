@@ -26,6 +26,7 @@ void main()
 	// Load the current pixel color, because it might contain intermediate
 	// color calculations
 	vec3 finalColor = vec3(imageLoad(outTexture, storePos));
+	//vec3 finalColor = vec3(0.0, 0.0,  0.0);
 	ray lightRay;		
 	bool shadowed = true;
 	vec3 light = vec3(0.0);
@@ -75,9 +76,8 @@ void main()
 			// if t is set to infinity, there's were no collision between
 			// the lightRay and the geometry
 			if(lightRay.t == 1.0 / 0.0) {	
-				shadowed = false;
-				// Makes the dark side of the sphere completely dark
-				float diffuse = max(dot(rays[i].n, lightDir), 0);
+				shadowed = false;				
+				float diffuse = max(dot(rays[i].n, lightDir), 0);				
 				
 				// view vector, i.e. the unit vector from the surface point to the eye position
 				vec3 v = normalize(camera_pos - rays[i].origin);			
@@ -86,33 +86,38 @@ void main()
 				vec3 I = lightDir * -1;		
 				
 				// reflection vector
+				float k = 0;
+				//if(dot(rays[i].n, lightDir) > 0)  // makes the highlights on the walls dissapear
+				{
 				vec3 r = normalize(reflect(I, rays[i].n));
 				
-				float k = pow(max(dot(v, r), 0), 30);
-
+				k = pow(max(dot(v, r), 0), 30);
+				}
 				// Distance to the light source
 				float d = length(lights[a].pos - rays[i].origin);
 				
 				// Linear Light attenuation
 				float attentuation = 1.0 / (1.0 * d);
-				
+				attentuation = 1;
 				//float attentuation = 1.0 / (1.0 + 0.0 * d + 0.9 * d * d);				
 				//float attentuation = 1.0;
 				
 				//light += (lights[a].color * diffuse + lights[a].color * k) / d;
-				light += ((diffuse + k) * lights[a].color) * attentuation;
+				light += ((diffuse + k) * lights[a].color); // test with different diffuse and specular constants?
+				//light += ((diffuse + k);
 				//light += lights[a].color;
 			}		
 		}
 		// No ambient color
-		finalColor += light;
+		//finalColor += light;
+		if(shadowed == false) {
+			finalColor += texColor + light;			
+		}
 	} else {
 		// Background color
-		finalColor = vec3(0.0, 0.0, 0.0);
+		finalColor = vec3(1.0, 0.0, 0.0);
 	}
-	if(shadowed == false) {
-		finalColor += texColor;		
-	}
+
 	
 	imageStore(outTexture, storePos, vec4(finalColor, 1.0));
 }
