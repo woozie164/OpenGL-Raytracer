@@ -139,7 +139,7 @@ GLuint UploadToSSBO(const VertexData * vertexData, unsigned int numVertices)
 
 void CompileRaytracerShader(int threadGroupSize, GLuint & raygenprog,
 	GLuint & rayintersectprog, GLuint & raycolorprog)
-{
+{	
 	ShaderInfo threadGroupShaderInfo;	
 	threadGroupShaderInfo.source =
 		"#version 430 core\n"
@@ -152,22 +152,22 @@ void CompileRaytracerShader(int threadGroupSize, GLuint & raygenprog,
 	vector<ShaderInfo> shaders;
 	shaders.push_back(threadGroupShaderInfo);
 	loadShader("definitions.glsl", SHADER_HEADER, shaders);
-	loadShader("raygen_cs.glsl", GL_COMPUTE_SHADER, shaders);
-	raygenprog = compileShaderProgram(shaders);
+	loadShader("raygen_cs.glsl", GL_COMPUTE_SHADER, shaders);	
+	compileShaderProgram(shaders, raygenprog);	
 
 	shaders.clear();
 	shaders.push_back(threadGroupShaderInfo);
 	loadShader("definitions.glsl", SHADER_HEADER, shaders);
 	loadShader("trace.glsl", SHADER_HEADER, shaders);
 	loadShader("rayintersect_cs.glsl", GL_COMPUTE_SHADER, shaders);	
-	rayintersectprog = compileShaderProgram(shaders);
-
+	compileShaderProgram(shaders, rayintersectprog);
+	
 	shaders.clear();
 	shaders.push_back(threadGroupShaderInfo);
 	loadShader("definitions.glsl", SHADER_HEADER, shaders);
 	loadShader("trace.glsl", SHADER_HEADER, shaders);
 	loadShader("raycol_cs.glsl", GL_COMPUTE_SHADER, shaders);	
-	raycolorprog = compileShaderProgram(shaders);
+	compileShaderProgram(shaders, raycolorprog);	
 }
 
 void WriteBenchmarkResultsToCSVFile(const char * filename, int threadGrpSize, int screenWidth, int screenHeight,
@@ -326,7 +326,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		*/
 
 		// Manual light controls
-		if (glfwGetKey(window, GLFW_KEY_J))  lightData[0] -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_J)) lightData[0] -= 0.01;
 		if (glfwGetKey(window, GLFW_KEY_L)) lightData[0] += 0.01;
 		if (glfwGetKey(window, GLFW_KEY_I))	lightData[1] -= 0.01;
 		if (glfwGetKey(window, GLFW_KEY_K))	lightData[1] += 0.01;

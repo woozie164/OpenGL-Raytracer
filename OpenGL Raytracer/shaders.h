@@ -11,7 +11,7 @@ struct ShaderInfo
 	GLuint shaderHandle;
 };
 
-GLuint compileShaderProgram(std::vector<ShaderInfo> & shaders);
+int compileShaderProgram(std::vector<ShaderInfo> & shaders, GLuint& programHandle);
 void loadShader(std::string filename, GLenum shaderType, std::vector<ShaderInfo> & shaders);
 
 #define SHADER_HEADER 0x0

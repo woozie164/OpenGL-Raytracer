@@ -24,10 +24,10 @@ void loadShader(std::string filename, GLenum shaderType, vector<ShaderInfo> & sh
 	shaders.push_back(shaderInfo);
 }
 
-GLuint compileShaderProgram(vector<ShaderInfo> & shaders)
+int compileShaderProgram(vector<ShaderInfo> & shaders, GLuint& programHandle)
 {	
-	GLuint programHandle = glCreateProgram();
-	if( programHandle == 0 )
+	GLuint pHandle = glCreateProgram();
+	if( pHandle == 0 )
 	{
 		fprintf(stderr, "Error creating program object.\n");
 		exit(1);
@@ -74,17 +74,17 @@ GLuint compileShaderProgram(vector<ShaderInfo> & shaders)
 				GLsizei written;
 				glGetShaderInfoLog(shaderHandle, logLen, &written, log);
 				fprintf(stderr, "Shader log:\n%s", log);
-				free(log);
-				return -1;
+				free(log);				
 			}
+			return -1;
 		}
 
-		glAttachShader(programHandle, shaderHandle);
+		glAttachShader(pHandle, shaderHandle);
 	}
 
-	glLinkProgram( programHandle);
+	glLinkProgram( pHandle);
 	GLint status;
-	glGetProgramiv( programHandle, GL_LINK_STATUS, &status );
+	glGetProgramiv( pHandle, GL_LINK_STATUS, &status );
 	if( status == GL_FALSE ) 
 	{
 		fprintf( stderr, "Failed to link shader program!\n" );
@@ -93,12 +93,12 @@ GLuint compileShaderProgram(vector<ShaderInfo> & shaders)
 			fprintf(stderr, "%s\n", shaders[i].filename.c_str());
 		}		
 		GLint logLen;
-		glGetProgramiv(programHandle, GL_INFO_LOG_LENGTH, &logLen);
+		glGetProgramiv(pHandle, GL_INFO_LOG_LENGTH, &logLen);
 		if( logLen > 0 )
 		{
 			char * log = (char *)malloc(logLen);
 			GLsizei written;
-			glGetProgramInfoLog(programHandle, logLen, &written, log);
+			glGetProgramInfoLog(pHandle, logLen, &written, log);
 			fprintf(stderr, "Program log: \n%s", log);
 			free(log);			
 		}
@@ -106,7 +106,8 @@ GLuint compileShaderProgram(vector<ShaderInfo> & shaders)
 	}
 	else
 	{
-		return programHandle;
+		programHandle = pHandle;
+		return 0;
 	}
 }
 	
