@@ -224,7 +224,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	glfwInit();
 
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-	GLFWwindow * window = glfwCreateWindow(windowWidth, windowHeight, "OpenGL Raytracer", 0, 0);
+	GLFWwindow * window = glfwCreateWindow(windowWidth * 2, windowHeight, "OpenGL Raytracer", 0, 0);
 	if (!window) {
 		glfwTerminate();
 		return -1;
@@ -266,9 +266,17 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT1, GL_TEXTURE_2D, depthTex, 0);	
-	GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);	
+	GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);		
 	PrintIfFrameBufferNotComplete(e);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	GLuint framebufferDepth;
+	glGenFramebuffers(1, &framebufferDepth);
+	glBindFramebuffer(GL_FRAMEBUFFER, framebufferDepth);	
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, depthTex, 0);
+	e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	PrintIfFrameBufferNotComplete(e);
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	// wtf is the difference vs glGenFrameBuffers? Different inital state - which contains what?
 	//glCreateFramebuffers(1, &framebuffer);	
@@ -439,6 +447,11 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight,
+			GL_COLOR_BUFFER_BIT, GL_NEAREST);
+
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferDepth);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glBlitFramebuffer(0, 0, windowWidth, windowHeight, windowWidth, 0, windowWidth * 2, windowHeight,
 			GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
 		glfwSwapBuffers(window);

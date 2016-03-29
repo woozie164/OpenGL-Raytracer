@@ -53,3 +53,4 @@ layout (binding = 0) uniform LightsBuffer {
 
 #define NEAR_ZERO 1e-20 // 1 * 10^-20
 #define NEAR_PLANE_DIST 1.0f
+#define FAR_PLANE_DIST 10.0f

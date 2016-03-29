@@ -12,7 +12,8 @@ void main(void)
 	trace(my_ray);
 	
 	float d = distance(my_ray.origin, camera_pos);
-	imageStore(depthTexture, storePos, vec4(d));
+	d = (d - NEAR_PLANE_DIST) / FAR_PLANE_DIST;	
+	imageStore(depthTexture, storePos, vec4(d)); // writes a vector of 32 bit floats to a 16 bit float pixel ... converts correctly?
 	
 	rays[i] = my_ray;
 }
