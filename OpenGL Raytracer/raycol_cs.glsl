@@ -87,11 +87,11 @@ void main()
 				
 				// reflection vector
 				float k = 0;
-				//if(dot(rays[i].n, lightDir) > 0)  // makes the highlights on the walls dissapear
+				if(dot(rays[i].n, lightDir) > 0)  // makes the highlights on the walls dissapear
 				{
-				vec3 r = normalize(reflect(I, rays[i].n));
-				
-				k = pow(max(dot(v, r), 0), 30);
+					vec3 r = normalize(reflect(I, rays[i].n));
+					
+					k = pow(max(dot(v, r), 0), 30);
 				}
 				// Distance to the light source
 				float d = length(lights[a].pos - rays[i].origin);
