@@ -182,6 +182,43 @@ void WriteBenchmarkResultsToCSVFile(const char * filename, int threadGrpSize, in
 		<< colorTime		<< endl;
 }
 
+void PrintIfFrameBufferNotComplete(GLenum e)
+{
+	if (e != GL_FRAMEBUFFER_COMPLETE)
+	{
+		switch (e)
+		{
+		case GL_FRAMEBUFFER_UNDEFINED:
+			printf("GL_FRAMEBUFFER_UNDEFINED");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT:
+			printf("GL_FRAMEBUFFER_INCOMPLETE_ATTACHMENT");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT:
+			printf("GL_FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER:
+			printf("GL_FRAMEBUFFER_INCOMPLETE_DRAW_BUFFER");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER:
+			printf("GL_FRAMEBUFFER_INCOMPLETE_READ_BUFFER");
+			break;
+		case GL_FRAMEBUFFER_UNSUPPORTED:
+			printf("GL_FRAMEBUFFER_UNSUPPORTED");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE:
+			printf("GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE");
+			break;
+		case GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS:
+			printf("GL_FRAMEBUFFER_INCOMPLETE_LAYER_TARGETS");
+			break;
+		case 0:
+			printf("Something went really wrong when creating this framebuffer.");
+			break;
+		}
+	}
+}
+
 int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int renderPasses, int numLights, int numFrames, const char * benchmarkOutputFile = nullptr) {
 	glfwSetErrorCallback(glfw_error_callback);
 	glfwInit();
@@ -215,14 +252,21 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, windowWidth, windowHeight, 0, GL_RGBA, GL_FLOAT, nullptr);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
+	GLuint depthRenderBuffer;
+	glGenRenderbuffers(1, &depthRenderBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, depthRenderBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT32, windowWidth, windowHeight);
+	
 	GLuint framebuffer;
 	glGenFramebuffers(1, &framebuffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);
-	GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-	if (e != GL_FRAMEBUFFER_COMPLETE)
-		printf("There is a problem with the FBO\n");
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex, 0);	
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, depthRenderBuffer);
+	GLenum e = glCheckFramebufferStatus(GL_FRAMEBUFFER);	
+	PrintIfFrameBufferNotComplete(e);
+
 	// wtf is the difference vs glGenFrameBuffers? Different inital state - which contains what?
 	//glCreateFramebuffers(1, &framebuffer);	
 
@@ -300,7 +344,8 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		camera.Update();
 
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
-		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));		
+		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));				
+		glClearBufferfv(GL_DEPTH, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
 
 		float timeNow = glfwGetTime();
 		float dt = timeNow - lastFrame;
