@@ -6,7 +6,7 @@ void main(void)
 	ray my_ray = rays[i];
 	
 	float d = distance(my_ray.origin, camera_pos);
-	imageStore(depthTexture, storePos, vec4(1.0)/*vec4(d)*/;
+	imageStore(depthTexture, storePos, vec4(1.0)/*vec4(d)*/);
 	
 	// Move the ray's origin point slighly forward so that 
 	// it avoids interesections with the primitive that spawned it.
