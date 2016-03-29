@@ -32,6 +32,7 @@ struct vertex {
 
 layout (rgba8, binding = 0) uniform image2D outTexture;
 layout (rgba8, binding = 1) uniform image2D meshTexture;
+layout (r16f, binding = 2) uniform image2D depthTexture;
 
 layout (binding = 1) buffer ray_buffer { ray rays[]; };
 layout (binding = 2) buffer sword_buffer { vertex vertices[]; };
