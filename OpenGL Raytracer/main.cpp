@@ -16,6 +16,7 @@
 using namespace std;
 
 const int UNLIMITED_FRAMES = 0;
+int gRenderPasses;
 
 void PrintComputeShaderLimits()
 {
@@ -47,7 +48,20 @@ void glfw_error_callback(int error, const char* description)
 	std::cerr << description << std::endl;
 }
 
-void APIENTRY openglCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void * userParam)
+void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	bool isPressedOrRepeat = action == GLFW_PRESS || action == GLFW_REPEAT;
+	if (key == GLFW_KEY_PAGE_UP && isPressedOrRepeat)
+	{
+		gRenderPasses++;
+	}
+	if (key == GLFW_KEY_PAGE_DOWN && isPressedOrRepeat)
+	{
+		if(gRenderPasses > 1) gRenderPasses--;
+	}
+}
+
+void APIENTRY OpenGLCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void * userParam)
 {
 	using namespace std;
 	// Ignore certain messages
@@ -219,7 +233,8 @@ void PrintIfFrameBufferNotComplete(GLenum e)
 	}
 }
 
-int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int renderPasses, int numLights, int numFrames, const char * benchmarkOutputFile = nullptr) {	
+int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int renderPasses, int numLights, int numFrames, const char * benchmarkOutputFile = nullptr) {
+	gRenderPasses = renderPasses;
 	glfwSetErrorCallback(glfw_error_callback);
 	glfwInit();
 
@@ -230,12 +245,14 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		return -1;
 	}
 	glfwMakeContextCurrent(window);
+	glfwSetKeyCallback(window, glfwKeyCallback);
+	
 	glewInit();
 
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	if (glDebugMessageCallback){
-		glDebugMessageCallback(openglCallbackFunction, nullptr);
+		glDebugMessageCallback(OpenGLCallbackFunction, nullptr);
 	} else {
 		cout << "glDebugMessageCallback not available" << endl;
 	}
@@ -390,7 +407,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		if (glfwGetKey(window, GLFW_KEY_O))	lightData[2] -= 0.01;
 		if (glfwGetKey(window, GLFW_KEY_P))	lightData[2] += 0.01;
 
-		int passes = renderPasses;
+		int passes = gRenderPasses;
 		vector<int> time(3);
 		/* Raytracer stuff */
 		for (int i = 0; i < 3; i++)
@@ -464,7 +481,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		if (benchmarkOutputFile)
 		{
 			WriteBenchmarkResultsToCSVFile(benchmarkOutputFile, threadGroupSize,
-				windowWidth, windowHeight, renderPasses, numLights,
+				windowWidth, windowHeight, gRenderPasses, numLights,
 				numVertices / 3, time[0], time[1], time[2]);	
 		}
 
