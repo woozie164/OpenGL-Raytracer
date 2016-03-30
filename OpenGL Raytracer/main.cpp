@@ -219,7 +219,7 @@ void PrintIfFrameBufferNotComplete(GLenum e)
 	}
 }
 
-int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int renderPasses, int numLights, int numFrames, const char * benchmarkOutputFile = nullptr) {
+int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int renderPasses, int numLights, int numFrames, const char * benchmarkOutputFile = nullptr) {	
 	glfwSetErrorCallback(glfw_error_callback);
 	glfwInit();
 
@@ -350,6 +350,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	float s = 0;
 
 	int enterKeyLastFrame = GLFW_RELEASE;
+	int tKeyPressedLastFrame = GLFW_RELEASE;
 	while (!glfwWindowShouldClose(window) && ((numFrames == UNLIMITED_FRAMES) || (frame < numFrames))) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
@@ -454,6 +455,9 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		glBlitFramebuffer(0, 0, windowWidth, windowHeight, windowWidth, 0, windowWidth * 2, windowHeight,
 			GL_COLOR_BUFFER_BIT, GL_NEAREST);
 
+		// TODO: Use the depthbuffer to render somekind of light position indicator.
+		// Blit depthbuffer?
+
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		
@@ -474,6 +478,14 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			CompileRaytracerShader(threadGroupSize, raygenprog, rayintersectprog, raycolorprog);
 		}
 		enterKeyLastFrame = enterKeyPressed;
+
+		int tKeyPressed = glfwGetKey(window, GLFW_KEY_T);
+		if (tKeyPressedLastFrame == GLFW_RELEASE && tKeyPressed == GLFW_PRESS)
+		{
+			camera.cameraMouseControlEnabled = !camera.cameraMouseControlEnabled;
+		}
+		tKeyPressedLastFrame = tKeyPressed;
+		
 	}
 
 	glfwTerminate();
