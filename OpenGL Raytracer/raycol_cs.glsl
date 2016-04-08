@@ -75,8 +75,8 @@ void main()
 			
 			// if t is set to infinity, there's were no collision between
 			// the lightRay and the geometry
-			if(lightRay.t == 1.0 / 0.0) {	
-				shadowed = false;				
+			if(lightRay.t == 1.0 / 0.0) {								
+				shadowed = false;
 				float diffuse = max(dot(rays[i].n, lightDir), 0);				
 				
 				// view vector, i.e. the unit vector from the surface point to the eye position
@@ -97,27 +97,27 @@ void main()
 				float d = length(lights[a].pos - rays[i].origin);
 				
 				// Linear Light attenuation
-				float attentuation = 1.0 / (1.0 * d);
-				attentuation = 1;
+				float attentuation = 1.0 / (0.5 * d);
 				//float attentuation = 1.0 / (1.0 + 0.0 * d + 0.9 * d * d);				
 				//float attentuation = 1.0;
 				
 				//light += (lights[a].color * diffuse + lights[a].color * k) / d;
-				light += ((diffuse + k) * lights[a].color); // test with different diffuse and specular constants?
+				//light += ((diffuse + k) * lights[a].color); // test with different diffuse and specular constants?
+				light += ((diffuse + k) * lights[a].color * attentuation);
 				//light += ((diffuse + k);
 				//light += lights[a].color;
 			}		
 		}
 		// No ambient color
 		//finalColor += light;
-		if(shadowed == false) {
-			finalColor += texColor + light;			
+		
+		if(!shadowed) {
+			finalColor += texColor + light;
 		}
 	} else {
 		// Background color
 		finalColor = vec3(1.0, 0.0, 0.0);
 	}
-
 	
 	imageStore(outTexture, storePos, vec4(finalColor, 1.0));
 }
