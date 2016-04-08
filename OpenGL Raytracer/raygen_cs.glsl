@@ -1,8 +1,13 @@
 void main(void) 
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
-	if(storePos.x > windowWidth) return;
-	
+	if(storePos.x >= windowWidth) return;	
+/*	
+	vec2 tempStorePos = vec2(storePos);
+	tempStorePos.x /= windowWidth;
+	tempStorePos.y /= windowHeight;
+	imageStore(outTexture, storePos, vec4(tempStorePos, 1.0, 0.0));	
+*/
 	float halfWindowWidth = windowWidth / 2.0f;
 	float halfWindowHeight = windowHeight / 2.0f;
 	float dx = (storePos.x - halfWindowWidth) / halfWindowWidth; 

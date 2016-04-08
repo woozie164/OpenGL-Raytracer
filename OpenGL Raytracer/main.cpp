@@ -448,7 +448,8 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			// Workgroup size is 32 x 1
 			// Dispatch 25 * 32 = 800
 			// x * threadGrpSize = windowWidth			
-			glDispatchCompute(ceil(windowWidth / (float)threadGroupSize), windowHeight, 1);
+			glMemoryBarrier(GL_ALL_BARRIER_BITS);			
+			glDispatchCompute(ceil(static_cast<float>(windowWidth) / static_cast<float>(threadGroupSize)), windowHeight, 1);
 			glMemoryBarrier(GL_ALL_BARRIER_BITS);
 			timer.End();
 			time[i] += timer.GetElapsedTime();
