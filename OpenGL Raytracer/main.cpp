@@ -498,6 +498,8 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 		glUseProgram(simpleShader);
 		glBindBuffer(GL_ARRAY_BUFFER, lightBuffer); // Note: contains not only light positions, but also padding and light color.
+		glEnableVertexAttribArray(0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 		glUniformMatrix4fv(glGetUniformLocation(simpleShader, "projection"), 1, false, glm::value_ptr(camera.getProjectionMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(simpleShader, "view"), 1, false, glm::value_ptr(camera.getViewMatrix()));
 		glPointSize(30.0f);
@@ -505,6 +507,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 		glUseProgram(0);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);		
+		glDisableVertexAttribArray(0);
 
 		/*
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferDepth);
