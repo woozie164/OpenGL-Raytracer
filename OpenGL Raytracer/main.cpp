@@ -233,6 +233,14 @@ void PrintIfFrameBufferNotComplete(GLenum e)
 	}
 }
 
+void CompileForwardRenderingShader(GLuint & simpleShader)
+{
+	vector<ShaderInfo> shaders;
+	loadShader("simple_vert.glsl", GL_VERTEX_SHADER, shaders);
+	loadShader("simple_frag.glsl", GL_FRAGMENT_SHADER, shaders);
+	compileShaderProgram(shaders, simpleShader);
+}
+
 int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int renderPasses, int numLights, int numFrames, const char * benchmarkOutputFile = nullptr) {
 	gRenderPasses = renderPasses;
 	glfwSetErrorCallback(glfw_error_callback);
@@ -257,11 +265,17 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		cout << "glDebugMessageCallback not available" << endl;
 	}
 
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LEQUAL);
+
 	PrintComputeShaderLimits();
 
 	GLuint raygenprog, rayintersectprog, raycolorprog;
 	CompileRaytracerShader(threadGroupSize, raygenprog, rayintersectprog, raycolorprog);
 	
+	GLuint simpleShader;
+	CompileForwardRenderingShader(simpleShader);
+
 	// Create a texture that the computer shader will render into
 	GLuint tex;
 	glGenTextures(1, &tex);
@@ -379,10 +393,10 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));				
-		glClearBufferfv(GL_COLOR, 1, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
 
 		glBindFramebuffer(GL_FRAMEBUFFER, framebufferDepth);
-		glClearBufferfv(GL_DEPTH, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
+		float one = 1.0f;
+		glClearBufferfv(GL_DEPTH, 0, &one);
 
 		float timeNow = glfwGetTime();
 		float dt = timeNow - lastFrame;
@@ -481,6 +495,17 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight,
 			GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 		
+
+		glUseProgram(simpleShader);
+		glBindBuffer(GL_ARRAY_BUFFER, lightBuffer); // Note: contains not only light positions, but also padding and light color.
+		glUniformMatrix4fv(glGetUniformLocation(simpleShader, "projection"), 1, false, glm::value_ptr(camera.getProjectionMatrix()));
+		glUniformMatrix4fv(glGetUniformLocation(simpleShader, "view"), 1, false, glm::value_ptr(camera.getViewMatrix()));
+		glPointSize(30.0f);
+		glDrawArrays(GL_POINTS, 0, numLights);
+
+		glUseProgram(0);
+		glBindBuffer(GL_UNIFORM_BUFFER, 0);		
+
 		/*
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferDepth);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
@@ -508,6 +533,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		if (enterKeyLastFrame == GLFW_RELEASE && enterKeyPressed == GLFW_PRESS)
 		{
 			CompileRaytracerShader(threadGroupSize, raygenprog, rayintersectprog, raycolorprog);
+			CompileForwardRenderingShader(simpleShader);
 		}
 		enterKeyLastFrame = enterKeyPressed;
 
