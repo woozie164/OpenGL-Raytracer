@@ -229,7 +229,7 @@ void PrintIfFrameBufferNotComplete(GLenum e)
 		case 0:
 			printf("Something went really wrong when creating this framebuffer.");
 			break;
-		}
+		}		
 	}
 }
 
@@ -239,7 +239,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	glfwInit();
 
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-	GLFWwindow * window = glfwCreateWindow(windowWidth * 2, windowHeight, "OpenGL Raytracer", 0, 0);
+	GLFWwindow * window = glfwCreateWindow(windowWidth, windowHeight, "OpenGL Raytracer", 0, 0);
 	if (!window) {
 		glfwTerminate();
 		return -1;
@@ -273,10 +273,15 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 	GLuint depthTex;
 	glGenTextures(1, &depthTex);
-	glBindTexture(GL_TEXTURE_2D, depthTex);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_R16F, windowWidth, windowHeight, 0, GL_RED, GL_FLOAT, nullptr);
+	glBindTexture(GL_TEXTURE_2D, depthTex);	
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_DEPTH_TEXTURE_MODE, GL_INTENSITY);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_R_TO_TEXTURE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_DEPTH_COMPONENT24, windowWidth, windowHeight, 0, GL_DEPTH_COMPONENT, GL_FLOAT, nullptr);
 	glBindTexture(GL_TEXTURE_2D, 0);
 
 	GLuint framebuffer;
@@ -290,7 +295,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	GLuint framebufferDepth;
 	glGenFramebuffers(1, &framebufferDepth);
 	glBindFramebuffer(GL_FRAMEBUFFER, framebufferDepth);	
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, depthTex, 0);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_TEXTURE_2D, depthTex, 0);
 	e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	PrintIfFrameBufferNotComplete(e);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
@@ -375,6 +380,9 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		glBindFramebuffer(GL_FRAMEBUFFER, framebuffer);
 		glClearBufferfv(GL_COLOR, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));				
 		glClearBufferfv(GL_COLOR, 1, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
+
+		glBindFramebuffer(GL_FRAMEBUFFER, framebufferDepth);
+		glClearBufferfv(GL_DEPTH, 0, glm::value_ptr(glm::vec4(0.0f, 0.0f, 0.0f, 0.0f)));
 
 		float timeNow = glfwGetTime();
 		float dt = timeNow - lastFrame;
@@ -467,12 +475,18 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight,
 			GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
+		
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferDepth);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		glBlitFramebuffer(0, 0, windowWidth, windowHeight, windowWidth, 0, windowWidth * 2, windowHeight,
-			GL_COLOR_BUFFER_BIT, GL_NEAREST);
-
+		glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight,
+			GL_DEPTH_BUFFER_BIT, GL_NEAREST);
+		
+		/*
+		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferDepth);
+		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
+		glRasterPos2i(0, 0);
+		glCopyPixels(0, 0, windowWidth, windowHeight, GL_DEPTH);
+		*/
 		// TODO: Use the depthbuffer to render somekind of light position indicator.
 		// Blit depthbuffer?
 
