@@ -8,12 +8,13 @@ Camera::Camera()
 	cameraPosition = vec3(0.0f, 0.0f, 0.0f);
 	horizontalAngle = 3.14f;
 	verticalAngle = 0.0f;
-	initialFoV = 45.0f;
+	initialFoV = 90.0f;
 	speed = 3.0f;
 	mouseSpeed = 0.005f;
 	scrollWheelY = 0.0f;
 	firstTime = true;
 	cameraMouseControlEnabled = true;
+	aspectRatio = 4.0f / 3.0f;
 }
 
 Camera::~Camera()
@@ -83,7 +84,7 @@ void Camera::Update(){
 	float FoV = initialFoV - 1.0f * scrollWheelY;
 
 	// Projection matrix : 45° Field of View, 4:3 ratio, display range : 0.1 unit <-> 100 units
-	projectionMatrix = perspective(FoV, 4.0f / 3.0f, 0.1f, 150.0f);
+	projectionMatrix = perspective(FoV, aspectRatio, 0.1f, 150.0f);
 	// Camera matrix
 
 	viewMatrix = lookAt(

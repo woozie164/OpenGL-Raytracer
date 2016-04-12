@@ -20,6 +20,7 @@ class Camera
 
 public:
 	bool cameraMouseControlEnabled;
+	float aspectRatio;
 
 	Camera();
 	~Camera();

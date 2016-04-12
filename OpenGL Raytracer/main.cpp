@@ -367,6 +367,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	camera.setPosition(2.77904, 0.594951, -1.95046);
 	camera.setVerticalAngle(24.82);
 	camera.setHorizontalAngle(-82.44);
+	camera.aspectRatio = static_cast<float>(windowHeight) / static_cast<float>(windowWidth);
 
 	Mesh swordMesh;
 	swordMesh.LoadFromObjFile("sword/", "sword.obj");
@@ -495,7 +496,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight,
 			GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 		
-
+		glBindFramebuffer(GL_FRAMEBUFFER, 0);
 		glUseProgram(simpleShader);
 		glBindBuffer(GL_ARRAY_BUFFER, lightBuffer); // Note: contains not only light positions, but also padding and light color.
 		glEnableVertexAttribArray(0);
