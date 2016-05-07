@@ -27,7 +27,7 @@ void main()
 	// color calculations
 	vec3 finalColor = vec3(imageLoad(outTexture, storePos));
 	//vec3 finalColor = vec3(0.0, 0.0,  0.0);
-	ray lightRay;		
+	
 	bool shadowed = true;
 	vec3 light = vec3(0.0);
 	vec3 texColor = vec3(0.0);
@@ -64,7 +64,7 @@ void main()
 			// A vector from the intersection point pointing towards the light
 			vec3 lightDir = normalize(lights[a].pos - rays[i].origin);			
 			
-			lightRay = ray(rays[i].origin + lightDir * 0.001, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
+			ray lightRay = ray(rays[i].origin + lightDir * 0.001, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
 			
 			trace(lightRay, true);			
 			
@@ -103,7 +103,11 @@ void main()
 				
 				//light += (lights[a].color * diffuse + lights[a].color * k) / d;
 				//light += ((diffuse + k) * lights[a].color); // test with different diffuse and specular constants?
-				light += ((diffuse + k) * lights[a].color * attentuation);
+				
+				
+//				light += ((diffuse + k) * lights[a].color * attentuation);
+				light += ((diffuse) * lights[a].color);
+				
 				//light += ((diffuse + k);
 				//light += lights[a].color;
 			}		
@@ -113,10 +117,12 @@ void main()
 		
 		if(!shadowed) {
 			finalColor += texColor + light;
+		} else {
+			//finalColor = vec3(0.0, 1.0, 0.0);
 		}
 	} else {
 		// Background color
-		finalColor = vec3(1.0, 0.0, 0.0);
+		finalColor = vec3(1.0, 0.0, 0.0);		
 	}
 	
 	imageStore(outTexture, storePos, vec4(finalColor, 1.0));

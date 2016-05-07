@@ -12,7 +12,7 @@ void main(void)
 	trace(my_ray);
 	
 	float d = distance(my_ray.origin, camera_pos);
-	//d = (d - NEAR_PLANE_DIST) / FAR_PLANE_DIST;	
+	//d = (d - NEAR_PLANE_DIST) / FAR_PLANE_DIST; // Scaling seems to be handled automatically if the texture is set as an DEPTHCOMPONENT_24
 	imageStore(depthTexture, storePos, vec4(d)); // writes a vector of 32 bit floats to a 16 bit float pixel ... converts correctly?
 	
 	rays[i] = my_ray;

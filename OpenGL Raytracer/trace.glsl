@@ -122,6 +122,7 @@ bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out fl
 // Do intersection tests with all the geometry in the scene
 void trace(in out ray r, bool earlyExit = false) {	
 	// Set initial value to infinity
+	r.t = 1.0 / 0.0;
 	float t_min = 1.0 / 0.0;	
 	float t;
 	vec3 n;
@@ -129,7 +130,10 @@ void trace(in out ray r, bool earlyExit = false) {
 	// Nvidia insight gave a warning that lightRay.color might sometimes
 	// be unitialized. Not sure how this affects the rendered image,
 	// or what to do about it.
-	//r.color = vec3(1.0, 0.0, 0.0);
+	// 
+	// Ray color is only unitialized when the ray doesn't hit any geometry. In that case, the color value 
+	// doesn't matter, because the pixel is set to some arbitrary background color.
+	//r.color = vec3(1.0, 1.0, 1.0);
 	
 	int primitiveID = -1;
 	
@@ -143,10 +147,11 @@ void trace(in out ray r, bool earlyExit = false) {
 				r.primitiveID = primitiveID;
 				r.color = vec3(0.0);
 				
-				// Calculate the surface normal of the triangle			
+				// Calculate the surface normal of the triangle				
 				vec3 u = x.pos - z.pos;
 				vec3 v = y.pos - z.pos;
 				n = normalize(cross(u, v));
+				
 				if(earlyExit) return;
 			}
 		}
