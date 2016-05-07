@@ -266,7 +266,6 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	}
 
 	glEnable(GL_DEPTH_TEST);
-	glDepthFunc(GL_LEQUAL);
 
 	PrintComputeShaderLimits();
 
@@ -337,7 +336,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	float lightData[]{
 		//LightPosition, padding, LightColor, padding 
 		// Note: a vec3 takes up 4 floats, 3 for the vec3 and 1 float padding
-			-0.1,	-0.1, -0.1, 0.0,	1.0, 0.0, 0.0, 0.0,
+			-0.32,	-0.16, -2.7,	0.0,	1.0, 0.0, 0.0,		0.0,
 			-7.0,	-0.1, -7.0, 0.0,	0.0, 1.0, 0.0, 0.0,
 			-8.0,	-0.1, -8.0, 0.0,	0.3, 0.0, 0.0, 0.0,
 			-3.75,	-0.1, -3.75, 0.0,	0.0, 0.0, 1.0, 0.0,
@@ -505,6 +504,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		glUniformMatrix4fv(glGetUniformLocation(simpleShader, "view"), 1, false, glm::value_ptr(camera.getViewMatrix()));
 		glPointSize(30.0f);
 		glDrawArrays(GL_POINTS, 0, numLights);
+		
 
 		glUseProgram(0);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);		
@@ -522,6 +522,13 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 		
+		/*
+		cout << "light position" << endl;
+		cout << "x " << lightData[0] << endl;
+		cout << "y " << lightData[1] << endl;
+		cout << "z " << lightData[2] << endl;
+		*/
+
 		if (benchmarkOutputFile)
 		{
 			WriteBenchmarkResultsToCSVFile(benchmarkOutputFile, threadGroupSize,
