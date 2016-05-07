@@ -206,6 +206,7 @@ void trace(in out ray r, bool earlyExit = false) {
 	r.origin = r.origin + r.dir * t_min;
 	
 	// Update ray direction
+	//r.dir = 2 * dot(r.dir, n) * n - r.dir; // Alternative version, changes the dir of the resulting vector.
 	r.dir = r.dir - 2 * dot(r.dir, n) * n;
 	
 	r.n = n;

@@ -87,7 +87,9 @@ void main()
 				
 				// reflection vector
 				float k = 0;
-				if(dot(rays[i].n, lightDir) > 0)  // makes the highlights on the walls dissapear
+				/*if(dot(rays[i].n, lightDir) > 0)*/  // makes the highlights on the walls dissapear
+				//if(dot(rays[i].n, lightDir*-1) > 0)  // hightlights on the walls and not on the sphere.
+				//if(dot(rays[i].n, lightDir) > 0)  // hightlights on the floor				
 				{
 					vec3 r = normalize(reflect(I, rays[i].n));
 					
@@ -99,17 +101,12 @@ void main()
 				// Linear Light attenuation
 				float attentuation = 1.0 / (0.5 * d);
 				//float attentuation = 1.0 / (1.0 + 0.0 * d + 0.9 * d * d);				
-				//float attentuation = 1.0;
+				//float attentuation = 1.0;											
 				
-				//light += (lights[a].color * diffuse + lights[a].color * k) / d;
+				light += ((diffuse + k) * lights[a].color * attentuation);
 				//light += ((diffuse + k) * lights[a].color); // test with different diffuse and specular constants?
-				
-				
-//				light += ((diffuse + k) * lights[a].color * attentuation);
-				light += ((diffuse) * lights[a].color);
-				
-				//light += ((diffuse + k);
-				//light += lights[a].color;
+				//light += ((diffuse) * lights[a].color);
+				//light += ((k) * lights[a].color);
 			}		
 		}
 		// No ambient color
