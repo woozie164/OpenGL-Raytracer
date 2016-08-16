@@ -122,10 +122,8 @@ bool intersectSphere(vec3 origin, vec3 dir, const sphere s, out float t0, out fl
 // Do intersection tests with all the geometry in the scene
 void trace(in out ray r, bool earlyExit = false) {	
 	// Set initial value to infinity
-	r.t = 1.0 / 0.0;
-	float t_min = 1.0 / 0.0;	
+	r.t = 1.0 / 0.0;	
 	float t;
-	vec3 n;
 	
 	// Nvidia insight gave a warning that lightRay.color might sometimes
 	// be unitialized. Not sure how this affects the rendered image,
@@ -142,15 +140,15 @@ void trace(in out ray r, bool earlyExit = false) {
 		vertex y = vertices[i+1];
 		vertex z = vertices[i+2];
 		if(RayVsTriangle(r.origin, r.dir, x.pos, y.pos, z.pos, t)) {
-			if(t > 0 && t < t_min) {
-				t_min = t;
+			if(t > 0 && t < r.t) {
+				r.t = t;
 				r.primitiveID = primitiveID;
 				r.color = vec3(0.0);
 				
 				// Calculate the surface normal of the triangle				
 				vec3 u = x.pos - z.pos;
 				vec3 v = y.pos - z.pos;
-				n = normalize(cross(u, v));
+				r.n = normalize(cross(u, v));
 				
 				if(earlyExit) return;
 			}
@@ -165,16 +163,16 @@ void trace(in out ray r, bool earlyExit = false) {
 	//if(intersectSphere(r.origin, r.dir, my_sphere, t0, t1)){
 	if(RaySphereIntersect(r.origin, r.dir, my_sphere.pos, my_sphere.r, t)) {
 		//t = min(t0, t1);
-		if(t > 0 && t < t_min) {
-			t_min = t;
+		if(t > 0 && t < r.t) {
+			r.t = t;
 			r.primitiveID = primitiveID + 1;
 			r.color = vec3(0.0, 0.0, 1.0);
 			
 			// First calculate the intersection point of the ray and the sphere
-			vec3 p = r.origin + r.dir * t_min;
+			vec3 p = r.origin + r.dir * r.t;
 			
 			// Then calculate the surface normal of the sphere
-			n = normalize(p - my_sphere.pos);							
+			r.n = normalize(p - my_sphere.pos);							
 			
 			if(earlyExit) return;
 		}
@@ -185,29 +183,18 @@ void trace(in out ray r, bool earlyExit = false) {
 	//if(intersectSphere(r.origin, r.dir, my_sphere2, t0, t1)){
 	if(RaySphereIntersect(r.origin, r.dir, my_sphere2.pos, my_sphere2.r, t)) {
 		//t = min(t0, t1);
-		if(t > 0 && t < t_min) {
-			t_min = t;
+		if(t > 0 && t < r.t) {
+			r.t = t;
 			r.primitiveID = primitiveID + 2;
 			r.color = vec3(0.0, 0.3, 0.3);
 			
 			// First calculate the intersection point of the ray and the sphere
-			vec3 p = r.origin + r.dir * t_min;
+			vec3 p = r.origin + r.dir * r.t;
 			
 			// Then calculate the surface normal of the sphere
-			n = normalize(p - my_sphere2.pos);							
+			r.n = normalize(p - my_sphere2.pos);							
 			
 			if(earlyExit) return;
 		}
 	}	
-	
-	r.t = t_min;
-	
-	// Update the ray position to the closest intersection point with the geometry
-	r.origin = r.origin + r.dir * t_min;
-	
-	// Update ray direction
-	//r.dir = 2 * dot(r.dir, n) * n - r.dir; // Alternative version, changes the dir of the resulting vector.
-	r.dir = r.dir - 2 * dot(r.dir, n) * n;
-	
-	r.n = n;
 }
