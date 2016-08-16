@@ -337,15 +337,15 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		//LightPosition, padding, LightColor, padding 
 		// Note: a vec3 takes up 4 floats, 3 for the vec3 and 1 float padding
 			-0.32,	-0.16, -2.7,	0.0,	1.0, 0.0, 0.0,		0.0,
-			-7.0,	-0.1, -7.0, 0.0,	0.0, 1.0, 0.0, 0.0,
-			-8.0,	-0.1, -8.0, 0.0,	0.3, 0.0, 0.0, 0.0,
-			-3.75,	-0.1, -3.75, 0.0,	0.0, 0.0, 1.0, 0.0,
-			-2.16,	-0.1, -2.22, 0.0,	0.5, 0.0, 0.5, 0.0,
-			-2.0,	-0.1, -2.0, 0.0,	0.0, 0.0, 0.3, 0.0,
-			-7.0,	-0.1, -7.0, 0.0,	0.0, 0.3, 0.0, 0.0,
-			-8.0,	-0.1, -8.0, 0.0,	0.4, 0.4, 0.4, 0.0,
-			-6.3,	-0.1, -4.06, 0.0,	0.0, 0.2, 0.2, 0.0,
-			2.16,	-0.1, 2.22, 0.0,	0.8, 0.8, 0.0, 0.0,
+			-7.0,	-0.1, -7.0,		0.0,	0.0, 1.0, 0.0,		0.0,
+			-8.0,	-0.1, -8.0,		0.0,	0.3, 0.0, 0.0,		0.0,
+			-3.75,	-0.1, -3.75,	0.0,	0.0, 0.0, 1.0,		0.0,
+			-2.16,	-0.1, -2.22,	0.0,	0.5, 0.0, 0.5,		0.0,
+			-2.0,	-0.1, -2.0,		0.0,	0.0, 0.0, 0.3,		0.0,
+			-7.0,	-0.1, -7.0,		0.0,	0.0, 0.3, 0.0,		0.0,
+			-8.0,	-0.1, -8.0,		0.0,	0.4, 0.4, 0.4,		0.0,
+			-6.3,	-0.1, -4.06,	0.0,	0.0, 0.2, 0.2,		0.0,
+			2.16,	-0.1, 2.22,		0.0,	0.8, 0.8, 0.0,		0.0,
 	};
 
 	// 8 floats per light (2 of those flots are padding) and 10 lights in total
@@ -502,7 +502,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		glUseProgram(simpleShader);
 		glBindBuffer(GL_ARRAY_BUFFER, lightBuffer); // Note: contains not only light positions, but also padding and light color.
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*5, 0);
 		glUniformMatrix4fv(glGetUniformLocation(simpleShader, "projection"), 1, false, glm::value_ptr(camera.getProjectionMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(simpleShader, "view"), 1, false, glm::value_ptr(camera.getViewMatrix()));
 		glPointSize(30.0f);
