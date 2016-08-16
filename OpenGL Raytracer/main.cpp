@@ -387,6 +387,9 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 	int enterKeyLastFrame = GLFW_RELEASE;
 	int tKeyPressedLastFrame = GLFW_RELEASE;
+	int zKeyPressedLastFrame = GLFW_RELEASE;
+	int xKeyPressedLastFrame = GLFW_RELEASE;
+
 	while (!glfwWindowShouldClose(window) && ((numFrames == UNLIMITED_FRAMES) || (frame < numFrames))) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
@@ -554,7 +557,20 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			camera.cameraMouseControlEnabled = !camera.cameraMouseControlEnabled;
 		}
 		tKeyPressedLastFrame = tKeyPressed;
-		
+
+		int zKeyPressed = glfwGetKey(window, GLFW_KEY_Z);
+		if (zKeyPressedLastFrame == GLFW_RELEASE && zKeyPressed == GLFW_PRESS)
+		{
+			numLights++;
+		}
+		zKeyPressedLastFrame = zKeyPressed;
+
+		int xKeyPressed = glfwGetKey(window, GLFW_KEY_X);
+		if (xKeyPressedLastFrame == GLFW_RELEASE && xKeyPressed == GLFW_PRESS)
+		{
+			numLights--;
+		}
+		xKeyPressedLastFrame = xKeyPressed;
 	}
 
 	glfwTerminate();
