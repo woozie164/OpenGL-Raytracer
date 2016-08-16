@@ -135,12 +135,15 @@ void trace(in out ray r, bool earlyExit = false) {
 	
 	int primitiveID = -1;
 	
-	for(int i = 0; i < num_vertices; i += 3) {
+	for(int i = 0; i < num_vertices; i += 3) 
+	{
 		vertex x = vertices[i];
 		vertex y = vertices[i+1];
 		vertex z = vertices[i+2];
-		if(RayVsTriangle(r.origin, r.dir, x.pos, y.pos, z.pos, t)) {
-			if(t > 0 && t < r.t) {
+		if(RayVsTriangle(r.origin, r.dir, x.pos, y.pos, z.pos, t)) 
+		{
+			if(t > 0 && t < r.t) 
+			{
 				r.t = t;
 				r.primitiveID = primitiveID;
 				r.color = vec3(0.0);
@@ -156,45 +159,28 @@ void trace(in out ray r, bool earlyExit = false) {
 		primitiveID++;
 	}
 	
-	// And 1 sphere
-	sphere my_sphere = sphere(vec3(0.0f, -0.7f, 2.0f), 0.5f);	
-	
-	float t0, t1;
-	//if(intersectSphere(r.origin, r.dir, my_sphere, t0, t1)){
-	if(RaySphereIntersect(r.origin, r.dir, my_sphere.pos, my_sphere.r, t)) {
-		//t = min(t0, t1);
-		if(t > 0 && t < r.t) {
-			r.t = t;
-			r.primitiveID = primitiveID + 1;
-			r.color = vec3(0.0, 0.0, 1.0);
-			
-			// First calculate the intersection point of the ray and the sphere
-			vec3 p = r.origin + r.dir * r.t;
-			
-			// Then calculate the surface normal of the sphere
-			r.n = normalize(p - my_sphere.pos);							
-			
-			if(earlyExit) return;
-		}
-	}
+	const int num_spheres = 2;
+	sphere spheres[num_spheres];
+	spheres[0] = sphere(vec3(0.0f, -0.7f, 2.0f), 0.5f);	
+	spheres[1] = sphere(vec3(-2.0f, -00f, 0.0f), 0.2f);	
 
-	sphere my_sphere2 = sphere(vec3(-2.0f, -00f, 0.0f), 0.2f);	
-	
-	//if(intersectSphere(r.origin, r.dir, my_sphere2, t0, t1)){
-	if(RaySphereIntersect(r.origin, r.dir, my_sphere2.pos, my_sphere2.r, t)) {
-		//t = min(t0, t1);
-		if(t > 0 && t < r.t) {
-			r.t = t;
-			r.primitiveID = primitiveID + 2;
-			r.color = vec3(0.0, 0.3, 0.3);
-			
-			// First calculate the intersection point of the ray and the sphere
-			vec3 p = r.origin + r.dir * r.t;
-			
-			// Then calculate the surface normal of the sphere
-			r.n = normalize(p - my_sphere2.pos);							
-			
-			if(earlyExit) return;
-		}
-	}	
+	for(int i = 0; i < num_spheres; i++)
+	{	
+		if(RaySphereIntersect(r.origin, r.dir, spheres[i].pos, spheres[i].r, t)) 
+		{
+			//t = min(t0, t1);
+			if(t > 0 && t < r.t) {
+				r.t = t;	
+				r.color = vec3(0.0, 0.0, 1.0);
+				
+				// First calculate the intersection point of the ray and the sphere
+				vec3 p = r.origin + r.dir * r.t;
+				
+				// Then calculate the surface normal of the sphere
+				r.n = normalize(p - spheres[i].pos);							
+				
+				if(earlyExit) return;
+			}
+		}	
+	}
 }
