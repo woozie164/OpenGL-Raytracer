@@ -446,12 +446,12 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		*/
 
 		// Manual light controls
-		if (glfwGetKey(window, GLFW_KEY_J)) lightData[0 + gCurrLight * 8].pos.x -= 0.01;
-		if (glfwGetKey(window, GLFW_KEY_L)) lightData[0 + gCurrLight * 8].pos.x += 0.01;
-		if (glfwGetKey(window, GLFW_KEY_I))	lightData[1 + gCurrLight * 8].pos.y -= 0.01;
-		if (glfwGetKey(window, GLFW_KEY_K))	lightData[1 + gCurrLight * 8].pos.y += 0.01;
-		if (glfwGetKey(window, GLFW_KEY_O))	lightData[2 + gCurrLight * 8].pos.z -= 0.01;
-		if (glfwGetKey(window, GLFW_KEY_P))	lightData[2 + gCurrLight * 8].pos.z += 0.01;
+		if (glfwGetKey(window, GLFW_KEY_J)) lightData[gCurrLight].pos.x -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_L)) lightData[gCurrLight].pos.x += 0.01;
+		if (glfwGetKey(window, GLFW_KEY_I))	lightData[gCurrLight].pos.y -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_K))	lightData[gCurrLight].pos.y += 0.01;
+		if (glfwGetKey(window, GLFW_KEY_O))	lightData[gCurrLight].pos.z -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_P))	lightData[gCurrLight].pos.z += 0.01;
 
 		int passes = gRenderPasses;
 		vector<int> time(3);
