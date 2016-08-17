@@ -32,11 +32,10 @@ void main()
 	
 		
 	if(!isinf(r.t)) 
-	{
-		int lightPrimitiveID = r.primitiveID;				
-		vertex a = vertices[lightPrimitiveID * 3];
-		vertex b = vertices[lightPrimitiveID * 3 + 1];
-		vertex c = vertices[lightPrimitiveID * 3 + 2];
+	{		
+		vertex a = vertices[r.primitiveID * 3];
+		vertex b = vertices[r.primitiveID * 3 + 1];
+		vertex c = vertices[r.primitiveID * 3 + 2];
 	
 		float u, v, w;
 		CartesianToBarycentricCoord(a.pos, b.pos, c.pos, r.origin, u, v, w);
@@ -88,9 +87,8 @@ void main()
 				
 				// reflection vector
 				float k = 0;
-				/*if(dot(r.n, lightDir) > 0)*/  // makes the highlights on the walls dissapear
-				//if(dot(r.n, lightDir*-1) > 0)  // hightlights on the walls and not on the sphere.
-				//if(dot(r.n, lightDir) > 0)  // hightlights on the floor				
+				//if(dot(r.n, lightDir) > 0)  // makes the highlights on the walls dissapear
+				//if(dot(r.n, lightDir*-1) > 0)  // hightlights on the walls and not on the sphere.				
 				{
 					vec3 r = normalize(reflect(I, r.n));
 					

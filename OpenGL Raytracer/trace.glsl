@@ -132,7 +132,7 @@ void trace(in out ray r, bool earlyExit = false) {
 	// Ray color is only unitialized when the ray doesn't hit any geometry. In that case, the color value 
 	// doesn't matter, because the pixel is set to some arbitrary background color.
 	//r.color = vec3(1.0, 1.0, 1.0);
-
+	int primitiveID = 0;
 	for(int i = 0; i < num_vertices; i += 3) 
 	{
 		vertex x = vertices[i];
@@ -144,7 +144,7 @@ void trace(in out ray r, bool earlyExit = false) {
 			{
 				r.t = t;
 				r.color = vec3(0.0);
-				
+				r.primitiveID = primitiveID;
 				// Calculate the surface normal of the triangle				
 				vec3 u = x.pos - z.pos;
 				vec3 v = y.pos - z.pos;
@@ -153,6 +153,7 @@ void trace(in out ray r, bool earlyExit = false) {
 				if(earlyExit) return;
 			}
 		}
+		primitiveID++;
 	}
 	
 	const int num_spheres = 2;
@@ -177,6 +178,7 @@ void trace(in out ray r, bool earlyExit = false) {
 				
 				if(earlyExit) return;
 			}
-		}	
+		}
+	
 	}
 }
