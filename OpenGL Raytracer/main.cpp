@@ -12,6 +12,7 @@
 #include "OBJ.h"
 #include "OpenGLTimer.h"
 #include <fstream>
+#include <algorithm>
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -270,6 +271,17 @@ float Rand0To1()
 	return ((double)rand() / (RAND_MAX));
 }
 
+void SetLightPosition(std::vector<Light> & lightData, float angleOffset)
+{
+	float angle = 0;
+	float angleIncr = 2 * M_PI / MAX_NUM_LIGHTS;
+	for (auto i = 0; i < lightData.size(); i++)
+	{
+		lightData[i].pos = glm::vec3(PointOnCircle(0, 0, 2, angle + angleOffset), 0);
+		angle += angleIncr;
+	}
+}
+
 int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int renderPasses, int numLights, int numFrames, const char * benchmarkOutputFile = nullptr) {
 	gRenderPasses = renderPasses;
 	glfwSetErrorCallback(glfw_error_callback);
@@ -357,16 +369,14 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
 
 	vector<Light> lightData(MAX_NUM_LIGHTS);
-	float angle = 0;
-	float angleIncr = 2 * M_PI / MAX_NUM_LIGHTS;
+	SetLightPosition(lightData, 0);
+
 	for (auto i = 0; i < lightData.size(); i++)
 	{
-		lightData[i].pos = glm::vec3(PointOnCircle(0, 0, 2, angle), 0);
-		angle += angleIncr;
 		lightData[i].color = glm::vec3(Rand0To1(), Rand0To1(), Rand0To1());
 		lightData[i].padding = -1;
 		lightData[i].padding2 = -1;
-	}	
+	}
 	
 	// 8 floats per light (2 of those flots are padding) and 10 lights in total
 	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * MAX_NUM_LIGHTS, lightData.data(), GL_STREAM_COPY);
@@ -410,7 +420,6 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	int zKeyPressedLastFrame = GLFW_RELEASE;
 	int xKeyPressedLastFrame = GLFW_RELEASE;
 
-
 	while (!glfwWindowShouldClose(window) && ((numFrames == UNLIMITED_FRAMES) || (frame < numFrames))) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
@@ -425,18 +434,20 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		float timeNow = glfwGetTime();
 		float dt = timeNow - lastFrame;
 		lastFrame = timeNow;
-		/*
-		// Make the lights rotate around the sword	
-		for (int i = 0; i < numLights * 8; i += 8)
+
+		// Make the lights rotate around the sword			
+		//max(sin(glfwGetTime()), 0.0)
+		SetLightPosition(lightData, glm::lerp(0.0, 2 * M_PI / MAX_NUM_LIGHTS, sin(glfwGetTime())));
+		/*		
+		for (int i = 0; i < MAX_NUM_LIGHTS; i++)
 		{
 			glm::vec2 pos1(1.0f, 0.0f);
 			glm::vec2 pos2(0.0f, 1.0f);
 			float angle = glm::lerp(0.0f, 2 * 3.14f, s);
-			angle += i * 0.2f;
-			glm::vec2 nextPos(pos1 * cos(angle) + pos2 * sin(angle));
+			angle += angleIncr;
+			glm::vec2 nextPos(pos1 * cos(angle) * 2.0f + pos2 * sin(angle) * 2.0f);
 
-			lightData[i] = nextPos.x;
-			lightData[i + 2] = nextPos.y;
+			lightData[i].pos = glm::vec3(nextPos, 0);
 		}
 		s += 0.1 * dt;
 		if (s >= 1.0f) {
