@@ -25,35 +25,14 @@ void main()
 	int i = storePos.x + storePos.y * windowHeight;
 	ray r = rays[i];
 	
-	vec3 finalColor = vec3(0.0, 0.0, 0.0);	
+	vec3 finalColor = vec3(0.1);	
 	bool shadowed = true;
 	vec3 light = vec3(0.0);
 	vec3 texColor = vec3(0.0);
 	
 		
 	if(!isinf(r.t)) 
-	{		
-		vertex a = vertices[r.primitiveID * 3];
-		vertex b = vertices[r.primitiveID * 3 + 1];
-		vertex c = vertices[r.primitiveID * 3 + 2];
-	
-		float u, v, w;
-		CartesianToBarycentricCoord(a.pos, b.pos, c.pos, r.origin, u, v, w);
-		vec2 uv = vec2(u * a.texCoord + v * b.texCoord + w * c.texCoord);
-					
-		ivec2 meshTexSize = imageSize(meshTexture);			
-		ivec2 pixelCoord = ivec2(uv * meshTexSize);			
-		texColor = vec3(imageLoad(meshTexture, pixelCoord));
-		
-		// Should be able to use a sampler2D, but I always get a black triangle
-		//lightRay.color = vec3(texture(meshSampler, uv));				
-		
-		// Gives the texture as a "reflection" inside the triangle
-		//lightRay.color = vec3(imageLoad(meshTexture, storePos));				
-		
-		// Gives a triangle with 3 different colors. Looks right IMO.
-		//lightRay.color = vec3(u, v, w);					
-		
+	{				
 		for(int a = 0; a < num_lights; a++) 
 		{			
 			// No need to calculate the intersection point, because
@@ -63,14 +42,9 @@ void main()
 			// A vector from the intersection point pointing towards the light			
 			vec3 lightDir = normalize(lights[a].pos - r.origin);			
 			
-			ray lightRay = ray(r.origin + lightDir * 0.001, lightDir, r.color, -1, r.primitiveID, vec3(0.0));
+			ray lightRay = ray(r.origin + lightDir * 0.001, lightDir, r.color, -1, -1, vec3(0.0));
 			
 			trace(lightRay, true);			
-			
-			// The trace function doesn't count the intersections between the ray and the
-			// primitive it was created from, so if this is true
-			// it means that the light ray didn't intersect with some other primitive 
-			//if(r.primitiveID == lightRay.primitiveID) {		
 			
 			// if t is set to infinity, there's were no collision between
 			// the lightRay and the geometry
@@ -108,19 +82,33 @@ void main()
 				//light += ((k) * lights[a].color);
 			}		
 		}
-		// No ambient color
-		//finalColor += light;
-		
+
 		if(!shadowed) 
 		{
-			finalColor += texColor + light;
+				vertex a = vertices[r.primitiveID * 3];
+			vertex b = vertices[r.primitiveID * 3 + 1];
+			vertex c = vertices[r.primitiveID * 3 + 2];
+		
+			float u, v, w;
+			CartesianToBarycentricCoord(a.pos, b.pos, c.pos, r.origin, u, v, w);
+			vec2 uv = vec2(u * a.texCoord + v * b.texCoord + w * c.texCoord);
+						
+			ivec2 meshTexSize = imageSize(meshTexture);			
+			ivec2 pixelCoord = ivec2(uv * meshTexSize);			
+			texColor = vec3(imageLoad(meshTexture, pixelCoord));
+			
+			// Should be able to use a sampler2D, but I always get a black triangle
+			//lightRay.color = vec3(texture(meshSampler, uv));				
+			
+			// Gives the texture as a "reflection" inside the triangle
+			//lightRay.color = vec3(imageLoad(meshTexture, storePos));				
+			
+			// Gives a triangle with 3 different colors. Looks right IMO.
+			//lightRay.color = vec3(u, v, w);					
+						
+			finalColor = texColor + light;					
 		}
 	} 
-	else 
-	{
-		// Background color
-		finalColor = vec3(1.0, 0.0, 0.0);		
-	}
-	
+		
 	imageStore(outTexture, storePos, vec4(finalColor, 1.0));
 }

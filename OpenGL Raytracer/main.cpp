@@ -277,7 +277,7 @@ void SetLightPosition(std::vector<Light> & lightData, float angleOffset)
 	float angleIncr = 2 * M_PI / MAX_NUM_LIGHTS;
 	for (auto i = 0; i < lightData.size(); i++)
 	{
-		lightData[i].pos = glm::vec3(PointOnCircle(0, 0, 2, angle + angleOffset), 0);
+		lightData[i].pos = glm::vec3(PointOnCircle(0, 0, 2, angle + angleOffset), -2);
 		angle += angleIncr;
 	}
 }
