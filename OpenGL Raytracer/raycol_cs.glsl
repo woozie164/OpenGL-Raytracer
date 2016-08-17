@@ -48,7 +48,7 @@ void main()
 			
 			// if t is set to infinity, there's were no collision between
 			// the lightRay and the geometry
-			if(lightRay.t == 1.0 / 0.0) 
+			if(isinf(lightRay.t)) 
 			{								
 				shadowed = false;
 				float diffuse = max(dot(r.n, lightDir), 0);				
@@ -85,7 +85,7 @@ void main()
 
 		if(!shadowed) 
 		{
-				vertex a = vertices[r.primitiveID * 3];
+			vertex a = vertices[r.primitiveID * 3];
 			vertex b = vertices[r.primitiveID * 3 + 1];
 			vertex c = vertices[r.primitiveID * 3 + 2];
 		

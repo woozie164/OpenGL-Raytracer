@@ -15,7 +15,7 @@ void main(void)
 	r.origin = r.origin + r.dir * r.t;
 	
 	// Update ray direction
-	//r.dir = 2 * dot(r.dir, n) * n - r.dir; // Alternative version, changes the dir of the resulting vector.
+	//r.dir = 2 * dot(r.dir, r.n) * r.n - r.dir; // Alternative version, changes the dir of the resulting vector.
 	r.dir = r.dir - 2 * dot(r.dir, r.n) * r.n;
 
 	
