@@ -23,23 +23,23 @@ void main()
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
 	if(storePos.x > windowWidth) return;
 	int i = storePos.x + storePos.y * windowHeight;
-	// Load the current pixel color, because it might contain intermediate
-	// color calculations
-	vec3 finalColor = vec3(imageLoad(outTexture, storePos));
-	//vec3 finalColor = vec3(0.0, 0.0,  0.0);
+	ray r = rays[i];
 	
+	vec3 finalColor = vec3(0.0, 0.0, 0.0);	
 	bool shadowed = true;
 	vec3 light = vec3(0.0);
 	vec3 texColor = vec3(0.0);
+	
 		
-	if(!isinf(rays[i].t)) {
-		int lightPrimitiveID = rays[i].primitiveID;				
+	if(!isinf(r.t)) 
+	{
+		int lightPrimitiveID = r.primitiveID;				
 		vertex a = vertices[lightPrimitiveID * 3];
 		vertex b = vertices[lightPrimitiveID * 3 + 1];
 		vertex c = vertices[lightPrimitiveID * 3 + 2];
 	
 		float u, v, w;
-		CartesianToBarycentricCoord(a.pos, b.pos, c.pos, rays[i].origin, u, v, w);
+		CartesianToBarycentricCoord(a.pos, b.pos, c.pos, r.origin, u, v, w);
 		vec2 uv = vec2(u * a.texCoord + v * b.texCoord + w * c.texCoord);
 					
 		ivec2 meshTexSize = imageSize(meshTexture);			
@@ -59,12 +59,12 @@ void main()
 		{			
 			// No need to calculate the intersection point, because
 			// this is already done in the intersection stage
-			//vec3 intersectionPoint = rays[i].origin + rays[i].dir * rays[i].t;
+			//vec3 intersectionPoint = r.origin + r.dir * r.t;
 			
-			// A vector from the intersection point pointing towards the light
-			vec3 lightDir = normalize(lights[a].pos - rays[i].origin);			
+			// A vector from the intersection point pointing towards the light			
+			vec3 lightDir = normalize(lights[a].pos - r.origin);			
 			
-			ray lightRay = ray(rays[i].origin + lightDir * 0.001, lightDir, rays[i].color, -1, lightPrimitiveID, vec3(0.0));
+			ray lightRay = ray(r.origin + lightDir * 0.001, lightDir, r.color, -1, lightPrimitiveID, vec3(0.0));
 			
 			trace(lightRay, true);			
 			
@@ -75,28 +75,29 @@ void main()
 			
 			// if t is set to infinity, there's were no collision between
 			// the lightRay and the geometry
-			if(lightRay.t == 1.0 / 0.0) {								
+			if(lightRay.t == 1.0 / 0.0) 
+			{								
 				shadowed = false;
-				float diffuse = max(dot(rays[i].n, lightDir), 0);				
+				float diffuse = max(dot(r.n, lightDir), 0);				
 				
 				// view vector, i.e. the unit vector from the surface point to the eye position
-				vec3 v = normalize(camera_pos - rays[i].origin);			
+				vec3 v = normalize(camera_pos - r.origin);			
 				
 				// The incident vector
 				vec3 I = lightDir * -1;		
 				
 				// reflection vector
 				float k = 0;
-				/*if(dot(rays[i].n, lightDir) > 0)*/  // makes the highlights on the walls dissapear
-				//if(dot(rays[i].n, lightDir*-1) > 0)  // hightlights on the walls and not on the sphere.
-				//if(dot(rays[i].n, lightDir) > 0)  // hightlights on the floor				
+				/*if(dot(r.n, lightDir) > 0)*/  // makes the highlights on the walls dissapear
+				//if(dot(r.n, lightDir*-1) > 0)  // hightlights on the walls and not on the sphere.
+				//if(dot(r.n, lightDir) > 0)  // hightlights on the floor				
 				{
-					vec3 r = normalize(reflect(I, rays[i].n));
+					vec3 r = normalize(reflect(I, r.n));
 					
 					k = pow(max(dot(v, r), 0), 30);
 				}
 				// Distance to the light source
-				float d = length(lights[a].pos - rays[i].origin);
+				float d = length(lights[a].pos - r.origin);
 				
 				// Linear Light attenuation
 				float attentuation = 1.0 / (0.5 * d);
@@ -112,12 +113,13 @@ void main()
 		// No ambient color
 		//finalColor += light;
 		
-		if(!shadowed) {
+		if(!shadowed) 
+		{
 			finalColor += texColor + light;
-		} else {
-			//finalColor = vec3(0.0, 1.0, 0.0);
 		}
-	} else {
+	} 
+	else 
+	{
 		// Background color
 		finalColor = vec3(1.0, 0.0, 0.0);		
 	}
