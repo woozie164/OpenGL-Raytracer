@@ -63,14 +63,14 @@ void main()
 			// A vector from the intersection point pointing towards the light			
 			vec3 lightDir = normalize(lights[a].pos - r.origin);			
 			
-			ray lightRay = ray(r.origin + lightDir * 0.001, lightDir, r.color, -1, lightPrimitiveID, vec3(0.0));
+			ray lightRay = ray(r.origin + lightDir * 0.001, lightDir, r.color, -1, r.primitiveID, vec3(0.0));
 			
 			trace(lightRay, true);			
 			
 			// The trace function doesn't count the intersections between the ray and the
 			// primitive it was created from, so if this is true
 			// it means that the light ray didn't intersect with some other primitive 
-			//if(lightPrimitiveID == lightRay.primitiveID) {		
+			//if(r.primitiveID == lightRay.primitiveID) {		
 			
 			// if t is set to infinity, there's were no collision between
 			// the lightRay and the geometry

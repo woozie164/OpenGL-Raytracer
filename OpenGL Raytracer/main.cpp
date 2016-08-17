@@ -17,6 +17,7 @@ using namespace std;
 
 const int UNLIMITED_FRAMES = 0;
 int gRenderPasses;
+int gCurrLight = 0;
 
 void PrintComputeShaderLimits()
 {
@@ -59,6 +60,11 @@ void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int 
 	{
 		if(gRenderPasses > 1) gRenderPasses--;
 	}
+
+	if (key == GLFW_KEY_1 && isPressedOrRepeat)
+		gCurrLight++;
+	if (key == GLFW_KEY_2 && isPressedOrRepeat)
+		gCurrLight--;
 }
 
 void APIENTRY OpenGLCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void * userParam)
@@ -390,6 +396,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	int zKeyPressedLastFrame = GLFW_RELEASE;
 	int xKeyPressedLastFrame = GLFW_RELEASE;
 
+
 	while (!glfwWindowShouldClose(window) && ((numFrames == UNLIMITED_FRAMES) || (frame < numFrames))) {
 		glClear(GL_COLOR_BUFFER_BIT);
 		camera.Update();
@@ -425,12 +432,12 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		*/
 
 		// Manual light controls
-		if (glfwGetKey(window, GLFW_KEY_J)) lightData[0] -= 0.01;
-		if (glfwGetKey(window, GLFW_KEY_L)) lightData[0] += 0.01;
-		if (glfwGetKey(window, GLFW_KEY_I))	lightData[1] -= 0.01;
-		if (glfwGetKey(window, GLFW_KEY_K))	lightData[1] += 0.01;
-		if (glfwGetKey(window, GLFW_KEY_O))	lightData[2] -= 0.01;
-		if (glfwGetKey(window, GLFW_KEY_P))	lightData[2] += 0.01;
+		if (glfwGetKey(window, GLFW_KEY_J)) lightData[0 + gCurrLight * 8] -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_L)) lightData[0 + gCurrLight * 8] += 0.01;
+		if (glfwGetKey(window, GLFW_KEY_I))	lightData[1 + gCurrLight * 8] -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_K))	lightData[1 + gCurrLight * 8] += 0.01;
+		if (glfwGetKey(window, GLFW_KEY_O))	lightData[2 + gCurrLight * 8] -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_P))	lightData[2 + gCurrLight * 8] += 0.01;
 
 		int passes = gRenderPasses;
 		vector<int> time(3);
@@ -502,7 +509,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		glUseProgram(simpleShader);
 		glBindBuffer(GL_ARRAY_BUFFER, lightBuffer); // Note: contains not only light positions, but also padding and light color.
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*5, 0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*8, 0);
 		glUniformMatrix4fv(glGetUniformLocation(simpleShader, "projection"), 1, false, glm::value_ptr(camera.getProjectionMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(simpleShader, "view"), 1, false, glm::value_ptr(camera.getViewMatrix()));
 		glPointSize(30.0f);
