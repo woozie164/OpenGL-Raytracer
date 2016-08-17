@@ -13,11 +13,24 @@
 #include "OpenGLTimer.h"
 #include <fstream>
 
+#define _USE_MATH_DEFINES
+#include <math.h>
+
 using namespace std;
 
 const int UNLIMITED_FRAMES = 0;
+const int MAX_NUM_LIGHTS = 10;
+
 int gRenderPasses;
 int gCurrLight = 0;
+
+struct Light
+{
+	glm::vec3 pos;
+	float padding;
+	glm::vec3 color;
+	float padding2;
+};
 
 void PrintComputeShaderLimits()
 {
@@ -62,9 +75,9 @@ void glfwKeyCallback(GLFWwindow* window, int key, int scancode, int action, int 
 	}
 
 	if (key == GLFW_KEY_1 && isPressedOrRepeat)
-		gCurrLight++;
+		if(gCurrLight < MAX_NUM_LIGHTS) gCurrLight++;
 	if (key == GLFW_KEY_2 && isPressedOrRepeat)
-		gCurrLight--;
+		if(gCurrLight > 0) gCurrLight--;
 }
 
 void APIENTRY OpenGLCallbackFunction(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void * userParam)
@@ -247,6 +260,16 @@ void CompileForwardRenderingShader(GLuint & simpleShader)
 	compileShaderProgram(shaders, simpleShader);
 }
 
+glm::vec2 PointOnCircle(float circleCenterX, float circleCenterY, float radius, float angle)
+{
+	return glm::vec2(circleCenterX + radius*cos(angle), circleCenterY + radius*sin(angle));
+}
+
+float Rand0To1()
+{
+	return ((double)rand() / (RAND_MAX));
+}
+
 int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int renderPasses, int numLights, int numFrames, const char * benchmarkOutputFile = nullptr) {
 	gRenderPasses = renderPasses;
 	glfwSetErrorCallback(glfw_error_callback);
@@ -322,13 +345,6 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	// wtf is the difference vs glGenFrameBuffers? Different inital state - which contains what?
 	//glCreateFramebuffers(1, &framebuffer);	
 
-	/* TODO:
-	-make things pretty
-		-lightning is kinda ugly
-	-do performance analysis
-	-write report on implementation and performance analysis	
-	*/
-
 	int sizeOfRay = sizeof(float) * 4 * 6;
 	GLuint ssbo = 0;
 	glGenBuffers(1, &ssbo);
@@ -339,23 +355,21 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	GLuint lightBuffer = 0;
 	glGenBuffers(1, &lightBuffer);
 	glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
-	float lightData[]{
-		//LightPosition, padding, LightColor, padding 
-		// Note: a vec3 takes up 4 floats, 3 for the vec3 and 1 float padding
-			-0.32,	-0.16, -2.7,	0.0,	1.0, 0.0, 0.0,		0.0,
-			-7.0,	-0.1, -7.0,		0.0,	0.0, 1.0, 0.0,		0.0,
-			-8.0,	-0.1, -8.0,		0.0,	0.3, 0.0, 0.0,		0.0,
-			-3.75,	-0.1, -3.75,	0.0,	0.0, 0.0, 1.0,		0.0,
-			-2.16,	-0.1, -2.22,	0.0,	0.5, 0.0, 0.5,		0.0,
-			-2.0,	-0.1, -2.0,		0.0,	0.0, 0.0, 0.3,		0.0,
-			-7.0,	-0.1, -7.0,		0.0,	0.0, 0.3, 0.0,		0.0,
-			-8.0,	-0.1, -8.0,		0.0,	0.4, 0.4, 0.4,		0.0,
-			-6.3,	-0.1, -4.06,	0.0,	0.0, 0.2, 0.2,		0.0,
-			2.16,	-0.1, 2.22,		0.0,	0.8, 0.8, 0.0,		0.0,
-	};
 
+	vector<Light> lightData(MAX_NUM_LIGHTS);
+	float angle = 0;
+	float angleIncr = 2 * M_PI / MAX_NUM_LIGHTS;
+	for (auto i = 0; i < lightData.size(); i++)
+	{
+		lightData[i].pos = glm::vec3(PointOnCircle(0, 0, 2, angle), 0);
+		angle += angleIncr;
+		lightData[i].color = glm::vec3(Rand0To1(), Rand0To1(), Rand0To1());
+		lightData[i].padding = -1;
+		lightData[i].padding2 = -1;
+	}	
+	
 	// 8 floats per light (2 of those flots are padding) and 10 lights in total
-	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);
+	glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * MAX_NUM_LIGHTS, lightData.data(), GL_STREAM_COPY);
 
 	GLuint tex_2d = SOIL_load_OGL_texture
 		(
@@ -432,12 +446,12 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		*/
 
 		// Manual light controls
-		if (glfwGetKey(window, GLFW_KEY_J)) lightData[0 + gCurrLight * 8] -= 0.01;
-		if (glfwGetKey(window, GLFW_KEY_L)) lightData[0 + gCurrLight * 8] += 0.01;
-		if (glfwGetKey(window, GLFW_KEY_I))	lightData[1 + gCurrLight * 8] -= 0.01;
-		if (glfwGetKey(window, GLFW_KEY_K))	lightData[1 + gCurrLight * 8] += 0.01;
-		if (glfwGetKey(window, GLFW_KEY_O))	lightData[2 + gCurrLight * 8] -= 0.01;
-		if (glfwGetKey(window, GLFW_KEY_P))	lightData[2 + gCurrLight * 8] += 0.01;
+		if (glfwGetKey(window, GLFW_KEY_J)) lightData[0 + gCurrLight * 8].pos.x -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_L)) lightData[0 + gCurrLight * 8].pos.x += 0.01;
+		if (glfwGetKey(window, GLFW_KEY_I))	lightData[1 + gCurrLight * 8].pos.y -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_K))	lightData[1 + gCurrLight * 8].pos.y += 0.01;
+		if (glfwGetKey(window, GLFW_KEY_O))	lightData[2 + gCurrLight * 8].pos.z -= 0.01;
+		if (glfwGetKey(window, GLFW_KEY_P))	lightData[2 + gCurrLight * 8].pos.z += 0.01;
 
 		int passes = gRenderPasses;
 		vector<int> time(3);
@@ -472,7 +486,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			glUniform1i(glGetUniformLocation(currentShaderProg, "num_lights"), numLights);
 
 			glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
-			glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData, GL_STREAM_COPY);
+			glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData.data(), GL_STREAM_COPY);
 			// Returns 0, but I was expecting 2 because of the layout (binding = 2) statement ...
 			//GLuint test = glGetUniformBlockIndex(currentShaderProg, "LightsBuffer");
 			glBindBufferBase(GL_UNIFORM_BUFFER, glGetUniformBlockIndex(currentShaderProg, "LightsBuffer"), lightBuffer);
