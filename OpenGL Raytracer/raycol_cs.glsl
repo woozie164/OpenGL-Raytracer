@@ -48,8 +48,8 @@ void main()
 			
 			// if t is set to infinity, there's were no collision between
 			// the lightRay and the geometry
-			if(isinf(lightRay.t)) 
-			{								
+			//if(isinf(lightRay.t)) // Causes the light to get weird if enabled, wtf. Would remove this line of code, but its needed for shadows ...
+			{		
 				shadowed = false;
 				float diffuse = max(dot(r.n, lightDir), 0);				
 				
@@ -76,14 +76,14 @@ void main()
 				//float attentuation = 1.0 / (1.0 + 0.0 * d + 0.9 * d * d);				
 				//float attentuation = 1.0;											
 				
-				//light += ((diffuse + k) * lights[a].color * attentuation);
+				light += ((diffuse + k) * lights[a].color * attentuation);
 				//light += ((diffuse + k) * lights[a].color); // test with different diffuse and specular constants?
-				light += ((diffuse) * lights[a].color);
+				//light += ((diffuse) * lights[a].color);
 				//light += ((k) * lights[a].color);
 			}		
 		}
 
-		if(!shadowed) 
+		if(!shadowed)
 		{
 			vertex a = vertices[r.primitiveID * 3];
 			vertex b = vertices[r.primitiveID * 3 + 1];
@@ -105,8 +105,9 @@ void main()
 			
 			// Gives a triangle with 3 different colors. Looks right IMO.
 			//lightRay.color = vec3(u, v, w);					
-						
-			finalColor = texColor + light;					
+			
+			float lightIntensity = 0.3;
+			finalColor = texColor + light * lightIntensity;
 		}
 	} 
 		
