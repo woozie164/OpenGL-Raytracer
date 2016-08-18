@@ -582,14 +582,14 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 		int zKeyPressed = glfwGetKey(window, GLFW_KEY_Z);
 		if (zKeyPressedLastFrame == GLFW_RELEASE && zKeyPressed == GLFW_PRESS)
 		{
-			numLights++;
+			if (numLights < MAX_NUM_LIGHTS) numLights++;
 		}
 		zKeyPressedLastFrame = zKeyPressed;
 
 		int xKeyPressed = glfwGetKey(window, GLFW_KEY_X);
 		if (xKeyPressedLastFrame == GLFW_RELEASE && xKeyPressed == GLFW_PRESS)
 		{
-			numLights--;
+			if (numLights > 0) numLights--;
 		}
 		xKeyPressedLastFrame = xKeyPressed;
 	}
