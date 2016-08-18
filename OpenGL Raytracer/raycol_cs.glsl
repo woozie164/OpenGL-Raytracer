@@ -76,9 +76,9 @@ void main()
 				//float attentuation = 1.0 / (1.0 + 0.0 * d + 0.9 * d * d);				
 				//float attentuation = 1.0;											
 				
-				light += ((diffuse + k) * lights[a].color * attentuation);
+				//light += ((diffuse + k) * lights[a].color * attentuation);
 				//light += ((diffuse + k) * lights[a].color); // test with different diffuse and specular constants?
-				//light += ((diffuse) * lights[a].color);
+				light += ((diffuse) * lights[a].color);
 				//light += ((k) * lights[a].color);
 			}		
 		}

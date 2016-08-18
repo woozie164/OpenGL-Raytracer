@@ -404,7 +404,9 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	camera.aspectRatio = static_cast<float>(windowHeight) / static_cast<float>(windowWidth);
 
 	Mesh swordMesh;
-	swordMesh.LoadFromObjFile("sword/", "sword.obj");
+	//swordMesh.LoadFromObjFile("sword/", "sword.obj");
+	//swordMesh.LoadFromObjFile("sword/", "testsword.obj");
+	swordMesh.LoadFromObjFile("sword/", "sword_fixed.obj");
 	//swordMesh.LoadFromObjFile("bth_logo_obj_tga/", "bth.obj"); 
 	GLuint swordDataHandle = UploadToSSBO(swordMesh.GetVertexData(0), swordMesh.GetVertexCount(0));
 	int numVertices = swordMesh.GetVertexCount(0);
