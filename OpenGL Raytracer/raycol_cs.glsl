@@ -42,7 +42,7 @@ void main()
 			// A vector from the intersection point pointing towards the light			
 			vec3 lightDir = normalize(lights[a].pos - r.origin);			
 			
-			ray lightRay = ray(r.origin + lightDir * 0.001, lightDir, r.color, -1, -1, vec3(0.0));
+			ray lightRay = ray(r.origin, lightDir, r.color, -1, -1, vec3(0.0));
 			
 			trace(lightRay, true);			
 			

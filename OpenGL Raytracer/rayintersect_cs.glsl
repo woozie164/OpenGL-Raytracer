@@ -7,7 +7,7 @@ void main(void)
 		
 	// Move the ray's origin point slighly forward so that 
 	// it avoids interesections with the primitive that spawned it.
-	r.origin = r.origin + r.dir * 0.001;
+	//r.origin = r.origin + r.dir * 0.001;
 		
 	trace(r);
 	
