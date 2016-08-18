@@ -266,7 +266,7 @@ glm::vec2 PointOnCircle(float circleCenterX, float circleCenterY, float radius, 
 	return glm::vec2(circleCenterX + radius*cos(angle), circleCenterY + radius*sin(angle));
 }
 
-float Rand0To1()
+double Rand0To1()
 {
 	return ((double)rand() / (RAND_MAX));
 }
@@ -287,7 +287,12 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	glfwSetErrorCallback(glfw_error_callback);
 	glfwInit();
 
+#ifdef _DEBUG
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
+#else 
+	glfwWindowHint(GLFW_OPENGL_COMPAT_PROFILE, GL_TRUE);
+#endif // DEBUG
+
 	GLFWwindow * window = glfwCreateWindow(windowWidth, windowHeight, "OpenGL Raytracer", 0, 0);
 	if (!window) {
 		glfwTerminate();
@@ -298,6 +303,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	
 	glewInit();
 
+#ifdef _DEBUG
 	glEnable(GL_DEBUG_OUTPUT);
 	glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 	if (glDebugMessageCallback){
@@ -305,10 +311,9 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	} else {
 		cout << "glDebugMessageCallback not available" << endl;
 	}
+#endif // DEBUG
 
 	glEnable(GL_DEPTH_TEST);
-
-	PrintComputeShaderLimits();
 
 	GLuint raygenprog, rayintersectprog, raycolorprog;
 	CompileRaytracerShader(threadGroupSize, raygenprog, rayintersectprog, raycolorprog);
@@ -519,7 +524,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			}
 		}
 
-		//glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+		glMemoryBarrier(GL_ALL_BARRIER_BITS);
 		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebuffer);
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
 		glBlitFramebuffer(0, 0, windowWidth, windowHeight, 0, 0, windowWidth, windowHeight,
@@ -531,38 +536,22 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			GL_DEPTH_BUFFER_BIT, GL_NEAREST);
 		
 		glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 		glUseProgram(simpleShader);
 		glBindBuffer(GL_ARRAY_BUFFER, lightBuffer); // Note: contains not only light positions, but also padding and light color.
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GL_FLOAT)*8, 0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Light), 0);
 		glUniformMatrix4fv(glGetUniformLocation(simpleShader, "projection"), 1, false, glm::value_ptr(camera.getProjectionMatrix()));
 		glUniformMatrix4fv(glGetUniformLocation(simpleShader, "view"), 1, false, glm::value_ptr(camera.getViewMatrix()));
 		glPointSize(30.0f);
 		glDrawArrays(GL_POINTS, 0, numLights);
 		
-
 		glUseProgram(0);
 		glBindBuffer(GL_UNIFORM_BUFFER, 0);		
 		glDisableVertexAttribArray(0);
 
-		/*
-		glBindFramebuffer(GL_READ_FRAMEBUFFER, framebufferDepth);
-		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, 0);
-		glRasterPos2i(0, 0);
-		glCopyPixels(0, 0, windowWidth, windowHeight, GL_DEPTH);
-		*/
-		// TODO: Use the depthbuffer to render somekind of light position indicator.
-		// Blit depthbuffer?
-
 		glfwSwapBuffers(window);
 		glfwPollEvents();
-		
-		/*
-		cout << "light position" << endl;
-		cout << "x " << lightData[0] << endl;
-		cout << "y " << lightData[1] << endl;
-		cout << "z " << lightData[2] << endl;
-		*/
 
 		if (benchmarkOutputFile)
 		{

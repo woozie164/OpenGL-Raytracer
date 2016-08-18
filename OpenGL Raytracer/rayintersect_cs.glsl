@@ -1,7 +1,7 @@
 void main(void) 
 {
 	ivec2 storePos = ivec2(gl_GlobalInvocationID.xy);
-	if(storePos.x > windowWidth) return;
+	if(storePos.x >= windowWidth) return;
 	int i = storePos.x + storePos.y * windowHeight;
 	ray r = rays[i];
 		

@@ -179,6 +179,5 @@ void trace(in out ray r, bool earlyExit = false) {
 				if(earlyExit) return;
 			}
 		}
-	
 	}
 }
