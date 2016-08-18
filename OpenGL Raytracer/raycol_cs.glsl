@@ -67,8 +67,7 @@ void main()
 				
 				// reflection vector
 				float k = 0;
-				//if(dot(r.n, lightDir) > 0)  // makes the highlights on the walls dissapear
-				//if(dot(r.n, lightDir*-1) > 0)  // hightlights on the walls and not on the sphere.				
+				if(dot(r.n, lightDir) > 0)				
 				{
 					vec3 r = normalize(reflect(I, r.n));
 					
