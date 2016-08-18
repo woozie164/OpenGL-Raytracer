@@ -13,7 +13,7 @@ bool RayVsTriangle(vec3 ray_origin, vec3 ray_dir,
 	float f = 1 / a;
 	vec3 s = ray_origin - tri_x;
 	float u = f * dot(s, q);
-	if(u < 0.0f) return false;
+	if(u < 0.0f || u > 1.0) return false;
 	
 	vec3 r = cross(s, e1);
 	float v = f * dot(ray_dir, r);
@@ -132,6 +132,7 @@ void trace(in out ray r, bool earlyExit = false) {
 	// Ray color is only unitialized when the ray doesn't hit any geometry. In that case, the color value 
 	// doesn't matter, because the pixel is set to some arbitrary background color.
 	//r.color = vec3(1.0, 1.0, 1.0);
+	r.primitiveID = 0;
 	int primitiveID = 0;
 	for(int i = 0; i < num_vertices; i += 3) 
 	{
@@ -140,7 +141,8 @@ void trace(in out ray r, bool earlyExit = false) {
 		vertex z = vertices[i+2];
 		if(RayVsTriangle(r.origin, r.dir, x.pos, y.pos, z.pos, t)) 
 		{
-			if(t > 0 && t < r.t) 
+			// t > 0 makes sure that the intersection point is in fron of the ray.
+			if(t > 0 && t < r.t)
 			{
 				r.t = t;
 				r.color = vec3(0.0);
@@ -169,7 +171,7 @@ void trace(in out ray r, bool earlyExit = false) {
 			if(t > 0 && t < r.t) {
 				r.t = t;	
 				r.color = vec3(0.0, 0.0, 1.0);
-				
+				r.primitiveID = primitiveID;
 				// First calculate the intersection point of the ray and the sphere
 				vec3 p = r.origin + r.dir * r.t;
 				
@@ -179,5 +181,6 @@ void trace(in out ray r, bool earlyExit = false) {
 				if(earlyExit) return;
 			}
 		}
+		primitiveID++;
 	}
 }

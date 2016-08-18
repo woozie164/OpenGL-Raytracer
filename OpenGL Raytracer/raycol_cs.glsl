@@ -48,7 +48,8 @@ void main()
 			
 			// if t is set to infinity, there's were no collision between
 			// the lightRay and the geometry
-			//if(isinf(lightRay.t)) // Causes the light to get weird if enabled, wtf. Would remove this line of code, but its needed for shadows ...
+			if(isinf(lightRay.t)) // Causes the light to get weird if enabled, wtf. Would remove this line of code, but its needed for shadows ...
+			//if(lightRay.primitiveID == 0) // Makes the sword shadows looks sligtly different compared to isinf(lightRay.t)
 			{		
 				shadowed = false;
 				float diffuse = max(dot(r.n, lightDir), 0);				
