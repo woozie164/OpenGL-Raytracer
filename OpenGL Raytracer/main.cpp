@@ -504,7 +504,7 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 			glUniform1i(glGetUniformLocation(currentShaderProg, "num_lights"), numLights);
 
 			glBindBuffer(GL_UNIFORM_BUFFER, lightBuffer);
-			glBufferData(GL_UNIFORM_BUFFER, sizeof(float) * 8 * 10, lightData.data(), GL_STREAM_COPY);
+			glBufferData(GL_UNIFORM_BUFFER, sizeof(Light) * MAX_NUM_LIGHTS, lightData.data(), GL_STREAM_COPY);
 			// Returns 0, but I was expecting 2 because of the layout (binding = 2) statement ...
 			//GLuint test = glGetUniformBlockIndex(currentShaderProg, "LightsBuffer");
 			glBindBufferBase(GL_UNIFORM_BUFFER, glGetUniformBlockIndex(currentShaderProg, "LightsBuffer"), lightBuffer);
