@@ -5,6 +5,8 @@ void main(void)
 	int i = storePos.x + storePos.y * windowHeight;
 	ray r = rays[i];
 		
+	if(r.primitiveID == -2) return;
+		
 	// Move the ray's origin point slighly forward so that 
 	// it avoids interesections with the primitive that spawned it.
 	r.origin = r.origin + r.dir * 0.001;

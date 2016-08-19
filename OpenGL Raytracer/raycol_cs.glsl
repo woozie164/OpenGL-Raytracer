@@ -25,12 +25,13 @@ void main()
 	int i = storePos.x + storePos.y * windowHeight;
 	ray r = rays[i];
 	
+	if(r.primitiveID == -2) return;
+	
 	vec3 finalColor = vec3(0.1);	
 	bool shadowed = true;
 	vec3 light = vec3(0.0);
 	vec3 texColor = vec3(0.0);
-	
-		
+			
 	if(!isinf(r.t)) 
 	{				
 		for(int a = 0; a < num_lights; a++) 
@@ -49,11 +50,9 @@ void main()
 			// if t is set to infinity, there's were no collision between
 			// the lightRay and the geometry
 			//if(!isinf(lightRay.t)) // Causes the light to get weird in front of the lights. Looks fine behind.
-			//if(isinf(lightRay.t)) // Causes the light to get weird in front, and black behind. Would remove this line of code, but its needed for shadows ...
-			
+			//if(isinf(lightRay.t)) // Causes the light to get weird in front, and black behind. Would remove this line of code, but its needed for shadows ...			
 			// For some reason, the area behind the lights is black. I think its because this if is evaluating to false when it shouldn't.
-			// 
-			
+
 			//if(lightRay.primitiveID == 0) // Makes the sword shadows looks sligtly different compared to isinf(lightRay.t)
 			{		
 				shadowed = false;
@@ -113,6 +112,23 @@ void main()
 			
 			float lightIntensity = 0.3;
 			finalColor = texColor + light * lightIntensity;
+			
+			// Stop the ray from tracing if it intersected a sword vertex.
+			// Prevents the sword from becoming reflective.
+			if(r.primitiveID + 3 * 5 - 2  < (num_vertices ) / 3)
+			{
+				r.primitiveID = -2;
+				rays[i] = r;
+			}
+			
+			/* 
+			// Stop the smaller sphere from becoming reflective.
+			if(r.primitiveID == num_vertices / 3 + 1)
+			{
+				r.primitiveID = -2;
+				rays[i] = r;
+			}
+			*/			
 		}
 	} 
 		
