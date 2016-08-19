@@ -28,109 +28,114 @@ void main()
 	if(r.primitiveID == -2) return;
 	
 	vec3 finalColor = vec3(0.1);	
+	//vec3 finalColor = vec3(imageLoad(outTexture, storePos));
+	
 	bool shadowed = true;
 	vec3 light = vec3(0.0);
-	vec3 texColor = vec3(0.0);
-			
-	if(!isinf(r.t)) 
-	{				
-		for(int a = 0; a < num_lights; a++) 
-		{			
-			// No need to calculate the intersection point, because
-			// this is already done in the intersection stage
-			//vec3 intersectionPoint = r.origin + r.dir * r.t;
-			
-			// A vector from the intersection point pointing towards the light			
-			vec3 lightDir = normalize(lights[a].pos - r.origin);			
-			
-			ray lightRay = ray(r.origin + lightDir * 0.001, lightDir, r.color, -1, -1, vec3(0.0));
-			
-			trace(lightRay, true);			
-			
-			// if t is set to infinity, there's were no collision between
-			// the lightRay and the geometry
-			//if(!isinf(lightRay.t)) // Causes the light to get weird in front of the lights. Looks fine behind.
-			//if(isinf(lightRay.t)) // Causes the light to get weird in front, and black behind. Would remove this line of code, but its needed for shadows ...			
-			// For some reason, the area behind the lights is black. I think its because this if is evaluating to false when it shouldn't.
-
-			//if(lightRay.primitiveID == 0) // Makes the sword shadows looks sligtly different compared to isinf(lightRay.t)
-			{		
-				shadowed = false;
-				float diffuse = max(dot(r.n, lightDir), 0);				
-				
-				// view vector, i.e. the unit vector from the surface point to the eye position
-				vec3 v = normalize(camera_pos - r.origin);			
-				
-				// The incident vector
-				vec3 I = lightDir * -1;		
-				
-				// reflection vector
-				float k = 0;
-				if(dot(r.n, lightDir) > 0)				
-				{
-					vec3 r = normalize(reflect(I, r.n));
+	vec3 texColor = vec3(0.0);	
+	
+	for(int a = 0; a < num_lights; a++) 
+	{			
+		// No need to calculate the intersection point, because
+		// this is already done in the intersection stage
+		//vec3 intersectionPoint = r.origin + r.dir * r.t;
+		
+		// A vector from the intersection point pointing towards the light			
+		vec3 lightDir = normalize(lights[a].pos - r.origin);			
 					
-					k = pow(max(dot(v, r), 0), 30);
-				}
-				// Distance to the light source
-				float d = length(lights[a].pos - r.origin);
-				
-				// Linear Light attenuation
-				float attentuation = 1.0 / (0.5 * d);
-				//float attentuation = 1.0 / (1.0 + 0.0 * d + 0.9 * d * d);				
-				//float attentuation = 1.0;											
-				
-				light += ((diffuse + k) * lights[a].color * attentuation);
-				//light += ((diffuse + k) * lights[a].color); // test with different diffuse and specular constants?
-				//light += ((diffuse) * lights[a].color);
-				//light += ((k) * lights[a].color);
-			}		
-		}
+		ray lightRay = ray(r.origin + lightDir * 0.001, lightDir, r.color, -1, -1, vec3(0.0));
+		
+		trace(lightRay, false);			
+		float t = length(lights[a].pos - r.origin);
+		
+		// if t is set to infinity, there's were no collision between
+		// the lightRay and the geometry
+		//if(!isinf(lightRay.t)) // Causes the light to get weird in front of the lights. Looks fine behind.
+		//if(isinf(lightRay.t)) // Causes the light to get weird in front, and black behind. Would remove this line of code, but its needed for shadows ...			
+		// For some reason, the area behind the lights is black. I think its because this if is evaluating to false when it shouldn't.
 
-		if(!shadowed)
+		//if(lightRay.primitiveID == 0) // Makes the sword shadows looks sligtly different compared to isinf(lightRay.t)
+		
+		// TODO: Check that the t value is less than the distance to the light source. 
+		// TODO: Test without earlyexit, since it might return an intersection points that is not the nearest one.
+		//if(isinf(lightRay.t) || lightRay.t <= t)
+		if((lightRay.t > t))
+		{		
+			shadowed = false;
+			float diffuse = max(dot(r.n, lightDir), 0);				
+			
+			// view vector, i.e. the unit vector from the surface point to the eye position
+			vec3 v = normalize(camera_pos - r.origin);			
+			
+			// The incident vector
+			vec3 I = lightDir * -1;		
+			
+			// reflection vector
+			float k = 0;
+			if(dot(r.n, lightDir) > 0)				
+			{
+				vec3 r = normalize(reflect(I, r.n));
+				
+				k = pow(max(dot(v, r), 0), 30);
+			}
+			// Distance to the light source
+			float d = length(lights[a].pos - r.origin);
+			
+			// Linear Light attenuation
+			float attentuation = 1.0 / (0.5 * d);
+			//float attentuation = 1.0 / (1.0 + 0.0 * d + 0.9 * d * d);				
+			//float attentuation = 1.0;											
+			
+			light += ((diffuse + k) * lights[a].color * attentuation);
+			//light += ((diffuse + k) * lights[a].color); // test with different diffuse and specular constants?
+			//light += ((diffuse) * lights[a].color);
+			//light += ((k) * lights[a].color);
+		}		
+	}
+
+	if(!shadowed)
+	{
+		vertex a = vertices[r.primitiveID * 3];
+		vertex b = vertices[r.primitiveID * 3 + 1];
+		vertex c = vertices[r.primitiveID * 3 + 2];
+	
+		float u, v, w;
+		CartesianToBarycentricCoord(a.pos, b.pos, c.pos, r.origin, u, v, w);
+		vec2 uv = vec2(u * a.texCoord + v * b.texCoord + w * c.texCoord);
+					
+		ivec2 meshTexSize = imageSize(meshTexture);			
+		ivec2 pixelCoord = ivec2(uv * meshTexSize);			
+		texColor = vec3(imageLoad(meshTexture, pixelCoord));
+		
+		// Should be able to use a sampler2D, but I always get a black triangle
+		//lightRay.color = vec3(texture(meshSampler, uv));				
+		
+		// Gives the texture as a "reflection" inside the triangle
+		//lightRay.color = vec3(imageLoad(meshTexture, storePos));				
+		
+		// Gives a triangle with 3 different colors. Looks right IMO.
+		//lightRay.color = vec3(u, v, w);					
+		
+		float lightIntensity = 0.3;
+		finalColor = texColor + light * lightIntensity;
+		
+		// Stop the ray from tracing if it intersected a sword vertex.
+		// Prevents the sword from becoming reflective.
+		if(r.primitiveID + 3 * 5 - 2  < (num_vertices ) / 3)
 		{
-			vertex a = vertices[r.primitiveID * 3];
-			vertex b = vertices[r.primitiveID * 3 + 1];
-			vertex c = vertices[r.primitiveID * 3 + 2];
-		
-			float u, v, w;
-			CartesianToBarycentricCoord(a.pos, b.pos, c.pos, r.origin, u, v, w);
-			vec2 uv = vec2(u * a.texCoord + v * b.texCoord + w * c.texCoord);
-						
-			ivec2 meshTexSize = imageSize(meshTexture);			
-			ivec2 pixelCoord = ivec2(uv * meshTexSize);			
-			texColor = vec3(imageLoad(meshTexture, pixelCoord));
-			
-			// Should be able to use a sampler2D, but I always get a black triangle
-			//lightRay.color = vec3(texture(meshSampler, uv));				
-			
-			// Gives the texture as a "reflection" inside the triangle
-			//lightRay.color = vec3(imageLoad(meshTexture, storePos));				
-			
-			// Gives a triangle with 3 different colors. Looks right IMO.
-			//lightRay.color = vec3(u, v, w);					
-			
-			float lightIntensity = 0.3;
-			finalColor = texColor + light * lightIntensity;
-			
-			// Stop the ray from tracing if it intersected a sword vertex.
-			// Prevents the sword from becoming reflective.
-			if(r.primitiveID + 3 * 5 - 2  < (num_vertices ) / 3)
-			{
-				r.primitiveID = -2;
-				rays[i] = r;
-			}
-			
-			/* 
-			// Stop the smaller sphere from becoming reflective.
-			if(r.primitiveID == num_vertices / 3 + 1)
-			{
-				r.primitiveID = -2;
-				rays[i] = r;
-			}
-			*/			
+			r.primitiveID = -2;
+			rays[i] = r;
 		}
-	} 
 		
+		/* 
+		// Stop the smaller sphere from becoming reflective.
+		if(r.primitiveID == num_vertices / 3 + 1)
+		{
+			r.primitiveID = -2;
+			rays[i] = r;
+		}
+		*/			
+	}
+
 	imageStore(outTexture, storePos, vec4(finalColor, 1.0));
 }
