@@ -24,9 +24,7 @@ void main()
 	if(storePos.x >= windowWidth) return;
 	int i = storePos.x + storePos.y * windowHeight;
 	ray r = rays[i];
-	
-	if(r.primitiveID == -2) return;
-	
+		
 	vec3 finalColor = vec3(0.1);	
 	//vec3 finalColor = vec3(imageLoad(outTexture, storePos));
 	
