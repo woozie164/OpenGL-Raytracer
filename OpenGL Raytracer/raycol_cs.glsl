@@ -46,9 +46,12 @@ void main()
 		ray lightRay = ray(r.origin + lightDir * 0.001, lightDir, r.color, -1, -1, vec3(0.0));
 		
 		trace(lightRay, false);	// Set to false, or else the shadow of the smaller sphere will disappear.		
-						
-		// Checks that there are no ray-scene intersections between the intersection point and the light.
-		if(lightRay.t > distance(lights[a].pos, r.origin))
+		
+		 // Distance between the light source and intersection point
+		float d = distance(lights[a].pos, r.origin);
+			
+		// Checks that there are no ray-scene intersections between the intersection point and the light.		
+		if(lightRay.t > d)
 		{		
 			shadowed = false;
 			float diffuse = max(dot(r.n, lightDir), 0);				
@@ -67,9 +70,7 @@ void main()
 				
 				k = pow(max(dot(v, r), 0), 30);
 			}
-			// Distance to the light source
-			float d = length(lights[a].pos - r.origin);
-			
+						
 			// Linear Light attenuation
 			float attentuation = 1.0 / (0.5 * d);
 			//float attentuation = 1.0 / (1.0 + 0.0 * d + 0.9 * d * d);				
