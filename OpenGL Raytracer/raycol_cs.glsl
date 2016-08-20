@@ -43,10 +43,11 @@ void main()
 		// A vector from the intersection point pointing towards the light			
 		vec3 lightDir = normalize(lights[a].pos - r.origin);			
 					
-		ray lightRay = ray(r.origin + lightDir * 0.001, lightDir, r.color, -1, -1, vec3(0.0));
+		ray lightRay = ray(r.origin + lightDir * 0.0000001, lightDir, r.color, -1, -1, vec3(0.0));
 		
 		trace(lightRay, false);	// Set to false, or else the shadow of the smaller sphere will disappear.		
 		
+		r.origin = r.origin - lightDir * 0.0000001;
 		 // Distance between the light source and intersection point
 		float d = distance(lights[a].pos, r.origin);
 			
@@ -108,6 +109,7 @@ void main()
 		
 		float lightIntensity = 0.3;
 		finalColor = texColor + light * lightIntensity;
+		//finalColor = texColor;
 		
 		// Stop the ray from tracing if it intersected a sword vertex.
 		// Prevents the sword from becoming reflective.

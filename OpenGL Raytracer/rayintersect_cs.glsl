@@ -13,6 +13,7 @@ void main(void)
 		
 	trace(r);
 				
+	r.origin = r.origin - r.dir * 0.001;				
 	if(isinf(r.t)) 
 	{
 		r.primitiveID = -2;
