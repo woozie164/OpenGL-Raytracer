@@ -45,21 +45,10 @@ void main()
 					
 		ray lightRay = ray(r.origin + lightDir * 0.001, lightDir, r.color, -1, -1, vec3(0.0));
 		
-		trace(lightRay, false);			
-		float t = length(lights[a].pos - r.origin);
-		
-		// if t is set to infinity, there's were no collision between
-		// the lightRay and the geometry
-		//if(!isinf(lightRay.t)) // Causes the light to get weird in front of the lights. Looks fine behind.
-		//if(isinf(lightRay.t)) // Causes the light to get weird in front, and black behind. Would remove this line of code, but its needed for shadows ...			
-		// For some reason, the area behind the lights is black. I think its because this if is evaluating to false when it shouldn't.
-
-		//if(lightRay.primitiveID == 0) // Makes the sword shadows looks sligtly different compared to isinf(lightRay.t)
-		
-		// TODO: Check that the t value is less than the distance to the light source. 
-		// TODO: Test without earlyexit, since it might return an intersection points that is not the nearest one.
-		//if(isinf(lightRay.t) || lightRay.t <= t)
-		if((lightRay.t > t))
+		trace(lightRay, false);	// Set to false, or else the shadow of the smaller sphere will disappear.		
+						
+		// Checks that there are no ray-scene intersections between the intersection point and the light.
+		if(lightRay.t > distance(lights[a].pos, r.origin))
 		{		
 			shadowed = false;
 			float diffuse = max(dot(r.n, lightDir), 0);				
