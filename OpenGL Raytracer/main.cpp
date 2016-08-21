@@ -602,13 +602,13 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 
 int main(int argc, char * argv) {
 	// Run raytracer with camera control and no limits on number of frames rendered before quitting.
-	RunRaytracer(800, 800, 32, 1, 1, UNLIMITED_FRAMES);
+	RunRaytracer(800, 800, 64, 1, 1, UNLIMITED_FRAMES);
 	
 	// Has weird stuff at the edges of the screen
-	RunRaytracer(800, 600, 32, 1, 2, UNLIMITED_FRAMES);
+	//RunRaytracer(800, 600, 32, 1, 2, UNLIMITED_FRAMES);
 
 	// Top part of the screen is brown. Like nothing is being rendered there.
-	RunRaytracer(300, 400, 32, 1, 2, UNLIMITED_FRAMES);
+	//RunRaytracer(300, 400, 32, 1, 2, UNLIMITED_FRAMES);
 
 	//RunRaytracer(800, 800, 32, 2, 2, 5, "numtriangles_results.csv");
 
