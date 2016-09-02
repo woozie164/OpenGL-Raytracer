@@ -15,3 +15,4 @@ int compileShaderProgram(std::vector<ShaderInfo> & shaders, GLuint& programHandl
 void loadShader(std::string filename, GLenum shaderType, std::vector<ShaderInfo> & shaders);
 
 #define SHADER_HEADER 0x0
+#define SHADER_VERSION_HEADER 0x1

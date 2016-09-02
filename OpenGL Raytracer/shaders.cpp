@@ -3,6 +3,7 @@
 #include <sstream>
 using namespace std;
 
+// Issue: longer shaders are so long they don't fit inside the console window.
 //#define PRINT_SHADER_SRC_ON_ERROR
 
 void loadShader(std::string filename, GLenum shaderType, vector<ShaderInfo> & shaders)
@@ -34,31 +35,54 @@ int compileShaderProgram(vector<ShaderInfo> & shaders, GLuint& programHandle)
 	}
 	vector<const GLchar *> shaderSrcPtr;
 
+	vector<string> lineNumbers(shaders.size());
+
+	for (unsigned int i = 0; i < shaders.size(); i++)
+	{		
+		lineNumbers[i] += "#line 1 ";
+		lineNumbers[i] += to_string(i);
+		lineNumbers[i] += " \n";
+	}
+
 	for(unsigned int i = 0; i < shaders.size(); i++)
 	{		
+		if(shaders[i].shaderType != SHADER_VERSION_HEADER)
+		{
+			shaderSrcPtr.push_back(lineNumbers[i].c_str());
+		}
+
 		shaderSrcPtr.push_back(shaders[i].source.c_str());
 
 		// If it's a shader header, it contains code that should 
 		// be added to the next shader that isn't a shader header
-		if (SHADER_HEADER == shaders[i].shaderType) {				
+		if (shaders[i].shaderType == SHADER_HEADER || shaders[i].shaderType == SHADER_VERSION_HEADER) {
 			continue;
 		}
 
 		GLuint shaderHandle = glCreateShader(shaders[i].shaderType);
 		shaders[i].shaderHandle = shaderHandle;		
-		glShaderSource(shaderHandle, shaderSrcPtr.size(), shaderSrcPtr.data(), 0);
-		shaderSrcPtr.clear();
+		glShaderSource(shaderHandle, shaderSrcPtr.size(), shaderSrcPtr.data(), 0);	
 		glCompileShader(shaderHandle);
 
 		GLint result;
 		glGetShaderiv( shaderHandle, GL_COMPILE_STATUS, &result );
 		if( result == GL_FALSE )
 		{
-			fprintf( stderr, "Shader compilation failed! %s\n", shaders[i].filename.c_str());
+			fprintf( stderr, "Shader compilation failed!\n");
+			for (int filenr = 0; filenr <= i; filenr++)
+			{
+				fprintf(stderr, "File %i: %s\n", filenr, shaders[filenr].filename.c_str());
+			}			
 
 #ifdef PRINT_SHADER_SRC_ON_ERROR
 			string s;
-			s.resize(shaders[i].source.size() + 1);
+			unsigned int totalLen = 0;
+			for (unsigned int j = 0; j < shaderSrcPtr.size(); j++)
+			{
+				totalLen += strlen(shaderSrcPtr[j]);
+			}
+
+			s.resize(totalLen + 1);
 			GLsizei length;
 			glGetShaderSource(shaderHandle, s.size(), &length, (GLchar *)s.c_str());
 			fprintf(stderr, "%s\n", s.c_str());
@@ -80,6 +104,7 @@ int compileShaderProgram(vector<ShaderInfo> & shaders, GLuint& programHandle)
 		}
 
 		glAttachShader(pHandle, shaderHandle);
+		shaderSrcPtr.clear();
 	}
 
 	glLinkProgram( pHandle);

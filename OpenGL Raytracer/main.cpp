@@ -181,8 +181,8 @@ void CompileRaytracerShader(int threadGroupSize, GLuint & raygenprog,
 		"layout(local_size_x = ";
 	threadGroupShaderInfo.source += to_string(threadGroupSize);
 	threadGroupShaderInfo.source += ", local_size_y = 1) in;\n";
-	threadGroupShaderInfo.shaderType = SHADER_HEADER;
-	threadGroupShaderInfo.filename = "No file"; // Only used for debugging
+	threadGroupShaderInfo.shaderType = SHADER_VERSION_HEADER;
+	threadGroupShaderInfo.filename = "No file / hardcoded string"; // Only used for debugging
 
 	vector<ShaderInfo> shaders;
 	shaders.push_back(threadGroupShaderInfo);
