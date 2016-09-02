@@ -13,6 +13,7 @@
 #include "OpenGLTimer.h"
 #include <fstream>
 #include <algorithm>
+#include "Ray.h"
 
 #define _USE_MATH_DEFINES
 #include <math.h>
@@ -358,15 +359,11 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	e = glCheckFramebufferStatus(GL_FRAMEBUFFER);
 	PrintIfFrameBufferNotComplete(e);
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
-	// wtf is the difference vs glGenFrameBuffers? Different inital state - which contains what?
-	//glCreateFramebuffers(1, &framebuffer);	
-
-	int sizeOfRay = sizeof(float) * 4 * 6;
+	
 	GLuint ssbo = 0;
 	glGenBuffers(1, &ssbo);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, ssbo);
-	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeOfRay * windowWidth * windowHeight, nullptr, GL_DYNAMIC_COPY);
+	glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(ray) * windowWidth * windowHeight, nullptr, GL_DYNAMIC_COPY);
 	glBindBuffer(GL_SHADER_STORAGE_BUFFER, 0);
 
 	GLuint lightBuffer = 0;

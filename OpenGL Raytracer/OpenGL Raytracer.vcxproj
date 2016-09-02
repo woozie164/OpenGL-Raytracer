@@ -84,6 +84,7 @@
     <ClInclude Include="camera.h" />
     <ClInclude Include="OBJ.h" />
     <ClInclude Include="OpenGLTimer.h" />
+    <ClInclude Include="Ray.h" />
     <ClInclude Include="shaders.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
