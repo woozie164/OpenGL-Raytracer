@@ -1,6 +1,3 @@
-//#include definitions.glsl
-//#include trace.glsl
-
 // Compute barycentric coordinates (u, v, w) for
 // point p with respect to triangle (a, b, c)
 void CartesianToBarycentricCoord(vec3 a, vec3 b, vec3 c,

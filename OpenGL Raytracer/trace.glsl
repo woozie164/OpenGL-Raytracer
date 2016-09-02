@@ -1,5 +1,3 @@
-//#include ray.glsl
-//#include sphere.glsl
 bool RayVsTriangle(vec3 ray_origin, vec3 ray_dir,
  vec3 tri_x, vec3 tri_y,  vec3 tri_z,
  out float t)
