@@ -43,10 +43,11 @@ int compileShaderProgram(vector<ShaderInfo> & shaders, GLuint& programHandle)
 		lineNumbers[i] += to_string(i);
 		lineNumbers[i] += " \n";
 	}
+	bool useLineNumberDefine = shaders[0].shaderType == SHADER_VERSION_HEADER;
 
 	for(unsigned int i = 0; i < shaders.size(); i++)
 	{		
-		if(shaders[i].shaderType != SHADER_VERSION_HEADER)
+		if(shaders[i].shaderType != SHADER_VERSION_HEADER && useLineNumberDefine)
 		{
 			shaderSrcPtr.push_back(lineNumbers[i].c_str());
 		}
