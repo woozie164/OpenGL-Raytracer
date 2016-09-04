@@ -39,7 +39,7 @@ int compileShaderProgram(vector<ShaderInfo> & shaders, GLuint& programHandle)
 
 	for (unsigned int i = 0; i < shaders.size(); i++)
 	{		
-		lineNumbers[i] += "#line 1 ";
+		lineNumbers[i] += "\n#line 1 ";
 		lineNumbers[i] += to_string(i);
 		lineNumbers[i] += " \n";
 	}
@@ -100,6 +100,19 @@ int compileShaderProgram(vector<ShaderInfo> & shaders, GLuint& programHandle)
 				fprintf(stderr, "Shader log:\n%s", log);
 				free(log);				
 			}
+
+			string errFileName = "errdump_" + shaders[i].filename;
+			ofstream f(errFileName.c_str());
+			if(f.is_open())
+			{
+				for (auto j = 0; j < shaderSrcPtr.size(); j++)
+				{
+					f << shaderSrcPtr[j];
+				}
+				f.close();
+				fprintf(stderr, "Shader written to %s\n", errFileName.c_str());
+			}
+			
 			return -1;
 		}
 
