@@ -61,6 +61,7 @@ void PrintComputeShaderLimits()
 
 void glfw_error_callback(int error, const char* description)
 {
+	std::cerr << __FUNCTION__ << ": ";
 	std::cerr << description << std::endl;
 }
 
@@ -289,10 +290,8 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	glfwInit();
 
 #ifdef _DEBUG
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);
-#else 
-	glfwWindowHint(GLFW_OPENGL_COMPAT_PROFILE, GL_TRUE);
-#endif // DEBUG
+	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE);	
+#endif // DEBUG		
 
 	GLFWwindow * window = glfwCreateWindow(windowWidth, windowHeight, "OpenGL Raytracer", 0, 0);
 	if (!window) {

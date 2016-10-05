@@ -13,18 +13,19 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{B30B4A21-481C-4724-9E6E-F7DBF7BE4AF9}</ProjectGuid>
     <RootNamespace>OpenGLRaytracer</RootNamespace>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v120</PlatformToolset>
+    <PlatformToolset>v140</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -39,12 +40,12 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IncludePath>.\glm;.\glew-1.13.0\include\GL;.\glfw-3.1.1.bin.WIN32\include\GLFW;.\SOIL\src;$(IncludePath)</IncludePath>
-    <LibraryPath>.\glfw-3.1.1.bin.WIN32\lib-vc2013;.\glew-1.13.0\lib\Release\Win32;.\SOIL\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\glm;.\glew-1.13.0\include\GL;.\glfw-3.2.1.bin.WIN32\include\GLFW;.\SOIL\src;$(IncludePath)</IncludePath>
+    <LibraryPath>.\glfw-3.2.1.bin.WIN32\lib-vc2015;.\glew-1.13.0\lib\Release\Win32;.\SOIL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IncludePath>.\glm;.\glew-1.13.0\include\GL;.\glfw-3.1.1.bin.WIN32\include\GLFW;.\SOIL\src;$(IncludePath)</IncludePath>
-    <LibraryPath>.\glfw-3.1.1.bin.WIN32\lib-vc2013;.\glew-1.13.0\lib\Release\Win32;.\SOIL\lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\glm;.\glew-1.13.0\include\GL;.\glfw-3.2.1.bin.WIN32\include\GLFW;.\SOIL\src;$(IncludePath)</IncludePath>
+    <LibraryPath>.\glfw-3.2.1.bin.WIN32\lib-vc2015;.\glew-1.13.0\lib\Release\Win32;.\SOIL\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
