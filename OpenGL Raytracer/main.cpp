@@ -311,8 +311,14 @@ int RunRaytracer(int windowWidth, int windowHeight, int threadGroupSize, int ren
 	} else {
 		cout << "glDebugMessageCallback not available" << endl;
 	}
-#endif // DEBUG
 
+	int major, min, rev;
+	glfwGetVersion(&major, &min, &rev);
+	cout << "GLFW version: " << major << "." << min << "." << rev << endl;
+	cout << "OpenGL version: " << glGetString(GL_VERSION) << endl;
+	cout << "GLSL version: " << glGetString(GL_SHADING_LANGUAGE_VERSION) << endl;
+#endif // DEBUG
+	
 	glEnable(GL_DEPTH_TEST);
 
 	GLuint raygenprog, rayintersectprog, raycolorprog;
